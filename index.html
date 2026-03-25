@@ -1,227 +1,67 @@
 <!doctype html>
-<html lang="ru">
-<head>
-  <meta charset="utf-8">
-  <title>Dashboard</title>
-
-  <!-- iPad: запуск как веб‑приложение (убирает адресную строку при запуске с "На экран Домой") -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Dashboard">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-  <style>
-    :root{
-      --bg:#050608; --card:#0b0d12; --muted:#aab2c0; --text:#f2f4f8; --accent:#e9eef9;
-      --border:rgba(255,255,255,.08); --shadow: 0 10px 30px rgba(0,0,0,.45);
-    }
-    html,body{height:100%; margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
-    .wrap{height:100%; box-sizing:border-box; padding:18px;}
-    .grid{display:grid; grid-template-columns: 1.2fr .8fr; grid-gap:14px; height:calc(100% - 42px);}
-    .topbar{display:flex; align-items:center; justify-content:space-between; height:42px; opacity:.95}
-    .brand{font-weight:700; letter-spacing:.5px}
-    .meta{font-size:12px; color:var(--muted)}
-    .card{background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
-      border:1px solid var(--border); border-radius:18px; box-shadow:var(--shadow); padding:14px; overflow:hidden;}
-    .cards2{display:grid; grid-template-columns: 1fr 1fr; grid-gap:14px;}
-    .kpi .label{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.12em}
-    .kpi .value{font-size:42px; font-weight:800; margin-top:6px; line-height:1.05}
-    .kpi .sub{font-size:14px; color:var(--muted); margin-top:6px}
-    .list h3{margin:0 0 10px 0; font-size:14px; color:var(--accent); text-transform:uppercase; letter-spacing:.12em}
-    ul{list-style:none; padding:0; margin:0}
-    li{padding:10px 10px; border:1px solid var(--border); border-radius:14px; margin-bottom:10px; background:rgba(0,0,0,.18)}
-    li:last-child{margin-bottom:0}
-    .chip{display:inline-block; font-size:11px; color:var(--muted); border:1px solid var(--border); border-radius:999px; padding:4px 8px; margin-left:8px}
-    .quote{display:flex; flex-direction:column; justify-content:center; height:100%;}
-    .quote .t{font-size:20px; font-weight:700; line-height:1.25}
-    .quote .a{margin-top:10px; font-size:13px; color:var(--muted)}
-    .rightcol{display:grid; grid-template-rows: 1fr 1fr; grid-gap:14px;}
-    .status{display:flex; gap:10px; align-items:center; font-size:12px; color:var(--muted); margin-top:10px}
-    .dot{width:8px; height:8px; border-radius:50%; background:#666}
-    .ok{background:#35d07f}
-    .bad{background:#ff5a73}
-    .muted{opacity:.85}
-    .small{font-size:12px}
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <div class="topbar">
-      <div class="brand">DASHBOARD</div>
-      <div class="meta" id="clock">—</div>
-    </div>
-
-    <div class="grid">
-      <div>
-        <div class="cards2">
-          <div class="card kpi">
-            <div class="label">Сегодня</div>
-            <div class="value" id="income_today">—</div>
-            <div class="sub">Доход за день</div>
-          </div>
-          <div class="card kpi">
-            <div class="label">Месяц</div>
-            <div class="value" id="income_month">—</div>
-            <div class="sub">Доход за месяц</div>
-          </div>
-        </div>
-
-        <div style="height:14px"></div>
-
-        <div class="card kpi">
-          <div class="label">Всего</div>
-          <div class="value" id="income_total">—</div>
-          <div class="sub">Накопленный доход</div>
-
-          <div class="status">
-            <div class="dot" id="sync_dot"></div>
-            <div id="sync_text">Нет данных</div>
-            <div class="chip" id="sync_age">—</div>
-          </div>
-        </div>
-
-        <div style="height:14px"></div>
-
-        <div class="card quote">
-          <div class="t" id="quote_text">—</div>
-          <div class="a" id="quote_author"></div>
-        </div>
-      </div>
-
-      <div class="rightcol">
-        <div class="card list">
-          <h3>Сегодняшние задачи</h3>
-          <ul id="tasks_today"></ul>
-        </div>
-        <div class="card list">
-          <h3>Глобальные цели</h3>
-          <ul id="goals_global"></ul>
-        </div>
-      </div>
-    </div>
-
-    <div class="meta small muted" id="hint" style="margin-top:10px">
-      Подсказка: добавь эту страницу через «Поделиться → На экран Домой», чтобы запускалась без адресной строки.
-    </div>
-  </div>
-
+<html lang="ru"><head>
+<meta charset="utf-8"><title>Dashboard — Main</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Dashboard">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<style>
+:root{--bg:#040507;--card:#0a0d12;--text:#eef2f7;--muted:#98a3b4;--line:rgba(255,255,255,.08);--accent:#cfe6ff;--green:#83e6b3;--red:#ff7c8e;--gold:#d9c38f}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+.wrap{min-height:100%;box-sizing:border-box;padding:14px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.brand{font-weight:800;letter-spacing:.08em;font-size:18px}.clock{font-size:12px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:1.15fr .85fr;gap:12px}.left,.right{display:grid;gap:12px}.metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015));border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:0 10px 35px rgba(0,0,0,.35);overflow:hidden}
+.label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}.value{font-size:38px;font-weight:800;margin-top:6px;line-height:1}.value.smallish{font-size:28px}
+.green{color:var(--green)}.red{color:var(--red)}.gold{color:var(--gold)}.mini{font-size:13px;color:var(--muted);margin-top:8px}.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+h3{margin:0 0 10px 0;font-size:13px;color:var(--accent);text-transform:uppercase;letter-spacing:.12em}ul{list-style:none;padding:0;margin:0}
+li{border:1px solid var(--line);background:rgba(0,0,0,.18);border-radius:12px;padding:10px 12px;margin-bottom:8px;font-size:18px;line-height:1.2}.li:last-child{margin-bottom:0}
+.biglist li{font-size:19px}.goal{display:flex;justify-content:space-between;gap:14px;align-items:flex-end;margin:10px 0;padding-bottom:10px;border-bottom:1px solid var(--line)}.goal:last-child{border-bottom:none;padding-bottom:0;margin-bottom:0}
+.goal .name{font-size:16px;line-height:1.25}.goal .num{font-size:28px;font-weight:800;white-space:nowrap}.reminder{font-size:26px;font-weight:800;line-height:1.2;color:#fff}
+.nav{display:flex;gap:10px;justify-content:flex-end;margin-top:12px}.btn{display:inline-block;text-decoration:none;color:#fff;border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border-radius:14px;padding:12px 16px;font-size:16px;font-weight:700}
+.status{margin-top:8px;font-size:12px;color:var(--muted)}.empty{opacity:.45}
+@media (max-width:1100px){.grid,.metrics,.two{grid-template-columns:1fr}.value{font-size:32px}.reminder{font-size:22px}}
+</style></head>
+<body><div class="wrap">
+<div class="top"><div class="brand">DASHBOARD</div><div class="clock" id="clock">—</div></div>
+<div class="grid">
+<div class="left">
+<div class="metrics">
+<div class="card"><div class="label">Вчера</div><div class="value green" id="income_yesterday">—</div><div class="mini">Доход за вчера</div></div>
+<div class="card"><div class="label">Сегодня</div><div class="value green" id="income_today">—</div><div class="mini">Доход за сегодня</div></div>
+<div class="card"><div class="label">Текущий месяц</div><div class="value green smallish" id="income_month">—</div><div class="mini">Доход за месяц</div></div>
+</div>
+<div class="two">
+<div class="card"><div class="label">Баланс</div><div class="value" id="balance">—</div></div>
+<div class="card"><div class="label">Долг</div><div class="value red" id="debt">—</div></div>
+</div>
+<div class="card">
+<h3>Ближайшие цели</h3>
+<div class="goal"><div class="name" id="goal_need_label">Необходимо заработать</div><div class="num gold" id="goal_need_value">—</div></div>
+<div class="goal"><div class="name" id="goal_recommended_label">Рекомендовано заработать</div><div class="num gold" id="goal_recommended_value">—</div></div>
+</div>
+<div class="two">
+<div class="card"><h3>Сейф</h3><div class="value" id="safe_value">—</div></div>
+<div class="card"><h3>Статус синхронизации</h3><div class="value smallish" id="sync_state">—</div><div class="status" id="sync_meta">Нет данных</div></div>
+</div>
+<div class="card"><h3>Напоминание</h3><div class="reminder" id="reminder_text">—</div></div>
+</div>
+<div class="right">
+<div class="card"><h3>Дела на сегодня</h3><ul class="biglist" id="tasks_today"></ul></div>
+<div class="card"><h3>Дела на завтра</h3><ul class="biglist" id="tasks_tomorrow"></ul></div>
+</div>
+</div>
+<div class="nav"><a class="btn" href="income.html">Страница дохода →</a></div>
+</div>
 <script>
-  // === НАСТРОЙКА ===
-  // Вставь сюда URL веб‑приложения Google Apps Script (Deployment → Web app → URL)
-  var GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwI-yuwuNLx0mFVocA43t_N1CKe7I1-yVRd1d2PVVhoQqZNyQT8zCa_G-m9UaVQHrFPZA/exec";
-  // Обновление данных (мс)
-  var REFRESH_MS = 30000;
-
-  var lastOkTs = 0;
-
-  function pad(n){ return (n<10? "0":"") + n; }
-
-  function tickClock(){
-    var d = new Date();
-    var s = pad(d.getDate()) + "." + pad(d.getMonth()+1) + "." + d.getFullYear() + "  " + pad(d.getHours()) + ":" + pad(d.getMinutes());
-    document.getElementById("clock").textContent = s;
-  }
-  setInterval(tickClock, 1000);
-  tickClock();
-
-  function setList(elId, items){
-    var el = document.getElementById(elId);
-    el.innerHTML = "";
-    if(!items || !items.length){
-      var li = document.createElement("li");
-      li.textContent = "—";
-      el.appendChild(li);
-      return;
-    }
-    for(var i=0;i<items.length;i++){
-      var li = document.createElement("li");
-      li.textContent = items[i];
-      el.appendChild(li);
-    }
-  }
-
-  function money(v){
-    if(v === null || v === undefined) return "—";
-    var s = (""+v).replace(/\s+/g,"").replace(",",".");
-    var num = parseFloat(s);
-    if(isNaN(num)) return ""+v;
-    var parts = (Math.round(num*100)/100).toFixed(2).split(".");
-    var intp = parts[0];
-    var frac = parts[1];
-    var out = "";
-    for(var i=0;i<intp.length;i++){
-      var ch = intp[intp.length-1-i];
-      out = ch + out;
-      if((i+1)%3===0 && i !== intp.length-1) out = " " + out;
-    }
-    return out + "," + frac;
-  }
-
-  // === JSONP (обход CORS на старом Safari) ===
-  function loadJsonp(){
-    if(!GAS_WEBAPP_URL || GAS_WEBAPP_URL.indexOf("http") !== 0){
-      document.getElementById("sync_text").textContent = "Вставь GAS_WEBAPP_URL в коде";
-      document.getElementById("sync_dot").className = "dot bad";
-      return;
-    }
-    var old = document.getElementById("jsonp_script");
-    if(old && old.parentNode) old.parentNode.removeChild(old);
-
-    var script = document.createElement("script");
-    script.id = "jsonp_script";
-    var cb = "renderData";
-    var url = GAS_WEBAPP_URL + (GAS_WEBAPP_URL.indexOf("?")>=0 ? "&" : "?")
-            + "callback=" + cb
-            + "&_=" + (new Date().getTime());
-    script.src = url;
-    script.onerror = function(){
-      document.getElementById("sync_text").textContent = "Ошибка загрузки данных";
-      document.getElementById("sync_dot").className = "dot bad";
-    };
-    document.body.appendChild(script);
-  }
-
-  function renderData(data){
-    try{
-      document.getElementById("income_today").textContent = money(data.income_today);
-      document.getElementById("income_month").textContent = money(data.income_month);
-      document.getElementById("income_total").textContent = money(data.income_total);
-
-      setList("tasks_today", data.tasks_today || []);
-      setList("goals_global", data.goals_global || []);
-
-      document.getElementById("quote_text").textContent = (data.quote && data.quote.text) ? data.quote.text : "—";
-      document.getElementById("quote_author").textContent = (data.quote && data.quote.author) ? data.quote.author : "";
-
-      lastOkTs = new Date().getTime();
-      document.getElementById("sync_text").textContent = "Синхронизировано";
-      document.getElementById("sync_dot").className = "dot ok";
-
-      if(data.updated_at){
-        document.getElementById("sync_age").textContent = data.updated_at;
-      } else {
-        document.getElementById("sync_age").textContent = "ok";
-      }
-    }catch(e){
-      document.getElementById("sync_text").textContent = "Данные пришли, но формат сломан";
-      document.getElementById("sync_dot").className = "dot bad";
-    }
-  }
-
-  function tickAge(){
-    if(!lastOkTs) return;
-    var ageSec = Math.floor((new Date().getTime() - lastOkTs)/1000);
-    var txt = ageSec < 60 ? (ageSec + "с") : (Math.floor(ageSec/60) + "м");
-    document.getElementById("sync_age").textContent = txt + " назад";
-    if(ageSec > (REFRESH_MS/1000)*2){
-      document.getElementById("sync_dot").className = "dot bad";
-      document.getElementById("sync_text").textContent = "Давно не обновлялось";
-    }
-  }
-  setInterval(tickAge, 1000);
-
-  loadJsonp();
-  setInterval(loadJsonp, REFRESH_MS);
-</script>
-</body>
-</html>
+var GAS_WEBAPP_URL="PASTE_GAS_WEBAPP_URL_HERE",PAGE_NAME="main",REFRESH_MS=30000,lastOk=0;
+function pad(n){return(n<10?"0":"")+n}
+function tickClock(){var d=new Date();document.getElementById("clock").textContent=pad(d.getDate())+"."+pad(d.getMonth()+1)+"."+d.getFullYear()+"  "+pad(d.getHours())+":"+pad(d.getMinutes())}
+tickClock();setInterval(tickClock,1000);
+function money(v){if(v===null||v===undefined||v==="")return"—";var s=(""+v).replace(/\s+/g,"").replace(",",".");var num=parseFloat(s);if(isNaN(num))return""+v;var parts=(Math.round(num*100)/100).toFixed(2).split("."),intp=parts[0],frac=parts[1],out="";for(var i=0;i<intp.length;i++){var ch=intp[intp.length-1-i];out=ch+out;if((i+1)%3===0&&i!==intp.length-1)out=" "+out}return out+","+frac}
+function setText(id,val,useMoney){document.getElementById(id).textContent=useMoney?money(val):(val||"—")}
+function setList(id,items){var el=document.getElementById(id);el.innerHTML="";if(!items||!items.length){var li=document.createElement("li");li.className="empty";li.textContent="—";el.appendChild(li);return}for(var i=0;i<items.length;i++){var li=document.createElement("li");li.textContent=items[i];el.appendChild(li)}}
+function loadJsonp(){if(!GAS_WEBAPP_URL||GAS_WEBAPP_URL.indexOf("http")!==0){document.getElementById("sync_state").textContent="Нет URL";document.getElementById("sync_meta").textContent="Вставь GAS_WEBAPP_URL в код";return}var old=document.getElementById("jsonp_script");if(old&&old.parentNode)old.parentNode.removeChild(old);var script=document.createElement("script");script.id="jsonp_script";script.src=GAS_WEBAPP_URL+(GAS_WEBAPP_URL.indexOf("?")>=0?"&":"?")+"callback=renderData&page="+PAGE_NAME+"&_="+Date.now();script.onerror=function(){document.getElementById("sync_state").textContent="Ошибка";document.getElementById("sync_meta").textContent="Не удалось загрузить данные"};document.body.appendChild(script)}
+function renderData(data){setText("income_yesterday",data.income_yesterday,true);setText("income_today",data.income_today,true);setText("income_month",data.income_month,true);setText("balance",data.balance,true);setText("debt",data.debt,true);setText("safe_value",data.safe,true);setText("goal_need_label",data.goal_need_label,false);setText("goal_need_value",data.goal_need_value,true);setText("goal_recommended_label",data.goal_recommended_label,false);setText("goal_recommended_value",data.goal_recommended_value,true);setText("reminder_text",data.reminder,false);setList("tasks_today",data.tasks_today||[]);setList("tasks_tomorrow",data.tasks_tomorrow||[]);document.getElementById("sync_state").textContent="OK";document.getElementById("sync_meta").textContent=data.updated_at||"Обновлено";lastOk=Date.now()}
+setInterval(function(){if(lastOk){var age=Math.floor((Date.now()-lastOk)/1000);if(age>(REFRESH_MS/1000)*2){document.getElementById("sync_state").textContent="Застыло"}}},1000);
+loadJsonp();setInterval(loadJsonp,REFRESH_MS);
+</script></body></html>
