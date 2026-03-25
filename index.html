@@ -53,7 +53,7 @@ li{border:1px solid var(--line);background:rgba(0,0,0,.18);border-radius:12px;pa
 <div class="nav"><a class="btn" href="income.html">Страница дохода →</a></div>
 </div>
 <script>
-var GAS_WEBAPP_URL="PASTE_GAS_WEBAPP_URL_HERE",PAGE_NAME="main",REFRESH_MS=30000,lastOk=0;
+var GAS_WEBAPP_URL="https://script.google.com/macros/s/AKfycbwI-yuwuNLx0mFVocA43t_N1CKe7I1-yVRd1d2PVVhoQqZNyQT8zCa_G-m9UaVQHrFPZA/exec",PAGE_NAME="main",REFRESH_MS=30000,lastOk=0;
 function pad(n){return(n<10?"0":"")+n}
 function tickClock(){var d=new Date();document.getElementById("clock").textContent=pad(d.getDate())+"."+pad(d.getMonth()+1)+"."+d.getFullYear()+"  "+pad(d.getHours())+":"+pad(d.getMinutes())}
 tickClock();setInterval(tickClock,1000);

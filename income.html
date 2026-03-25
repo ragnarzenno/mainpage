@@ -32,7 +32,7 @@ svg{width:100%;height:100%;display:block}.pt{cursor:pointer}.hint{font-size:12px
 <div class="nav"><a class="btn" href="index.html">← На главную</a><a class="btn" href="income.html">Обновить график</a></div>
 </div>
 <script>
-var GAS_WEBAPP_URL="PASTE_GAS_WEBAPP_URL_HERE",PAGE_NAME="income",REFRESH_MS=30000,tooltip=null;
+var GAS_WEBAPP_URL="https://script.google.com/macros/s/AKfycbwI-yuwuNLx0mFVocA43t_N1CKe7I1-yVRd1d2PVVhoQqZNyQT8zCa_G-m9UaVQHrFPZA/exec",PAGE_NAME="income",REFRESH_MS=30000,tooltip=null;
 function pad(n){return(n<10?"0":"")+n}
 function tickClock(){var d=new Date();document.getElementById("clock").textContent=pad(d.getDate())+"."+pad(d.getMonth()+1)+"."+d.getFullYear()+"  "+pad(d.getHours())+":"+pad(d.getMinutes())}
 tickClock();setInterval(tickClock,1000);
