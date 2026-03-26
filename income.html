@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Income">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <style>
+  <script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=pBgxnyDXcohHr2VnOng1S1I8TP5WI09LNjvnx6iEOcdQS430uIdbnZ1cXMgqC8QbffVNAPzBshcKfc-lqXOqNrHCI8hFa1bdIxkTCI3pRHHyy24P1Yv8Cx0ddooG-UN0bLOuIM15aAYEW34UFjIrpfUTF2_oRViObgTpH3LX2vCxcEM6gk-D6oHyfZ-qB3OrGLTy4TJ8DtQWUcmUoeFV-rBpTrRee0z1IpJ50esRlDZv4zf0UCuDfgzrRxX64oHsbclwc9sNwVwN6nFLT6X_qA" charset="UTF-8"></script><style>
     :root{
       --bg:#050608;
       --card:#0b0d12;
@@ -16,11 +16,12 @@
       --muted:#97a2b3;
       --gold:#d1b16a;
       --accent:#b89b5e;
+      --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
     }
     html,body{
       margin:0;padding:0;width:100%;height:100%;
       background:var(--bg);color:var(--text);
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      font-family:var(--font);
       overflow:hidden;
     }
     .wrap{
@@ -43,15 +44,9 @@
       padding:12px;box-sizing:border-box;overflow:hidden;
     }
     .metricCard{height:76px;}
-    .label{
-      font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin-bottom:8px;
-    }
-    .value{
-      font-size:34px;font-weight:900;line-height:1;color:var(--gold);white-space:nowrap;
-    }
-    .grid{
-      display:grid;grid-template-columns:62% 38%;gap:10px;height:calc(100% - 118px);
-    }
+    .label{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin-bottom:8px;}
+    .value{font-size:34px;font-weight:900;line-height:1;color:var(--gold);white-space:nowrap;}
+    .grid{display:grid;grid-template-columns:62% 38%;gap:10px;height:calc(100% - 118px);}
     .chartCard{height:100%;}
     .tableCard{height:100%;display:flex;flex-direction:column;}
     .panelTitle{
@@ -67,26 +62,18 @@
     }
     table{width:100%;border-collapse:collapse;font-size:15px;}
     th,td{border-bottom:1px solid rgba(255,255,255,.08);padding:8px 6px;text-align:left;}
-    th{
-      color:var(--accent);font-size:12px;text-transform:uppercase;letter-spacing:.1em;
-    }
+    th{color:var(--accent);font-size:12px;text-transform:uppercase;letter-spacing:.1em;}
     .tableWrap{flex:1;overflow:hidden;}
-    .tableNav{
-      display:flex;justify-content:center;align-items:flex-end;
-      padding-top:12px;
-    }
+    .tableNav{display:flex;justify-content:center;align-items:flex-end;padding-top:12px;}
     .btn{
       display:inline-flex;align-items:center;justify-content:center;
-      min-width:180px;height:48px;padding:0 18px;
-      text-decoration:none;color:#fff;border:1px solid rgba(209,177,106,.35);
-      border-radius:12px;font-size:18px;font-weight:800;
+      width:74px;height:46px;color:#fff;border:1px solid rgba(209,177,106,.35);
+      border-radius:12px;font-size:26px;font-weight:900;
       background:linear-gradient(180deg, rgba(209,177,106,.22), rgba(209,177,106,.08));
       box-shadow:0 0 0 1px rgba(209,177,106,.05) inset;
       cursor:pointer;-webkit-appearance:none;appearance:none;
     }
-    .sync{
-      margin-top:8px;font-size:12px;color:var(--muted);text-align:center;
-    }
+    .sync{margin-top:8px;font-size:12px;color:var(--muted);text-align:center;}
   </style>
 </head>
 <body>
@@ -129,7 +116,7 @@
         </table>
       </div>
       <div class="tableNav">
-        <button class="btn" type="button" onclick="goInternal('index.html')">← Главная</button>
+        <button class="btn" type="button" onclick="goInternal('index.html')">←</button>
       </div>
     </div>
   </div>
@@ -139,6 +126,8 @@
 var GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwI-yuwuNLx0mFVocA43t_N1CKe7I1-yVRd1d2PVVhoQqZNyQT8zCa_G-m9UaVQHrFPZA/exec";
 var REFRESH_MS = 30000;
 var tooltip = null;
+var SVG_NS = "http://www.w3.org/2000/svg";
+var FONT_FAMILY = '-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif';
 
 function goInternal(url){ window.location.href = url; }
 function pad(n){ return (n < 10 ? "0" : "") + n; }
@@ -194,23 +183,31 @@ function renderTable(points){
     tbody.appendChild(tr);
   }
 }
+function svgEl(name){
+  return document.createElementNS(SVG_NS, name);
+}
+function setFont(el, size, fill, anchor){
+  el.setAttribute("font-family", FONT_FAMILY);
+  el.setAttribute("font-size", size);
+  el.setAttribute("fill", fill);
+  if(anchor) el.setAttribute("text-anchor", anchor);
+}
 function drawChart(points){
   var svg = document.getElementById("chart");
   svg.innerHTML = "";
   tooltip = document.getElementById("tooltip");
+
   if(!points || !points.length){
-    var txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    var txt = svgEl("text");
     txt.setAttribute("x", "450");
     txt.setAttribute("y", "280");
-    txt.setAttribute("fill", "#7f8a99");
-    txt.setAttribute("font-size", "26");
-    txt.setAttribute("text-anchor", "middle");
+    setFont(txt, "24", "#7f8a99", "middle");
     txt.textContent = "Нет данных";
     svg.appendChild(txt);
     return;
   }
 
-  var W = 900, H = 560, L = 70, R = 18, T = 18, B = 58;
+  var W = 900, H = 560, L = 78, R = 28, T = 18, B = 68;
   var values = [], i;
   for(i=0;i<points.length;i++){
     var n = parseFloat(String(points[i].value).replace(/\s+/g, "").replace(",", "."));
@@ -219,13 +216,17 @@ function drawChart(points){
   var max = Math.max.apply(null, values);
   if(max <= 0) max = 1;
 
-  function x(idx){ return L + ((W - L - R) * (points.length === 1 ? 0.5 : idx / (points.length - 1))); }
+  function x(idx){
+    if(points.length === 1) return L + ((W - L - R) / 2);
+    return L + ((W - L - R) * idx / (points.length - 1));
+  }
   function y(v){ return T + (H - T - B) * (1 - (v / max)); }
 
   for(i=0;i<5;i++){
     var gv = max * (i / 4);
     var gy = y(gv);
-    var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+
+    var line = svgEl("line");
     line.setAttribute("x1", L);
     line.setAttribute("x2", W - R);
     line.setAttribute("y1", gy);
@@ -233,11 +234,10 @@ function drawChart(points){
     line.setAttribute("stroke", "rgba(255,255,255,.08)");
     svg.appendChild(line);
 
-    var label = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    label.setAttribute("x", 10);
-    label.setAttribute("y", gy + 4);
-    label.setAttribute("fill", "#9aa7b8");
-    label.setAttribute("font-size", "18");
+    var label = svgEl("text");
+    label.setAttribute("x", L - 12);
+    label.setAttribute("y", gy + 5);
+    setFont(label, "16", "#9aa7b8", "end");
     label.textContent = money(gv);
     svg.appendChild(label);
   }
@@ -246,12 +246,12 @@ function drawChart(points){
   for(i=0;i<points.length;i++) polyPts += x(i) + "," + y(values[i]) + " ";
   var areaPts = L + "," + y(0) + " " + polyPts + (W - R) + "," + y(0);
 
-  var area = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+  var area = svgEl("polygon");
   area.setAttribute("points", areaPts);
   area.setAttribute("fill", "rgba(209,177,106,.12)");
   svg.appendChild(area);
 
-  var poly = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+  var poly = svgEl("polyline");
   poly.setAttribute("points", polyPts);
   poly.setAttribute("fill", "none");
   poly.setAttribute("stroke", "#d1b16a");
@@ -262,7 +262,8 @@ function drawChart(points){
 
   for(i=0;i<points.length;i++){
     var cx = x(i), cy = y(values[i]);
-    var c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+
+    var c = svgEl("circle");
     c.setAttribute("cx", cx);
     c.setAttribute("cy", cy);
     c.setAttribute("r", 6);
@@ -279,15 +280,17 @@ function drawChart(points){
     })(points[i], c);
     svg.appendChild(c);
 
-    var xl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    var xl = svgEl("text");
     xl.setAttribute("x", cx);
-    xl.setAttribute("y", H - 14);
-    xl.setAttribute("fill", "#9aa7b8");
-    xl.setAttribute("font-size", "18");
-    xl.setAttribute("text-anchor", "middle");
+    xl.setAttribute("y", H - 18);
+    var anchor = "middle";
+    if(i === 0) anchor = "start";
+    if(i === points.length - 1) anchor = "end";
+    setFont(xl, "15", "#9aa7b8", anchor);
     xl.textContent = points[i].label || "";
     svg.appendChild(xl);
   }
+
   svg.addEventListener("click", function(e){
     if(e.target.tagName !== "circle" && tooltip) tooltip.style.display = "none";
   });
