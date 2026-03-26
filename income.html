@@ -30,7 +30,7 @@
     }
     .top{
       display:flex;justify-content:flex-end;align-items:center;
-      margin-bottom:10px;height:22px;
+      margin-bottom:12px;height:22px;
     }
     .clock{font-size:14px;color:#c6ced9;letter-spacing:.03em;}
     .stats{
@@ -46,7 +46,7 @@
     .metricCard{height:76px;display:flex;flex-direction:column;min-height:0;}
     .label{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .value{font-size:32px;font-weight:900;line-height:1;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .value.moneyLong{font-size:27px;}
+    .value.moneyLong{font-size:25px;}
     .grid{display:grid;grid-template-columns:62% 38%;gap:20px;height:calc(100% - 138px);}
     .chartCard{height:100%;}
     .tableCard{height:100%;display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;}
@@ -181,7 +181,7 @@ function parseCurrencyValue(v){
   }
   var n = parseFloat(normalized);
   if(isNaN(n)) return { text: raw, currency: currency, number: null };
-  var text = n.toLocaleString("ru-RU", {minimumFractionDigits:2, maximumFractionDigits:2});
+  var text = n.toLocaleString("ru-RU", {minimumFractionDigits:0, maximumFractionDigits:0});
   if(currency) text += " " + currency;
   return { text: text, currency: currency, number: n };
 }

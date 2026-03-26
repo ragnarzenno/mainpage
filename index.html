@@ -95,7 +95,7 @@
     .stats2{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--gap);}
 
     .metricCard{
-      height:108px;
+      height:116px;
       display:flex;
       flex-direction:column;
       justify-content:flex-start;
@@ -121,7 +121,7 @@
       text-transform:uppercase;
       letter-spacing:.18em;
       color:#a9b4c5;
-      margin-bottom:10px;
+      margin-bottom:12px;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
@@ -137,7 +137,7 @@
     }
 
     .value{
-      font-size:31px;
+      font-size:29px;
       font-weight:900;
       line-height:1;
       color:var(--gold);
@@ -146,14 +146,14 @@
       text-overflow:ellipsis;
       margin-top:2px;
     }
-    .value.small{font-size:30px;}
-    .value.moneyLong{font-size:27px;}
-    .value.moneyXL{font-size:23px;}
+    .value.small{font-size:28px;}
+    .value.moneyLong{font-size:25px;}
+    .value.moneyXL{font-size:22px;}
     .value.white{color:#ffffff;}
     .sub{
       margin-top:auto;
-      padding-top:12px;
-      font-size:13px;
+      padding-top:14px;
+      font-size:12px;
       line-height:1.05;
       color:#ecf2fb;
     }
@@ -273,7 +273,7 @@
       letter-spacing:.16em;
       color:var(--accent);
       font-weight:900;
-      margin-bottom:10px;
+      margin-bottom:12px;
       line-height:1;
     }
     .reminderInner{
@@ -410,7 +410,7 @@ function parseCurrencyValue(v){
   }
   var n = parseFloat(normalized);
   if(isNaN(n)) return { text: raw, currency: currency, number: null };
-  var text = n.toLocaleString("ru-RU", {minimumFractionDigits:2, maximumFractionDigits:2});
+  var text = n.toLocaleString("ru-RU", {minimumFractionDigits:0, maximumFractionDigits:0});
   if(currency) text += " " + currency;
   return { text: text, currency: currency, number: n };
 }
