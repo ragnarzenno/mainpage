@@ -43,7 +43,25 @@
     .left{grid-column:1;grid-row:1;}
     .right{grid-column:2;grid-row:1;}
     .stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
-    .stats2{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+    .stats2{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+    .wideCard{
+      height:94px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      min-height:0;
+    }
+    .wideRow{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:12px;
+      align-items:center;
+      min-height:0;
+    }
+    .wideText{font-size:18px;line-height:1.15;font-weight:800;overflow:hidden;}
+    .wideValue{font-size:30px;font-weight:900;color:var(--gold);white-space:nowrap;}
+    .wideValue.moneyLong{font-size:26px;}
+    .wideValue.moneyXL{font-size:23px;}
     .card{
       background:linear-gradient(180deg, rgba(13,16,22,.98), rgba(8,10,14,.98));
       border:1px solid var(--line);
@@ -219,9 +237,12 @@
           <div class="label" id="debt_label">Долг</div>
           <div class="value white" id="debt">—</div>
         </div>
-        <div class="card metricCard">
-          <div class="label" id="safe_label">Сейф</div>
-          <div class="value" id="safe_value">—</div>
+      </div>
+
+      <div class="card wideCard">
+        <div class="wideRow">
+          <div class="wideText" id="safe_label">Сейф</div>
+          <div class="wideValue" id="safe_value">—</div>
         </div>
       </div>
 
