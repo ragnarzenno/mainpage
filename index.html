@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Dashboard">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=66Nrf1-gXIuTzEJskwYyG6-LDtdwYmxCOpQBo7u7hZXblBCE-PIXkb2ylulOLkzu3RlCwHd_m1k1KAh7VA1sKMTG9SeSszmupcqJLvTLgpP4SBZywdxCDebBlwcXm3LA_dfSi3fhO_5abVEsglCNWIHJ2z-tjYL7tFldcX6bk42H7eP11TaE9tVRg1BkaITyfQiRg52mrsn8dphBtN-wRMSuGo4565Cc9d0CCFUNvsQ_vkwsVRnE30uHeD0C3l3JmqtsjXK8XF_wCfIoct_N_g" charset="UTF-8"></script><style>
+  <style>
     :root{
       --bg:#050608;
       --card:#0b0d12;
@@ -33,9 +33,15 @@
     }
     .clock{font-size:14px;color:#c6ced9;letter-spacing:.03em;}
     .layout{
-      display:grid;grid-template-columns:60% 40%;gap:10px;height:calc(100% - 32px);
+      display:grid;
+      grid-template-columns:60% 40%;
+      grid-template-rows:1fr 132px;
+      gap:10px;
+      height:calc(100% - 32px);
     }
     .left,.right{display:flex;flex-direction:column;gap:10px;min-height:0;}
+    .left{grid-column:1;grid-row:1;}
+    .right{grid-column:2;grid-row:1;}
     .stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
     .stats2{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
     .card{
@@ -45,14 +51,33 @@
       box-shadow:0 0 0 1px rgba(209,177,106,.04) inset, 0 10px 30px rgba(0,0,0,.25);
       padding:12px;box-sizing:border-box;overflow:hidden;
     }
-    .metricCard{height:108px;}
+    .metricCard{
+      height:108px;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-start;
+    }
     .label{
-      font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin-bottom:10px;
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      color:var(--muted);
+      margin-bottom:8px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
     .value{
-      font-size:38px;font-weight:900;line-height:1;color:var(--gold);white-space:nowrap;
+      font-size:34px;
+      font-weight:900;
+      line-height:1;
+      color:var(--gold);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      margin-top:4px;
     }
-    .value.small{font-size:34px;}
+    .value.small{font-size:31px;}
     .value.white{color:#ffffff;}
     .sub{margin-top:10px;font-size:15px;color:#dfe6f0;}
     .panelTitle{
@@ -62,18 +87,20 @@
     .goalsCard{flex:1;min-height:0;}
     .goalRow{
       display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;
-      border-bottom:1px solid rgba(255,255,255,.08);padding:10px 0;
+      border-bottom:1px solid rgba(255,255,255,.08);padding:10px 0;min-height:54px;
     }
     .goalRow:last-child{border-bottom:none;}
     .goalText{font-size:17px;line-height:1.18;font-weight:700;}
     .goalValue{font-size:30px;font-weight:900;color:var(--gold);white-space:nowrap;}
     .reminderCard{
-      height:122px;
+      grid-column:1 / span 2;
+      grid-row:2;
+      height:132px;
       position:relative;
       display:flex;
       flex-direction:column;
-      padding-left:20px;
-      padding-right:20px;
+      padding-left:24px;
+      padding-right:24px;
     }
     .reminderTitle{
       margin:0 0 8px 0;
@@ -191,14 +218,6 @@
           <div class="goalValue" id="safe_value">—</div>
         </div>
       </div>
-
-      <div class="card reminderCard">
-        <div class="reminderTitle" id="reminder_label">Главное напоминание</div>
-        <div class="reminderInner">
-          <div class="reminder" id="reminder_text">—</div>
-        </div>
-        <div class="sync" id="sync_meta">Нет данных</div>
-      </div>
     </div>
 
     <div class="right">
@@ -215,6 +234,14 @@
       <div class="nav">
         <button class="btn" type="button" onclick="goInternal('income.html')">→</button>
       </div>
+    </div>
+
+    <div class="card reminderCard">
+      <div class="reminderTitle" id="reminder_label">Главное напоминание</div>
+      <div class="reminderInner">
+        <div class="reminder" id="reminder_text">—</div>
+      </div>
+      <div class="sync" id="sync_meta">Нет данных</div>
     </div>
   </div>
 </div>
