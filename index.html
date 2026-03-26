@@ -41,12 +41,10 @@
       justify-content:space-between;
       align-items:center;
       margin-bottom:8px;
+      min-height:24px;
     }
-    .brand {
-      font-size:28px;
-      font-weight:900;
-      letter-spacing:.08em;
-      color:var(--white);
+    .topClockOnly {
+      justify-content:flex-end;
     }
     .clock {
       font-size:14px;
@@ -210,6 +208,9 @@
       font-size:15px;
       font-weight:800;
       background:linear-gradient(180deg, rgba(209,177,106,.12), rgba(209,177,106,.05));
+      cursor:pointer;
+      -webkit-appearance:none;
+      appearance:none;
     }
     .sync {
       font-size:12px;
@@ -220,8 +221,7 @@
 </head>
 <body>
 <div class="wrap">
-  <div class="top">
-    <div class="brand">DASHBOARD</div>
+  <div class="top topClockOnly">
     <div class="clock" id="clock">—</div>
   </div>
 
@@ -282,7 +282,7 @@
         </div>
 
         <div class="nav">
-          <a class="btn" href="income.html">Страница дохода →</a>
+          <button class="btn" type="button" onclick="goInternal('income.html')">Страница дохода →</button>
         </div>
       </div>
     </div>
@@ -401,6 +401,24 @@ function renderMain(data) {
 
 loadJsonp();
 setInterval(loadJsonp, REFRESH_MS);
+function goInternal(url) {
+  window.location.href = url;
+}
+
+document.addEventListener('click', function(e) {
+  var node = e.target;
+  while (node && node !== document) {
+    if (node.tagName === 'A' && node.getAttribute('href')) {
+      var href = node.getAttribute('href');
+      if (href.indexOf('http') !== 0 && href.indexOf('//') !== 0 && href.charAt(0) !== '#') {
+        e.preventDefault();
+        window.location.href = href;
+        return;
+      }
+    }
+    node = node.parentNode;
+  }
+}, false);
 </script>
 </body>
 </html>
