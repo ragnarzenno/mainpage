@@ -14,12 +14,9 @@
       --line:rgba(255,255,255,.08);
       --text:#eef2f7;
       --muted:#97a2b3;
-      --green:#d1b16a;
-      --red:#d97b86;
-      --steel:#d7d2c8;
-      --accent:#b89b5e;
       --gold:#d1b16a;
-      --gold-soft:rgba(209,177,106,.16);
+      --accent:#b89b5e;
+      --white:#f5f7fb;
     }
     html,body {
       margin:0;
@@ -36,40 +33,48 @@
       height:768px;
       margin:0 auto;
       box-sizing:border-box;
-      padding:12px;
+      padding:10px 12px;
       overflow:hidden;
     }
     .top {
       display:flex;
       justify-content:space-between;
       align-items:center;
-      margin-bottom:10px;
+      margin-bottom:8px;
     }
     .brand {
       font-size:28px;
       font-weight:900;
       letter-spacing:.08em;
+      color:var(--white);
     }
     .clock {
       font-size:14px;
-      color:#8f949d;
-    }
-    .grid {
-      display:grid;
-      grid-template-columns:58% 42%;
-      gap:10px;
-      height:calc(100% - 52px);
+      color:#a0a8b3;
     }
     .dashboardBody {
       display:grid;
       grid-template-rows:1fr auto;
       gap:10px;
-      height:100%;
+      height:calc(100% - 44px);
+      min-height:0;
+    }
+    .grid {
+      display:grid;
+      grid-template-columns:58% 42%;
+      gap:10px;
+      min-height:0;
     }
     .left, .right {
       display:grid;
       gap:10px;
       min-height:0;
+    }
+    .left {
+      grid-template-rows:auto auto 1fr;
+    }
+    .right {
+      grid-template-rows:1fr 1fr auto;
     }
     .metrics {
       display:grid;
@@ -89,56 +94,33 @@
       padding:12px;
       box-sizing:border-box;
       overflow:hidden;
+      min-height:0;
     }
     .label {
       font-size:11px;
       text-transform:uppercase;
       letter-spacing:.14em;
-      color:#8f949d;
-      margin-bottom:8px;
+      color:#9ea6b1;
+      margin-bottom:10px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
     .value {
-      font-size:36px;
+      font-size:34px;
       font-weight:900;
       line-height:1;
       color:var(--gold);
     }
-    .value.green { color:var(--green); }
-    .value.red { color:var(--red); }
     .value.small { font-size:28px; }
+    .value.debt { color:var(--white); }
     .sub {
       margin-top:8px;
       font-size:12px;
-      color:#8f949d;
-    }
-    .goalRow {
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-end;
-      gap:12px;
-      padding:10px 0;
-      border-bottom:1px solid var(--line);
-    }
-    .goalRow:last-child {
-      border-bottom:none;
-      padding-bottom:0;
-    }
-    .goalText {
-      font-size:17px;
-      line-height:1.2;
-      font-weight:700;
-    }
-    .goalValue {
-      font-size:30px;
-      font-weight:900;
-      color:var(--gold);
-      white-space:nowrap;
-    }
-    .reminder {
-      font-size:24px;
-      line-height:1.18;
-      font-weight:900;
-      color:#fff;
+      color:#a7aeb8;
+      line-height:1.15;
+      max-height:28px;
+      overflow:hidden;
     }
     .panelTitle {
       margin:0 0 8px 0;
@@ -148,24 +130,67 @@
       color:var(--accent);
       text-shadow:0 0 12px rgba(209,177,106,.08);
       font-weight:900;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .goalRow {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      padding:12px 0;
+      border-bottom:1px solid var(--line);
+    }
+    .goalRow:last-child {
+      border-bottom:none;
+      padding-bottom:0;
+    }
+    .goalText {
+      font-size:17px;
+      line-height:1.15;
+      font-weight:700;
+      flex:1;
+    }
+    .goalValue {
+      font-size:30px;
+      font-weight:900;
+      color:var(--gold);
+      white-space:nowrap;
+      text-align:right;
+    }
+    .reminderCard {
+      padding:14px 18px;
+      text-align:center;
+    }
+    .reminder {
+      font-size:22px;
+      line-height:1.16;
+      font-weight:900;
+      color:#fff;
+      max-height:52px;
+      overflow:hidden;
     }
     ul {
       list-style:none;
       padding:0;
       margin:0;
+      display:grid;
+      gap:7px;
     }
     li {
       border:1px solid var(--line);
       background:rgba(255,255,255,.012);
       border-radius:10px;
       padding:8px 10px;
-      margin-bottom:7px;
-      font-size:17px;
-      line-height:1.18;
+      font-size:16px;
+      line-height:1.16;
       font-weight:700;
+      overflow:hidden;
     }
-    li:last-child {
-      margin-bottom:0;
+    .singleLine li {
+      white-space:nowrap;
+      text-overflow:ellipsis;
     }
     .empty {
       opacity:.45;
@@ -174,7 +199,6 @@
       display:flex;
       justify-content:flex-end;
       align-items:center;
-      margin-top:8px;
     }
     .btn {
       display:inline-block;
@@ -203,69 +227,68 @@
 
   <div class="dashboardBody">
     <div class="grid">
-    <div class="left">
-      <div class="metrics">
-        <div class="card">
-          <div class="label">Вчера</div>
-          <div class="value green" style="color:var(--gold);" id="income_yesterday">—</div>
-          <div class="sub">Доход за вчера</div>
+      <div class="left">
+        <div class="metrics">
+          <div class="card">
+            <div class="label" id="label_income_yesterday">Вчера</div>
+            <div class="value" id="income_yesterday">—</div>
+            <div class="sub" id="sub_income_yesterday">—</div>
+          </div>
+          <div class="card">
+            <div class="label" id="label_income_today">Сегодня</div>
+            <div class="value" id="income_today">—</div>
+            <div class="sub" id="sub_income_today">—</div>
+          </div>
+          <div class="card">
+            <div class="label" id="label_income_month">Текущий месяц</div>
+            <div class="value small" id="income_month">—</div>
+            <div class="sub" id="sub_income_month">—</div>
+          </div>
         </div>
-        <div class="card">
-          <div class="label">Сегодня</div>
-          <div class="value green" style="color:var(--gold);" id="income_today">—</div>
-          <div class="sub">Доход за сегодня</div>
+
+        <div class="two">
+          <div class="card">
+            <div class="label" id="label_balance">Баланс</div>
+            <div class="value" id="balance">—</div>
+          </div>
+          <div class="card">
+            <div class="label" id="label_debt">Долг</div>
+            <div class="value debt" id="debt">—</div>
+          </div>
         </div>
+
         <div class="card">
-          <div class="label">Текущий месяц</div>
-          <div class="value green small" style="color:var(--gold);" id="income_month">—</div>
-          <div class="sub">Доход за месяц</div>
+          <div class="panelTitle" id="panel_goals">Ближайшие цели</div>
+          <div class="goalRow">
+            <div class="goalText" id="goal_need_label">—</div>
+            <div class="goalValue" id="goal_need_value">—</div>
+          </div>
+          <div class="goalRow">
+            <div class="goalText" id="safe_label">—</div>
+            <div class="goalValue" id="safe_value">—</div>
+          </div>
         </div>
       </div>
 
-      <div class="two">
+      <div class="right">
         <div class="card">
-          <div class="label">Баланс</div>
-          <div class="value" id="balance">—</div>
+          <div class="panelTitle" id="panel_today_tasks">Дела на сегодня</div>
+          <ul id="tasks_today" class="singleLine"></ul>
         </div>
+
         <div class="card">
-          <div class="label">Долг</div>
-          <div class="value red" id="debt">—</div>
+          <div class="panelTitle" id="panel_tomorrow_tasks">Дела на завтра</div>
+          <ul id="tasks_tomorrow"></ul>
+        </div>
+
+        <div class="nav">
+          <a class="btn" href="income.html">Страница дохода →</a>
         </div>
       </div>
-
-      <div class="card">
-        <div class="panelTitle">Ближайшие цели</div>
-        <div class="goalRow">
-          <div class="goalText">Необходимо заработать до 19 апреля 2026 года</div>
-          <div class="goalValue" id="goal_need_value">—</div>
-        </div>
-        <div class="goalRow">
-          <div class="goalText">Сейф</div>
-          <div class="goalValue" id="safe_value">—</div>
-        </div>
-      </div>
-
     </div>
 
-    <div class="right">
-      <div class="card">
-        <div class="panelTitle">Дела на сегодня</div>
-        <ul id="tasks_today"></ul>
-      </div>
-
-      <div class="card">
-        <div class="panelTitle">Дела на завтра</div>
-        <ul id="tasks_tomorrow"></ul>
-      </div>
-
-      <div class="nav">
-        <a class="btn" href="income.html">Страница дохода →</a>
-      </div>
-    </div>
-    </div>
-
-    <div class="card" style="padding:14px 18px; text-align:center;">
-      <div class="panelTitle" style="margin-bottom:10px;">Главное напоминание</div>
+    <div class="card reminderCard">
+      <div class="panelTitle" id="panel_reminder">Главное напоминание</div>
       <div class="reminder" id="reminder_text">—</div>
       <div class="sync" id="sync_meta">Нет данных</div>
     </div>
@@ -286,6 +309,7 @@ function tickClock() {
     pad(d.getDate()) + "." + pad(d.getMonth() + 1) + "." + d.getFullYear() + "  " +
     pad(d.getHours()) + ":" + pad(d.getMinutes());
 }
+
 tickClock();
 setInterval(tickClock, 1000);
 
@@ -305,7 +329,9 @@ function money(v) {
 }
 
 function setText(id, val, asMoney) {
-  document.getElementById(id).textContent = asMoney ? money(val) : (val || "—");
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = asMoney ? money(val) : ((val || "").toString().trim() || "—");
 }
 
 function setList(id, items) {
@@ -343,6 +369,22 @@ function renderMain(data) {
     document.getElementById("sync_meta").textContent = data && data.error ? ("Ошибка: " + data.error) : "Ошибка данных";
     return;
   }
+
+  setText("label_income_yesterday", data.label_income_yesterday, false);
+  setText("sub_income_yesterday", data.sub_income_yesterday, false);
+  setText("label_income_today", data.label_income_today, false);
+  setText("sub_income_today", data.sub_income_today, false);
+  setText("label_income_month", data.label_income_month, false);
+  setText("sub_income_month", data.sub_income_month, false);
+  setText("label_balance", data.label_balance, false);
+  setText("label_debt", data.label_debt, false);
+  setText("panel_goals", data.panel_goals, false);
+  setText("goal_need_label", data.goal_need_label, false);
+  setText("safe_label", data.safe_label, false);
+  setText("panel_reminder", data.panel_reminder, false);
+  setText("panel_today_tasks", data.panel_today_tasks, false);
+  setText("panel_tomorrow_tasks", data.panel_tomorrow_tasks, false);
+
   setText("income_yesterday", data.income_yesterday, true);
   setText("income_today", data.income_today, true);
   setText("income_month", data.income_month, true);
@@ -353,6 +395,7 @@ function renderMain(data) {
   setText("reminder_text", data.reminder, false);
   setList("tasks_today", data.tasks_today || []);
   setList("tasks_tomorrow", data.tasks_tomorrow || []);
+
   document.getElementById("sync_meta").textContent = data.updated_at ? ("Обновлено: " + data.updated_at) : "OK";
 }
 

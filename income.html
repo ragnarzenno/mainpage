@@ -14,9 +14,8 @@
       --line:rgba(255,255,255,.08);
       --text:#eef2f7;
       --muted:#97a2b3;
-      --green:#d1b16a;
-      --accent:#b89b5e;
       --gold:#d1b16a;
+      --accent:#b89b5e;
     }
     html,body {
       margin:0;
@@ -33,14 +32,14 @@
       height:768px;
       margin:0 auto;
       box-sizing:border-box;
-      padding:12px;
+      padding:10px 12px;
       overflow:hidden;
     }
     .top {
       display:flex;
       justify-content:space-between;
       align-items:center;
-      margin-bottom:10px;
+      margin-bottom:8px;
     }
     .brand {
       font-size:28px;
@@ -70,8 +69,11 @@
       font-size:11px;
       text-transform:uppercase;
       letter-spacing:.14em;
-      color:#8f949d;
+      color:#9ea6b1;
       margin-bottom:8px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
     .value {
       font-size:34px;
@@ -87,6 +89,9 @@
       color:var(--accent);
       text-shadow:0 0 12px rgba(209,177,106,.08);
       font-weight:900;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
     .grid {
       display:grid;
@@ -165,15 +170,15 @@
   </div>
 
   <div class="metrics">
-    <div class="card"><div class="label">Вчера</div><div class="value" id="income_yesterday">—</div></div>
-    <div class="card"><div class="label">Сегодня</div><div class="value" id="income_today">—</div></div>
-    <div class="card"><div class="label">Текущий месяц</div><div class="value" id="income_month">—</div></div>
-    <div class="card"><div class="label">Всего в таблице</div><div class="value" id="income_total">—</div></div>
+    <div class="card"><div class="label" id="label_income_yesterday">Вчера</div><div class="value" id="income_yesterday">—</div></div>
+    <div class="card"><div class="label" id="label_income_today">Сегодня</div><div class="value" id="income_today">—</div></div>
+    <div class="card"><div class="label" id="label_income_month">Текущий месяц</div><div class="value" id="income_month">—</div></div>
+    <div class="card"><div class="label" id="label_income_total">Всего в таблице</div><div class="value" id="income_total">—</div></div>
   </div>
 
   <div class="grid">
     <div class="card">
-      <div class="panelTitle">График дохода</div>
+      <div class="panelTitle" id="panel_chart">График дохода</div>
       <div class="chartWrap">
         <svg id="chart" viewBox="0 0 900 560" preserveAspectRatio="none"></svg>
         <div class="tooltip" id="tooltip"></div>
@@ -182,9 +187,9 @@
     </div>
 
     <div class="card">
-      <div class="panelTitle">Таблица заработка</div>
+      <div class="panelTitle" id="panel_table">Таблица заработка</div>
       <table>
-        <thead><tr><th>Дата</th><th>Сумма</th></tr></thead>
+        <thead><tr><th id="table_col_date">Дата</th><th id="table_col_amount">Сумма</th></tr></thead>
         <tbody id="income_table"></tbody>
       </table>
     </div>
@@ -211,6 +216,7 @@ function tickClock() {
     pad(d.getDate()) + "." + pad(d.getMonth() + 1) + "." + d.getFullYear() + "  " +
     pad(d.getHours()) + ":" + pad(d.getMinutes());
 }
+
 tickClock();
 setInterval(tickClock, 1000);
 
@@ -229,8 +235,10 @@ function money(v) {
   return out + "," + frac;
 }
 
-function setText(id, val) {
-  document.getElementById(id).textContent = money(val);
+function setText(id, val, asMoney) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = asMoney ? money(val) : ((val || "").toString().trim() || "—");
 }
 
 function loadJsonp() {
@@ -253,10 +261,20 @@ function renderIncome(data) {
     drawChart([]);
     return;
   }
-  setText("income_yesterday", data.income_yesterday);
-  setText("income_today", data.income_today);
-  setText("income_month", data.income_month);
-  setText("income_total", data.income_total);
+
+  setText("label_income_yesterday", data.label_income_yesterday, false);
+  setText("label_income_today", data.label_income_today, false);
+  setText("label_income_month", data.label_income_month, false);
+  setText("label_income_total", data.label_income_total, false);
+  setText("panel_chart", data.panel_chart, false);
+  setText("panel_table", data.panel_table, false);
+  setText("table_col_date", data.table_col_date, false);
+  setText("table_col_amount", data.table_col_amount, false);
+
+  setText("income_yesterday", data.income_yesterday, true);
+  setText("income_today", data.income_today, true);
+  setText("income_month", data.income_month, true);
+  setText("income_total", data.income_total, true);
   renderTable(data.chart_points || []);
   drawChart(data.chart_points || []);
   document.getElementById("sync_meta").textContent = data.updated_at ? ("Обновлено: " + data.updated_at) : "OK";
@@ -299,7 +317,7 @@ function drawChart(points) {
   }
 
   var vals = points.map(function(p) {
-    return +((("" + p.value).replace(",", "."))) || 0;
+    return +(("" + p.value).replace(/\s+/g, "").replace(",", ".")) || 0;
   });
   var min = Math.min.apply(null, vals);
   var max = Math.max.apply(null, vals);
