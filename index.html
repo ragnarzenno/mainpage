@@ -12,8 +12,8 @@
       --bg:#050608;
       --cardTop:#10141b;
       --cardBottom:#090c12;
-      --line:rgba(209,177,106,.18);
-      --lineSoft:rgba(209,177,106,.08);
+      --line:rgba(209,177,106,.30);
+      --lineSoft:rgba(209,177,106,.14);
       --text:#eef2f7;
       --muted:#97a2b3;
       --gold:#d1b16a;
@@ -71,21 +71,23 @@
     .card{
       position:relative;
       background:linear-gradient(180deg, rgba(16,20,27,.98), rgba(9,12,18,.98));
-      border:1px solid var(--line);
-      border-radius:var(--radius);
+      border:2px solid var(--line);
+      border-radius:18px;
       box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,.02),
-        inset 0 1px 0 rgba(255,255,255,.03),
-        0 10px 24px rgba(0,0,0,.18);
+        inset 0 0 0 1px rgba(255,255,255,.025),
+        inset 0 1px 0 rgba(255,255,255,.035),
+        0 8px 20px rgba(0,0,0,.18);
       padding:var(--pad);
       box-sizing:border-box;
       overflow:hidden;
+      -webkit-background-clip:padding-box;
+      background-clip:padding-box;
     }
     .card:before{
       content:"";
-      position:absolute;inset:0;
-      border-radius:inherit;
-      box-shadow:inset 0 0 0 1px var(--lineSoft);
+      position:absolute;left:1px;top:1px;right:1px;bottom:1px;
+      border-radius:16px;
+      border:1px solid var(--lineSoft);
       pointer-events:none;
     }
 
@@ -226,15 +228,20 @@
     }
     .navLower{
       margin-top:auto;
-      padding-bottom:6px;
+      padding-bottom:10px;
     }
     .btn{
       display:inline-flex;align-items:center;justify-content:center;
-      width:74px;height:44px;
-      color:#fff;border:1px solid rgba(209,177,106,.35);
-      border-radius:13px;font-size:26px;font-weight:900;
-      background:linear-gradient(180deg, rgba(209,177,106,.22), rgba(209,177,106,.08));
-      box-shadow:0 0 0 1px rgba(209,177,106,.05) inset;
+      width:112px;height:48px;
+      color:#fff;
+      border:2px solid rgba(209,177,106,.42);
+      border-radius:15px;
+      font-size:24px;font-weight:900;
+      letter-spacing:.02em;
+      background:linear-gradient(180deg, rgba(233,205,143,.28), rgba(209,177,106,.10));
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.08),
+        0 8px 20px rgba(0,0,0,.18);
       cursor:pointer;-webkit-appearance:none;appearance:none;
     }
 
