@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Dashboard">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=C-oT-9NqMkHxoEVGCa68YYNEeKAjuMKnH5iIDiWeJMa6T5qN4gUQFZouCPmvIoFb4fRgrl9vH2TUsHspYITvw7tKyLXHEFYUNzhuUhdr8OFjubySvBwipCuS8qci85THnMa9YnUiZhnJDZeADhcLORM0TzG33KBLJnkEFwJq5VALKeToX_kY0YQ9Ezgv2tcWxktzbxa3ztm39AdbXP4seUmetJPTpC87rYaDSKHfnKI5MxdzTr9AzGmmegh3_JEKOnKdA-88rHa5DhaGudPhtw" charset="UTF-8"></script><style>
+  <script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=66Nrf1-gXIuTzEJskwYyG6-LDtdwYmxCOpQBo7u7hZXblBCE-PIXkb2ylulOLkzu3RlCwHd_m1k1KAh7VA1sKMTG9SeSszmupcqJLvTLgpP4SBZywdxCDebBlwcXm3LA_dfSi3fhO_5abVEsglCNWIHJ2z-tjYL7tFldcX6bk42H7eP11TaE9tVRg1BkaITyfQiRg52mrsn8dphBtN-wRMSuGo4565Cc9d0CCFUNvsQ_vkwsVRnE30uHeD0C3l3JmqtsjXK8XF_wCfIoct_N_g" charset="UTF-8"></script><style>
     :root{
       --bg:#050608;
       --card:#0b0d12;
@@ -72,35 +72,61 @@
       position:relative;
       display:flex;
       flex-direction:column;
+      padding-left:20px;
+      padding-right:20px;
+    }
+    .reminderTitle{
+      margin:0 0 8px 0;
+      font-size:13px;text-transform:uppercase;letter-spacing:.12em;
+      color:var(--accent);font-weight:900;
+      text-align:center;
     }
     .reminderInner{
       flex:1;
       display:flex;
-      flex-direction:column;
       align-items:center;
       justify-content:center;
       text-align:center;
       min-height:0;
-      padding:0 28px 18px 28px;
+      padding:0 10px 18px 10px;
     }
     .reminder{
+      width:100%;
       font-size:23px;line-height:1.12;font-weight:900;color:#fff;
-      max-height:52px;overflow:hidden;
+      text-align:center;
+      overflow:hidden;
+      word-break:break-word;
     }
     .sync{
       position:absolute;left:0;right:0;bottom:10px;
       font-size:12px;color:var(--muted);text-align:center;
     }
-    .tasksCard{height:188px;}
+    .tasksCard{
+      height:188px;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+    }
     ul{list-style:none;padding:0;margin:0;}
+    .taskList{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      gap:7px;
+      min-height:0;
+    }
+    .taskList.compact li{font-size:15px;line-height:1.12;padding:7px 9px;}
+    .taskList.tight li{font-size:13px;line-height:1.08;padding:6px 8px;}
     li{
       border:1px solid rgba(255,255,255,.08);
       background:rgba(255,255,255,.015);
-      border-radius:10px;padding:8px 10px;margin-bottom:7px;
+      border-radius:10px;padding:8px 10px;
       font-size:17px;line-height:1.16;font-weight:700;
-      max-height:38px;overflow:hidden;
+      overflow:hidden;
+      display:-webkit-box;
+      -webkit-line-clamp:2;
+      -webkit-box-orient:vertical;
     }
-    li:last-child{margin-bottom:0;}
     .empty{opacity:.45;}
     .nav{
       display:flex;justify-content:center;align-items:center;
@@ -167,7 +193,7 @@
       </div>
 
       <div class="card reminderCard">
-        <div class="panelTitle" id="reminder_label">Главное напоминание</div>
+        <div class="reminderTitle" id="reminder_label">Главное напоминание</div>
         <div class="reminderInner">
           <div class="reminder" id="reminder_text">—</div>
         </div>
@@ -178,12 +204,12 @@
     <div class="right">
       <div class="card tasksCard">
         <div class="panelTitle">Дела на сегодня</div>
-        <ul id="tasks_today"></ul>
+        <ul id="tasks_today" class="taskList"></ul>
       </div>
 
       <div class="card tasksCard">
         <div class="panelTitle">Дела на завтра</div>
-        <ul id="tasks_tomorrow"></ul>
+        <ul id="tasks_tomorrow" class="taskList"></ul>
       </div>
 
       <div class="nav">
@@ -224,6 +250,7 @@ function setText(id, val, isMoney){
 function setList(id, items){
   var el = document.getElementById(id);
   if(!el) return;
+  el.className = "taskList";
   el.innerHTML = "";
   if(!items || !items.length){
     var li = document.createElement("li");
@@ -232,7 +259,10 @@ function setList(id, items){
     el.appendChild(li);
     return;
   }
-  for(var i=0;i<items.length && i<3;i++){
+  if(items.length >= 4) el.className = "taskList compact";
+  if(items.length >= 6) el.className = "taskList tight";
+
+  for(var i=0;i<items.length;i++){
     var li = document.createElement("li");
     li.textContent = items[i];
     el.appendChild(li);
