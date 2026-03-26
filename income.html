@@ -65,7 +65,19 @@
     th,td{border-bottom:1px solid rgba(255,255,255,.08);padding:8px 6px;text-align:left;}
     th{color:var(--accent);font-size:12px;text-transform:uppercase;letter-spacing:.1em;}
     .tableWrap{flex:1;overflow:hidden;}
-    .tableNav{display:flex;justify-content:center;align-items:flex-end;padding-top:12px;}
+    .tableNav{
+      display:flex;
+      justify-content:center;
+      align-items:flex-end;
+      padding-top:14px;
+      padding-bottom:2px;
+      min-height:64px;
+      flex:0 0 64px;
+    }
+    .backBtn{
+      position:relative;
+      z-index:5;
+    }
     .btn{
       display:inline-flex;align-items:center;justify-content:center;
       width:74px;height:46px;color:#fff;border:1px solid rgba(209,177,106,.35);
@@ -117,7 +129,7 @@
         </table>
       </div>
       <div class="tableNav">
-        <button class="btn" type="button" onclick="goInternal('index.html')">←</button>
+        <button class="btn backBtn" id="back_btn" type="button">←</button>
       </div>
     </div>
   </div>
@@ -130,7 +142,13 @@ var tooltip = null;
 var SVG_NS = "http://www.w3.org/2000/svg";
 var FONT_FAMILY = '-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif';
 
-function goInternal(url){ window.location.href = url; }
+function goInternal(url){
+  try{
+    window.location.href = url;
+  }catch(e){
+    try{ window.location.assign(url); }catch(e2){}
+  }
+}
 function pad(n){ return (n < 10 ? "0" : "") + n; }
 function tickClock(){
   var d = new Date();
@@ -187,12 +205,16 @@ function loadJsonp(){
   document.body.appendChild(s);
 }
 function renderIncome(data){
-  setText("income_yesterday", data.income_yesterday);
-  setText("income_today", data.income_today);
-  setText("income_month", data.income_month);
-  renderTable(data.chart_points || []);
-  drawChart(data.chart_points || []);
-  document.getElementById("sync_meta").textContent = data.updated_at ? ("Обновлено: " + data.updated_at) : "OK";
+  try{
+    setText("income_yesterday", data.income_yesterday);
+    setText("income_today", data.income_today);
+    setText("income_month", data.income_month);
+    renderTable(data.chart_points || []);
+    drawChart(data.chart_points || []);
+    document.getElementById("sync_meta").textContent = data.updated_at ? ("Обновлено: " + data.updated_at) : "OK";
+  }catch(err){
+    document.getElementById("sync_meta").textContent = "Ошибка рендера: " + (err && err.message ? err.message : err);
+  }
 }
 function renderTable(points){
   var tbody = document.getElementById("income_table");
@@ -322,6 +344,21 @@ function drawChart(points){
     if(e.target.tagName !== "circle" && tooltip) tooltip.style.display = "none";
   });
 }
+
+var backBtnEl = document.getElementById("back_btn");
+if(backBtnEl){
+  var backHandler = function(ev){
+    if(ev && ev.preventDefault) ev.preventDefault();
+    goInternal('index.html');
+    return false;
+  };
+  backBtnEl.onclick = backHandler;
+  if(backBtnEl.addEventListener){
+    backBtnEl.addEventListener('touchend', backHandler, false);
+    backBtnEl.addEventListener('click', backHandler, false);
+  }
+}
+
 loadJsonp();
 setInterval(loadJsonp, REFRESH_MS);
 </script>

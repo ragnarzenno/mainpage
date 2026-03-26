@@ -188,6 +188,9 @@
       flex-direction:column;
       min-height:0;
     }
+    .tasksCardToday{
+      height:372px;
+    }
     ul{list-style:none;padding:0;margin:0;}
     .taskList{
       flex:1;
@@ -220,6 +223,10 @@
       height:52px;
       flex:0 0 52px;
       margin-top:-2px;
+    }
+    .navLower{
+      margin-top:auto;
+      padding-bottom:6px;
     }
     .btn{
       display:inline-flex;align-items:center;justify-content:center;
@@ -341,17 +348,12 @@
     </div>
 
     <div class="right">
-      <div class="card tasksCard">
+      <div class="card tasksCard tasksCardToday">
         <div class="panelTitle">Дела на сегодня</div>
         <ul id="tasks_today" class="taskList"></ul>
       </div>
 
-      <div class="card tasksCard">
-        <div class="panelTitle">Дела на завтра</div>
-        <ul id="tasks_tomorrow" class="taskList"></ul>
-      </div>
-
-      <div class="nav">
+      <div class="nav navLower">
         <button class="btn" type="button" onclick="goInternal('income.html')">→</button>
       </div>
     </div>
@@ -456,22 +458,25 @@ function loadJsonp(){
   document.body.appendChild(s);
 }
 function renderMain(data){
-  setText("income_yesterday", data.income_yesterday, true);
-  setText("income_today", data.income_today, true);
-  setText("income_month", data.income_month, true);
-  setText("balance", data.balance, true);
-  setText("debt", data.debt, true);
-  setText("goal_need_value", data.goal_need_value, true);
-  setText("safe_value", data.safe, true);
-  setText("reminder_text", data.reminder, false);
-  setText("balance_label", data.balance_label, false);
-  setText("debt_label", data.debt_label, false);
-  setText("goal_need_label", data.goal_need_label, false);
-  setText("safe_label", data.safe_label, false);
-  setText("reminder_label", data.reminder_label, false);
-  setList("tasks_today", data.tasks_today || []);
-  setList("tasks_tomorrow", data.tasks_tomorrow || []);
-  document.getElementById("sync_meta").textContent = data.updated_at ? ("Обновлено: " + data.updated_at) : "OK";
+  try{
+    setText("income_yesterday", data.income_yesterday, true);
+    setText("income_today", data.income_today, true);
+    setText("income_month", data.income_month, true);
+    setText("balance", data.balance, true);
+    setText("debt", data.debt, true);
+    setText("goal_need_value", data.goal_need_value, true);
+    setText("safe_value", data.safe, true);
+    setText("reminder_text", data.reminder, false);
+    setText("balance_label", data.balance_label, false);
+    setText("debt_label", data.debt_label, false);
+    setText("goal_need_label", data.goal_need_label, false);
+    setText("safe_label", data.safe_label, false);
+    setText("reminder_label", data.reminder_label, false);
+    setList("tasks_today", data.tasks_today || []);
+    document.getElementById("sync_meta").textContent = data.updated_at ? ("Обновлено: " + data.updated_at) : "OK";
+  }catch(err){
+    document.getElementById("sync_meta").textContent = "Ошибка рендера: " + (err && err.message ? err.message : err);
+  }
 }
 loadJsonp();
 setInterval(loadJsonp, REFRESH_MS);
