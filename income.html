@@ -26,7 +26,7 @@
     }
     .wrap{
       width:1024px;height:768px;margin:0 auto;box-sizing:border-box;
-      padding:14px 18px 18px;overflow:hidden;
+      padding:20px 24px 24px;overflow:hidden;
     }
     .top{
       display:flex;justify-content:flex-end;align-items:center;
@@ -34,7 +34,7 @@
     }
     .clock{font-size:14px;color:#c6ced9;letter-spacing:.03em;}
     .stats{
-      display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px;
+      display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:18px;
     }
     .card{
       background:linear-gradient(180deg, rgba(13,16,22,.98), rgba(8,10,14,.98));
@@ -47,9 +47,9 @@
     .label{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .value{font-size:32px;font-weight:900;line-height:1;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .value.moneyLong{font-size:27px;}
-    .grid{display:grid;grid-template-columns:62% 38%;gap:16px;height:calc(100% - 124px);}
+    .grid{display:grid;grid-template-columns:62% 38%;gap:16px;height:calc(100% - 132px);}
     .chartCard{height:100%;}
-    .tableCard{height:100%;display:flex;flex-direction:column;}
+    .tableCard{height:100%;display:flex;flex-direction:column;justify-content:flex-start;}
     .panelTitle{
       margin:0 0 10px 0;font-size:13px;text-transform:uppercase;letter-spacing:.12em;
       color:var(--accent);font-weight:900;
@@ -64,21 +64,22 @@
     table{width:100%;border-collapse:collapse;font-size:15px;}
     th,td{border-bottom:1px solid rgba(255,255,255,.08);padding:8px 6px;text-align:left;}
     th{color:var(--accent);font-size:12px;text-transform:uppercase;letter-spacing:.1em;}
-    .tableWrap{flex:1;overflow:hidden;}
+    .tableWrap{flex:1 1 auto;overflow:hidden;max-height:320px;}
     .tableNav{
       display:flex;
-      justify-content:stretch;
-      align-items:flex-end;
-      padding-top:16px;
-      padding-bottom:4px;
-      min-height:72px;
-      flex:0 0 72px;
+      justify-content:center;
+      align-items:flex-start;
+      padding-top:12px;
+      padding-bottom:0;
+      min-height:58px;
+      flex:0 0 58px;
       width:100%;
+      margin-top:2px;
     }
     .backBtn{
       position:relative;
       z-index:50;
-      width:100%;
+      width:92%;
       display:inline-flex;
       visibility:visible;
       opacity:1;
