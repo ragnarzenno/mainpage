@@ -26,7 +26,7 @@
     }
     .wrap{
       width:1024px;height:768px;margin:0 auto;box-sizing:border-box;
-      padding:24px 30px 28px;overflow:hidden;
+      padding:28px 38px 32px;overflow:hidden;
     }
     .top{
       display:flex;justify-content:flex-end;align-items:center;
@@ -47,7 +47,7 @@
     .label{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .value{font-size:32px;font-weight:900;line-height:1;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .value.moneyLong{font-size:25px;}
-    .grid{display:grid;grid-template-columns:62% 38%;gap:20px;height:calc(100% - 138px);}
+    .grid{display:grid;grid-template-columns:62% 38%;gap:24px;height:calc(100% - 144px);}
     .chartCard{height:100%;}
     .tableCard{height:100%;display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;}
     .panelTitle{
@@ -64,17 +64,17 @@
     table{width:100%;border-collapse:collapse;font-size:15px;}
     th,td{border-bottom:1px solid rgba(255,255,255,.08);padding:8px 6px;text-align:left;}
     th{color:var(--accent);font-size:12px;text-transform:uppercase;letter-spacing:.1em;}
-    .tableWrap{flex:0 0 auto;overflow:hidden;max-height:none;}
+    .tableWrap{flex:0 0 auto;overflow:hidden;max-height:none;margin-bottom:10px;}
     .tableNav{
       display:flex;
       justify-content:center;
       align-items:flex-start;
-      padding-top:12px;
+      padding-top:0;
       padding-bottom:0;
-      min-height:58px;
+      min-height:52px;
       flex:0 0 auto;
       width:100%;
-      margin-top:8px;
+      margin-top:0;
     }
     .backBtn{
       position:relative;
@@ -83,10 +83,11 @@
       display:inline-flex;
       visibility:visible;
       opacity:1;
+      margin-top:0;
     }
     .btn{
       display:inline-flex;align-items:center;justify-content:center;
-      width:74px;height:46px;color:#fff;border:1px solid rgba(209,177,106,.35);
+      width:88%;height:48px;color:#fff;border:2px solid rgba(209,177,106,.40);
       border-radius:12px;font-size:26px;font-weight:900;
       background:linear-gradient(180deg, rgba(209,177,106,.22), rgba(209,177,106,.08));
       box-shadow:0 0 0 1px rgba(209,177,106,.05) inset;
@@ -134,9 +135,8 @@
           <tbody id="income_table"></tbody>
         </table>
       </div>
-      <div style="flex:1 1 auto;"></div>
       <div class="tableNav">
-        <button class="btn backBtn" id="back_btn" type="button" style="width:100%;display:inline-flex;visibility:visible;opacity:1;">←</button>
+        <button class="btn backBtn" id="back_btn" type="button" style="width:88%;display:inline-flex;visibility:visible;opacity:1;margin-top:0;">←</button>
       </div>
     </div>
   </div>
