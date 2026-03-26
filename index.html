@@ -14,10 +14,12 @@
       --line:rgba(255,255,255,.08);
       --text:#eef2f7;
       --muted:#97a2b3;
-      --green:#8ce8b8;
-      --red:#ff7c8e;
-      --steel:#d6dbe3;
-      --accent:#cfd8e6;
+      --green:#d1b16a;
+      --red:#d97b86;
+      --steel:#d7d2c8;
+      --accent:#b89b5e;
+      --gold:#d1b16a;
+      --gold-soft:rgba(209,177,106,.16);
     }
     html,body {
       margin:0;
@@ -50,13 +52,19 @@
     }
     .clock {
       font-size:14px;
-      color:var(--muted);
+      color:#8f949d;
     }
     .grid {
       display:grid;
-      grid-template-columns:59% 41%;
+      grid-template-columns:58% 42%;
       gap:10px;
       height:calc(100% - 52px);
+    }
+    .dashboardBody {
+      display:grid;
+      grid-template-rows:1fr auto;
+      gap:10px;
+      height:100%;
     }
     .left, .right {
       display:grid;
@@ -74,8 +82,9 @@
       gap:10px;
     }
     .card {
-      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
-      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.012));
+      border:1px solid rgba(209,177,106,.18);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.03), 0 6px 22px rgba(0,0,0,.28);
       border-radius:12px;
       padding:12px;
       box-sizing:border-box;
@@ -85,14 +94,14 @@
       font-size:11px;
       text-transform:uppercase;
       letter-spacing:.14em;
-      color:var(--muted);
+      color:#8f949d;
       margin-bottom:8px;
     }
     .value {
       font-size:36px;
       font-weight:900;
       line-height:1;
-      color:var(--steel);
+      color:var(--gold);
     }
     .value.green { color:var(--green); }
     .value.red { color:var(--red); }
@@ -100,7 +109,7 @@
     .sub {
       margin-top:8px;
       font-size:12px;
-      color:var(--muted);
+      color:#8f949d;
     }
     .goalRow {
       display:flex;
@@ -122,7 +131,7 @@
     .goalValue {
       font-size:30px;
       font-weight:900;
-      color:var(--steel);
+      color:var(--gold);
       white-space:nowrap;
     }
     .reminder {
@@ -137,6 +146,7 @@
       text-transform:uppercase;
       letter-spacing:.12em;
       color:var(--accent);
+      text-shadow:0 0 12px rgba(209,177,106,.08);
       font-weight:900;
     }
     ul {
@@ -146,7 +156,7 @@
     }
     li {
       border:1px solid var(--line);
-      background:rgba(255,255,255,.015);
+      background:rgba(255,255,255,.012);
       border-radius:10px;
       padding:8px 10px;
       margin-bottom:7px;
@@ -175,11 +185,11 @@
       padding:10px 14px;
       font-size:15px;
       font-weight:800;
-      background:rgba(255,255,255,.03);
+      background:linear-gradient(180deg, rgba(209,177,106,.12), rgba(209,177,106,.05));
     }
     .sync {
       font-size:12px;
-      color:var(--muted);
+      color:#8f949d;
       margin-top:6px;
     }
   </style>
@@ -191,22 +201,23 @@
     <div class="clock" id="clock">—</div>
   </div>
 
-  <div class="grid">
+  <div class="dashboardBody">
+    <div class="grid">
     <div class="left">
       <div class="metrics">
         <div class="card">
           <div class="label">Вчера</div>
-          <div class="value green" id="income_yesterday">—</div>
+          <div class="value green" style="color:var(--gold);" id="income_yesterday">—</div>
           <div class="sub">Доход за вчера</div>
         </div>
         <div class="card">
           <div class="label">Сегодня</div>
-          <div class="value green" id="income_today">—</div>
+          <div class="value green" style="color:var(--gold);" id="income_today">—</div>
           <div class="sub">Доход за сегодня</div>
         </div>
         <div class="card">
           <div class="label">Текущий месяц</div>
-          <div class="value green small" id="income_month">—</div>
+          <div class="value green small" style="color:var(--gold);" id="income_month">—</div>
           <div class="sub">Доход за месяц</div>
         </div>
       </div>
@@ -234,11 +245,6 @@
         </div>
       </div>
 
-      <div class="card">
-        <div class="panelTitle">Напоминание</div>
-        <div class="reminder" id="reminder_text">—</div>
-        <div class="sync" id="sync_meta">Нет данных</div>
-      </div>
     </div>
 
     <div class="right">
@@ -255,6 +261,13 @@
       <div class="nav">
         <a class="btn" href="income.html">Страница дохода →</a>
       </div>
+    </div>
+    </div>
+
+    <div class="card" style="padding:14px 18px; text-align:center;">
+      <div class="panelTitle" style="margin-bottom:10px;">Главное напоминание</div>
+      <div class="reminder" id="reminder_text">—</div>
+      <div class="sync" id="sync_meta">Нет данных</div>
     </div>
   </div>
 </div>
@@ -326,6 +339,10 @@ function loadJsonp() {
 }
 
 function renderMain(data) {
+  if (!data || data.ok === false) {
+    document.getElementById("sync_meta").textContent = data && data.error ? ("Ошибка: " + data.error) : "Ошибка данных";
+    return;
+  }
   setText("income_yesterday", data.income_yesterday, true);
   setText("income_today", data.income_today, true);
   setText("income_month", data.income_month, true);
