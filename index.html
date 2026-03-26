@@ -43,7 +43,7 @@
     .left{grid-column:1;grid-row:1;}
     .right{grid-column:2;grid-row:1;}
     .stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
-    .stats2{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+    .stats2{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
     .card{
       background:linear-gradient(180deg, rgba(13,16,22,.98), rgba(8,10,14,.98));
       border:1px solid var(--line);
@@ -195,7 +195,7 @@
         <div class="card metricCard">
           <div class="label">Текущий месяц</div>
           <div class="value small" id="income_month">—</div>
-          <div class="sub">Сумма по таблице</div>
+          <div class="sub">Доход за месяц</div>
         </div>
       </div>
 
@@ -208,17 +208,17 @@
           <div class="label" id="debt_label">Долг</div>
           <div class="value white" id="debt">—</div>
         </div>
+        <div class="card metricCard">
+          <div class="label" id="safe_label">Сейф</div>
+          <div class="value" id="safe_value">—</div>
+        </div>
       </div>
 
       <div class="card goalsCard">
         <div class="panelTitle">Ближайшие цели</div>
         <div class="goalRow">
-          <div class="goalText" id="goal_need_label">Необходимо заработать</div>
+          <div class="goalText" id="goal_need_label">Необходимый доход</div>
           <div class="goalValue" id="goal_need_value">—</div>
-        </div>
-        <div class="goalRow">
-          <div class="goalText" id="safe_label">Сейф</div>
-          <div class="goalValue" id="safe_value">—</div>
         </div>
       </div>
     </div>
