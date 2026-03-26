@@ -1,36 +1,45 @@
 /**
- * iPad Dashboard v2
- * J — дела на сегодня
- * K — дела на завтра
- * Используются 2 листа по gid, которые ты дал.
- * Если какие-то цифры лежат в других ячейках — просто поменяй CONFIG.
+ * Dashboard v3
+ *
+ * Главная:
+ * B1 — доход за сегодня
+ * B2 — доход за вчера
+ * B3 — доход за месяц
+ * B5 — баланс
+ * B6 — долг
+ * B8 — необходимо заработать до 19 апреля 2026 года
+ * B10 — сейф
+ * B12 — главное напоминание
+ * J2:J — дела на сегодня
+ * K2:K — дела на завтра
+ *
+ * Вторая страница:
+ * A2:A — дата
+ * B2:B — сумма
  */
 var CONFIG = {
   MAIN_GID: 0,
   INCOME_GID: 1262080830,
   MAIN: {
-    TASKS_TODAY_RANGE: "J2:J50",
-    TASKS_TOMORROW_RANGE: "K2:K50",
+    INCOME_TODAY_CELL: "B1",
     INCOME_YESTERDAY_CELL: "B2",
-    INCOME_TODAY_CELL: "B3",
-    INCOME_MONTH_CELL: "B4",
+    INCOME_MONTH_CELL: "B3",
     BALANCE_CELL: "B5",
     DEBT_CELL: "B6",
-    SAFE_CELL: "B7",
-    GOAL_NEED_LABEL_CELL: "A9",
-    GOAL_NEED_VALUE_CELL: "B9",
-    GOAL_RECOMMENDED_LABEL_CELL: "A10",
-    GOAL_RECOMMENDED_VALUE_CELL: "B10",
-    REMINDER_CELL: "A12"
+    GOAL_NEED_VALUE_CELL: "B8",
+    SAFE_CELL: "B10",
+    REMINDER_CELL: "B12",
+    TASKS_TODAY_RANGE: "J2:J200",
+    TASKS_TOMORROW_RANGE: "K2:K200"
   },
   INCOME: {
     INCOME_YESTERDAY_CELL: "B2",
-    INCOME_TODAY_CELL: "B3",
-    INCOME_MONTH_CELL: "B4",
+    INCOME_TODAY_CELL: "B1",
+    INCOME_MONTH_CELL: "B3",
     CHART_LABELS_COL: "A",
     CHART_VALUES_COL: "B",
     CHART_START_ROW: 2,
-    CHART_END_ROW: 60
+    CHART_END_ROW: 200
   }
 };
 
@@ -39,11 +48,15 @@ function doGet(e) {
   var page = (e && e.parameter && e.parameter.page) ? e.parameter.page : "main";
   var payload = page === "income" ? getIncomeData_() : getMainData_();
   var json = JSON.stringify(payload);
+
   if (cb) {
-    return ContentService.createTextOutput(cb + "(" + json + ");")
+    return ContentService
+      .createTextOutput(cb + "(" + json + ");")
       .setMimeType(ContentService.MimeType.JAVASCRIPT);
   }
-  return ContentService.createTextOutput(json)
+
+  return ContentService
+    .createTextOutput(json)
     .setMimeType(ContentService.MimeType.JSON);
 }
 
@@ -51,17 +64,15 @@ function getMainData_() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sh = getSheetByGid_(ss, CONFIG.MAIN_GID);
   var c = CONFIG.MAIN;
+
   return {
     income_yesterday: getCell_(sh, c.INCOME_YESTERDAY_CELL),
     income_today: getCell_(sh, c.INCOME_TODAY_CELL),
     income_month: getCell_(sh, c.INCOME_MONTH_CELL),
     balance: getCell_(sh, c.BALANCE_CELL),
     debt: getCell_(sh, c.DEBT_CELL),
-    safe: getCell_(sh, c.SAFE_CELL),
-    goal_need_label: getCell_(sh, c.GOAL_NEED_LABEL_CELL),
     goal_need_value: getCell_(sh, c.GOAL_NEED_VALUE_CELL),
-    goal_recommended_label: getCell_(sh, c.GOAL_RECOMMENDED_LABEL_CELL),
-    goal_recommended_value: getCell_(sh, c.GOAL_RECOMMENDED_VALUE_CELL),
+    safe: getCell_(sh, c.SAFE_CELL),
     reminder: getCell_(sh, c.REMINDER_CELL),
     tasks_today: getList_(sh, c.TASKS_TODAY_RANGE),
     tasks_tomorrow: getList_(sh, c.TASKS_TOMORROW_RANGE),
@@ -73,11 +84,14 @@ function getIncomeData_() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sh = getSheetByGid_(ss, CONFIG.INCOME_GID);
   var c = CONFIG.INCOME;
+  var points = getChartPoints_(sh, c.CHART_LABELS_COL, c.CHART_VALUES_COL, c.CHART_START_ROW, c.CHART_END_ROW);
+
   return {
     income_yesterday: getCell_(sh, c.INCOME_YESTERDAY_CELL),
     income_today: getCell_(sh, c.INCOME_TODAY_CELL),
     income_month: getCell_(sh, c.INCOME_MONTH_CELL),
-    chart_points: getChartPoints_(sh, c.CHART_LABELS_COL, c.CHART_VALUES_COL, c.CHART_START_ROW, c.CHART_END_ROW),
+    income_total: sumPoints_(points),
+    chart_points: points,
     updated_at: formatNow_()
   };
 }
@@ -109,10 +123,25 @@ function getChartPoints_(sh, labelsCol, valuesCol, startRow, endRow) {
   for (var r = startRow; r <= endRow; r++) {
     var label = sh.getRange(labelsCol + r).getDisplayValue();
     var value = sh.getRange(valuesCol + r).getDisplayValue();
+
     if ((label || "").toString().trim() === "" && (value || "").toString().trim() === "") continue;
-    out.push({ label: label, value: value });
+
+    out.push({
+      label: label,
+      value: value
+    });
   }
   return out;
+}
+
+function sumPoints_(points) {
+  var sum = 0;
+  for (var i = 0; i < points.length; i++) {
+    var v = ("" + points[i].value).replace(/\s+/g, "").replace(",", ".");
+    var n = parseFloat(v);
+    if (!isNaN(n)) sum += n;
+  }
+  return sum.toFixed(2).replace(".", ",");
 }
 
 function formatNow_() {

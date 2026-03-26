@@ -1,52 +1,391 @@
 <!doctype html>
-<html lang="ru"><head>
-<meta charset="utf-8"><title>Dashboard — Income</title>
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Income">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<style>
-:root{--bg:#050608;--card:#0b0e13;--line:rgba(255,255,255,.08);--text:#edf2f7;--muted:#95a1b2;--green:#8ce8b8;--accent:#d4e8ff}
-html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
-.wrap{min-height:100%;box-sizing:border-box;padding:14px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.brand{font-weight:800;letter-spacing:.08em;font-size:18px}.clock{font-size:12px;color:var(--muted)}
-.card{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015));border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:0 10px 35px rgba(0,0,0,.35)}.metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}
-.label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}.value{font-size:34px;font-weight:800;margin-top:6px;line-height:1;color:var(--green)}.sub{font-size:13px;color:var(--muted);margin-top:8px}
-h3{margin:0 0 10px 0;font-size:13px;color:var(--accent);text-transform:uppercase;letter-spacing:.12em}.chartWrap{position:relative;height:460px}
-svg{width:100%;height:100%;display:block}.pt{cursor:pointer}.hint{font-size:12px;color:var(--muted);margin-top:10px}
-.tooltip{position:absolute;display:none;pointer-events:none;z-index:20;background:#0c1118;border:1px solid var(--line);border-radius:12px;padding:10px 12px;box-shadow:0 10px 25px rgba(0,0,0,.4);font-size:14px;color:#fff;max-width:240px}
-.nav{display:flex;justify-content:space-between;gap:10px;margin-top:12px}.btn{display:inline-block;text-decoration:none;color:#fff;border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border-radius:14px;padding:12px 16px;font-size:16px;font-weight:700}
-.status{font-size:12px;color:var(--muted)}
-@media (max-width:1100px){.metrics{grid-template-columns:1fr}.chartWrap{height:380px}.value{font-size:30px}}
-</style></head>
-<body><div class="wrap">
-<div class="top"><div class="brand">INCOME</div><div class="clock" id="clock">—</div></div>
-<div class="metrics">
-<div class="card"><div class="label">Вчера</div><div class="value" id="income_yesterday">—</div><div class="sub">Доход за вчера</div></div>
-<div class="card"><div class="label">Сегодня</div><div class="value" id="income_today">—</div><div class="sub">Доход за сегодня</div></div>
-<div class="card"><div class="label">Текущий месяц</div><div class="value" id="income_month">—</div><div class="sub">Доход за месяц</div></div>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>Income</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Income">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <style>
+    :root {
+      --bg:#050608;
+      --card:#0b0d12;
+      --line:rgba(255,255,255,.08);
+      --text:#eef2f7;
+      --muted:#97a2b3;
+      --green:#8ce8b8;
+      --accent:#cfd8e6;
+    }
+    html,body {
+      margin:0;
+      padding:0;
+      width:100%;
+      height:100%;
+      background:var(--bg);
+      color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      overflow:hidden;
+    }
+    .wrap {
+      width:1024px;
+      height:768px;
+      margin:0 auto;
+      box-sizing:border-box;
+      padding:12px;
+      overflow:hidden;
+    }
+    .top {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:10px;
+    }
+    .brand {
+      font-size:28px;
+      font-weight:900;
+      letter-spacing:.08em;
+    }
+    .clock {
+      font-size:14px;
+      color:var(--muted);
+    }
+    .metrics {
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .card {
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:12px;
+      box-sizing:border-box;
+      overflow:hidden;
+    }
+    .label {
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      color:var(--muted);
+      margin-bottom:8px;
+    }
+    .value {
+      font-size:34px;
+      font-weight:900;
+      line-height:1;
+      color:var(--green);
+    }
+    .panelTitle {
+      margin:0 0 8px 0;
+      font-size:13px;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      color:var(--accent);
+      font-weight:900;
+    }
+    .grid {
+      display:grid;
+      grid-template-columns:62% 38%;
+      gap:10px;
+      height:calc(100% - 126px);
+    }
+    .chartWrap {
+      position:relative;
+      height:100%;
+    }
+    svg {
+      width:100%;
+      height:100%;
+      display:block;
+    }
+    .tooltip {
+      position:absolute;
+      display:none;
+      pointer-events:none;
+      z-index:20;
+      background:#0c1118;
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:8px 10px;
+      box-shadow:0 10px 25px rgba(0,0,0,.4);
+      font-size:13px;
+      color:#fff;
+    }
+    table {
+      width:100%;
+      border-collapse:collapse;
+      font-size:15px;
+    }
+    th, td {
+      border-bottom:1px solid var(--line);
+      padding:7px 6px;
+      text-align:left;
+    }
+    th {
+      color:var(--accent);
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.1em;
+    }
+    .nav {
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      margin-top:8px;
+    }
+    .btn {
+      display:inline-block;
+      text-decoration:none;
+      color:#fff;
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:10px 14px;
+      font-size:15px;
+      font-weight:800;
+      background:rgba(255,255,255,.03);
+    }
+    .sync {
+      font-size:12px;
+      color:var(--muted);
+      margin-top:8px;
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand">INCOME</div>
+    <div class="clock" id="clock">—</div>
+  </div>
+
+  <div class="metrics">
+    <div class="card"><div class="label">Вчера</div><div class="value" id="income_yesterday">—</div></div>
+    <div class="card"><div class="label">Сегодня</div><div class="value" id="income_today">—</div></div>
+    <div class="card"><div class="label">Текущий месяц</div><div class="value" id="income_month">—</div></div>
+    <div class="card"><div class="label">Всего в таблице</div><div class="value" id="income_total">—</div></div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="panelTitle">График дохода</div>
+      <div class="chartWrap">
+        <svg id="chart" viewBox="0 0 900 560" preserveAspectRatio="none"></svg>
+        <div class="tooltip" id="tooltip"></div>
+      </div>
+      <div class="sync" id="sync_meta">Нет данных</div>
+    </div>
+
+    <div class="card">
+      <div class="panelTitle">Таблица заработка</div>
+      <table>
+        <thead><tr><th>Дата</th><th>Сумма</th></tr></thead>
+        <tbody id="income_table"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="nav">
+    <a class="btn" href="index.html">← На главную</a>
+    <a class="btn" href="income.html">Обновить</a>
+  </div>
 </div>
-<div class="card"><h3>График дохода</h3>
-<div class="chartWrap"><svg id="chart" viewBox="0 0 1200 460" preserveAspectRatio="none"></svg><div class="tooltip" id="tooltip"></div></div>
-<div class="hint">По точкам можно нажимать. Если на старом iPad будет тяжело — просто оставь так, здесь без лишней анимации.</div>
-<div class="status" id="sync_meta" style="margin-top:10px;">Нет данных</div></div>
-<div class="nav"><a class="btn" href="index.html">← На главную</a><a class="btn" href="income.html">Обновить график</a></div>
-</div>
+
 <script>
-var GAS_WEBAPP_URL="https://script.google.com/macros/s/AKfycbwI-yuwuNLx0mFVocA43t_N1CKe7I1-yVRd1d2PVVhoQqZNyQT8zCa_G-m9UaVQHrFPZA/exec",PAGE_NAME="income",REFRESH_MS=30000,tooltip=null;
-function pad(n){return(n<10?"0":"")+n}
-function tickClock(){var d=new Date();document.getElementById("clock").textContent=pad(d.getDate())+"."+pad(d.getMonth()+1)+"."+d.getFullYear()+"  "+pad(d.getHours())+":"+pad(d.getMinutes())}
-tickClock();setInterval(tickClock,1000);
-function money(v){if(v===null||v===undefined||v==="")return"—";var s=(""+v).replace(/\s+/g,"").replace(",",".");var num=parseFloat(s);if(isNaN(num))return""+v;var parts=(Math.round(num*100)/100).toFixed(2).split("."),intp=parts[0],frac=parts[1],out="";for(var i=0;i<intp.length;i++){var ch=intp[intp.length-1-i];out=ch+out;if((i+1)%3===0&&i!==intp.length-1)out=" "+out}return out+","+frac}
-function setText(id,v){document.getElementById(id).textContent=money(v)}
-function loadJsonp(){if(!GAS_WEBAPP_URL||GAS_WEBAPP_URL.indexOf("http")!==0){document.getElementById("sync_meta").textContent="Вставь GAS_WEBAPP_URL в код";return}var old=document.getElementById("jsonp_script");if(old&&old.parentNode)old.parentNode.removeChild(old);var script=document.createElement("script");script.id="jsonp_script";script.src=GAS_WEBAPP_URL+(GAS_WEBAPP_URL.indexOf("?")>=0?"&":"?")+"callback=renderIncome&page="+PAGE_NAME+"&_="+Date.now();script.onerror=function(){document.getElementById("sync_meta").textContent="Ошибка загрузки данных"};document.body.appendChild(script)}
-function renderIncome(data){setText("income_yesterday",data.income_yesterday);setText("income_today",data.income_today);setText("income_month",data.income_month);document.getElementById("sync_meta").textContent=data.updated_at||"Обновлено";drawChart(data.chart_points||[])}
-function drawChart(points){var svg=document.getElementById("chart");while(svg.firstChild)svg.removeChild(svg.firstChild);tooltip=document.getElementById("tooltip");var W=1200,H=460,L=70,R=30,T=30,B=60,iw=W-L-R,ih=H-T-B;if(!points||!points.length){var txt=document.createElementNS("http://www.w3.org/2000/svg","text");txt.setAttribute("x","50%");txt.setAttribute("y","50%");txt.setAttribute("text-anchor","middle");txt.setAttribute("fill","rgba(255,255,255,.35)");txt.setAttribute("font-size","24");txt.textContent="Нет данных для графика";svg.appendChild(txt);return}var vals=[];for(var i=0;i<points.length;i++)vals.push(+points[i].value||0);var min=Math.min.apply(null,vals),max=Math.max.apply(null,vals);if(min===max){min=min-1;max=max+1}
-for(var gy=0;gy<5;gy++){var y=T+ih*gy/4;var line=document.createElementNS("http://www.w3.org/2000/svg","line");line.setAttribute("x1",L);line.setAttribute("x2",W-R);line.setAttribute("y1",y);line.setAttribute("y2",y);line.setAttribute("stroke","rgba(255,255,255,.08)");line.setAttribute("stroke-width","1");svg.appendChild(line);var val=max-(max-min)*gy/4;var label=document.createElementNS("http://www.w3.org/2000/svg","text");label.setAttribute("x",L-12);label.setAttribute("y",y+4);label.setAttribute("text-anchor","end");label.setAttribute("fill","rgba(255,255,255,.5)");label.setAttribute("font-size","14");label.textContent=money(val);svg.appendChild(label)}
-var path="";for(var i=0;i<points.length;i++){var x=L+(iw*i/Math.max(points.length-1,1));var y=T+ih-((vals[i]-min)/(max-min))*ih;path+=(i===0?"M":"L")+x+" "+y+" "}
-var area=document.createElementNS("http://www.w3.org/2000/svg","path");var areaPath=path+"L "+(L+iw)+" "+(T+ih)+" L "+L+" "+(T+ih)+" Z";area.setAttribute("d",areaPath);area.setAttribute("fill","rgba(140,232,184,.10)");svg.appendChild(area);
-var linep=document.createElementNS("http://www.w3.org/2000/svg","path");linep.setAttribute("d",path);linep.setAttribute("fill","none");linep.setAttribute("stroke","#8ce8b8");linep.setAttribute("stroke-width","4");linep.setAttribute("stroke-linejoin","round");linep.setAttribute("stroke-linecap","round");svg.appendChild(linep);
-for(var i=0;i<points.length;i++){var x=L+(iw*i/Math.max(points.length-1,1));var y=T+ih-((vals[i]-min)/(max-min))*ih;var c=document.createElementNS("http://www.w3.org/2000/svg","circle");c.setAttribute("cx",x);c.setAttribute("cy",y);c.setAttribute("r",7);c.setAttribute("fill","#8ce8b8");c.setAttribute("stroke","#0a1015");c.setAttribute("stroke-width","4");c.setAttribute("class","pt");(function(p,xx,yy,node){node.addEventListener("click",function(evt){showTip(p,xx,yy,evt)})})(points[i],x,y,c);svg.appendChild(c);var t=document.createElementNS("http://www.w3.org/2000/svg","text");t.setAttribute("x",x);t.setAttribute("y",H-20);t.setAttribute("text-anchor","middle");t.setAttribute("fill","rgba(255,255,255,.55)");t.setAttribute("font-size","13");t.textContent=points[i].label;svg.appendChild(t)}}
-function showTip(p,x,y,evt){tooltip.style.display="block";tooltip.innerHTML="<strong>"+(p.label||"")+"</strong><br>"+money(p.value);var wrapRect=document.querySelector(".chartWrap").getBoundingClientRect();tooltip.style.left=Math.max(10,evt.clientX-wrapRect.left-40)+"px";tooltip.style.top=Math.max(10,evt.clientY-wrapRect.top-65)+"px"}
-document.addEventListener("click",function(e){if(tooltip&&!/pt/.test((e.target&&e.target.getAttribute&&e.target.getAttribute("class"))||"")){tooltip.style.display="none"}});
-loadJsonp();setInterval(loadJsonp,REFRESH_MS);
-</script></body></html>
+var GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwI-yuwuNLx0mFVocA43t_N1CKe7I1-yVRd1d2PVVhoQqZNyQT8zCa_G-m9UaVQHrFPZA/exec";
+var REFRESH_MS = 30000;
+var tooltip = null;
+
+function pad(n) {
+  return (n < 10 ? "0" : "") + n;
+}
+
+function tickClock() {
+  var d = new Date();
+  document.getElementById("clock").textContent =
+    pad(d.getDate()) + "." + pad(d.getMonth() + 1) + "." + d.getFullYear() + "  " +
+    pad(d.getHours()) + ":" + pad(d.getMinutes());
+}
+tickClock();
+setInterval(tickClock, 1000);
+
+function money(v) {
+  if (v === null || v === undefined || v === "") return "—";
+  var s = ("" + v).replace(/\s+/g, "").replace(",", ".");
+  var num = parseFloat(s);
+  if (isNaN(num)) return "" + v;
+  var parts = (Math.round(num * 100) / 100).toFixed(2).split(".");
+  var intp = parts[0], frac = parts[1], out = "";
+  for (var i = 0; i < intp.length; i++) {
+    var ch = intp[intp.length - 1 - i];
+    out = ch + out;
+    if ((i + 1) % 3 === 0 && i !== intp.length - 1) out = " " + out;
+  }
+  return out + "," + frac;
+}
+
+function setText(id, val) {
+  document.getElementById(id).textContent = money(val);
+}
+
+function loadJsonp() {
+  var old = document.getElementById("jsonp_script");
+  if (old && old.parentNode) old.parentNode.removeChild(old);
+
+  var s = document.createElement("script");
+  s.id = "jsonp_script";
+  s.src = GAS_WEBAPP_URL + "?callback=renderIncome&page=income&_=" + Date.now();
+  s.onerror = function() {
+    document.getElementById("sync_meta").textContent = "Ошибка загрузки данных";
+  };
+  document.body.appendChild(s);
+}
+
+function renderIncome(data) {
+  setText("income_yesterday", data.income_yesterday);
+  setText("income_today", data.income_today);
+  setText("income_month", data.income_month);
+  setText("income_total", data.income_total);
+  renderTable(data.chart_points || []);
+  drawChart(data.chart_points || []);
+  document.getElementById("sync_meta").textContent = data.updated_at ? ("Обновлено: " + data.updated_at) : "OK";
+}
+
+function renderTable(points) {
+  var tbody = document.getElementById("income_table");
+  tbody.innerHTML = "";
+  if (!points.length) {
+    var tr = document.createElement("tr");
+    tr.innerHTML = "<td colspan='2'>—</td>";
+    tbody.appendChild(tr);
+    return;
+  }
+  for (var i = 0; i < points.length; i++) {
+    var tr = document.createElement("tr");
+    tr.innerHTML = "<td>" + (points[i].label || "—") + "</td><td>" + money(points[i].value) + "</td>";
+    tbody.appendChild(tr);
+  }
+}
+
+function drawChart(points) {
+  var svg = document.getElementById("chart");
+  while (svg.firstChild) svg.removeChild(svg.firstChild);
+  tooltip = document.getElementById("tooltip");
+
+  var W = 900, H = 560, L = 65, R = 20, T = 20, B = 55;
+  var iw = W - L - R, ih = H - T - B;
+
+  if (!points.length) {
+    var txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    txt.setAttribute("x", "50%");
+    txt.setAttribute("y", "50%");
+    txt.setAttribute("text-anchor", "middle");
+    txt.setAttribute("fill", "rgba(255,255,255,.35)");
+    txt.setAttribute("font-size", "24");
+    txt.textContent = "Нет данных";
+    svg.appendChild(txt);
+    return;
+  }
+
+  var vals = points.map(function(p) {
+    return +((("" + p.value).replace(",", "."))) || 0;
+  });
+  var min = Math.min.apply(null, vals);
+  var max = Math.max.apply(null, vals);
+  if (min === max) {
+    min = min - 1;
+    max = max + 1;
+  }
+
+  for (var gy = 0; gy < 5; gy++) {
+    var y = T + ih * gy / 4;
+    var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.setAttribute("x1", L);
+    line.setAttribute("x2", W - R);
+    line.setAttribute("y1", y);
+    line.setAttribute("y2", y);
+    line.setAttribute("stroke", "rgba(255,255,255,.08)");
+    svg.appendChild(line);
+
+    var val = max - (max - min) * gy / 4;
+    var label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    label.setAttribute("x", L - 10);
+    label.setAttribute("y", y + 4);
+    label.setAttribute("text-anchor", "end");
+    label.setAttribute("fill", "rgba(255,255,255,.5)");
+    label.setAttribute("font-size", "13");
+    label.textContent = money(val);
+    svg.appendChild(label);
+  }
+
+  var path = "";
+  for (var i = 0; i < points.length; i++) {
+    var x = L + iw * i / Math.max(points.length - 1, 1);
+    var y = T + ih - ((vals[i] - min) / (max - min)) * ih;
+    path += (i === 0 ? "M" : "L") + x + " " + y + " ";
+  }
+
+  var area = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  area.setAttribute("d", path + "L " + (L + iw) + " " + (T + ih) + " L " + L + " " + (T + ih) + " Z");
+  area.setAttribute("fill", "rgba(140,232,184,.10)");
+  svg.appendChild(area);
+
+  var lp = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  lp.setAttribute("d", path);
+  lp.setAttribute("fill", "none");
+  lp.setAttribute("stroke", "#8ce8b8");
+  lp.setAttribute("stroke-width", "4");
+  lp.setAttribute("stroke-linecap", "round");
+  lp.setAttribute("stroke-linejoin", "round");
+  svg.appendChild(lp);
+
+  for (var i = 0; i < points.length; i++) {
+    var x = L + iw * i / Math.max(points.length - 1, 1);
+    var y = T + ih - ((vals[i] - min) / (max - min)) * ih;
+
+    var c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    c.setAttribute("cx", x);
+    c.setAttribute("cy", y);
+    c.setAttribute("r", 6);
+    c.setAttribute("fill", "#8ce8b8");
+    c.setAttribute("stroke", "#0b0d12");
+    c.setAttribute("stroke-width", "3");
+    c.style.cursor = "pointer";
+    (function(p, node) {
+      node.addEventListener("click", function(evt) {
+        showTip(p, evt);
+      });
+    })(points[i], c);
+    svg.appendChild(c);
+
+    var t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    t.setAttribute("x", x);
+    t.setAttribute("y", H - 16);
+    t.setAttribute("text-anchor", "middle");
+    t.setAttribute("fill", "rgba(255,255,255,.55)");
+    t.setAttribute("font-size", "12");
+    t.textContent = points[i].label;
+    svg.appendChild(t);
+  }
+}
+
+function showTip(p, evt) {
+  tooltip.style.display = "block";
+  tooltip.innerHTML = "<strong>" + (p.label || "") + "</strong><br>" + money(p.value);
+  var wrapRect = document.querySelector(".chartWrap").getBoundingClientRect();
+  tooltip.style.left = Math.max(8, evt.clientX - wrapRect.left - 36) + "px";
+  tooltip.style.top = Math.max(8, evt.clientY - wrapRect.top - 58) + "px";
+}
+
+document.addEventListener("click", function(e) {
+  if (tooltip && e.target.tagName !== "circle") {
+    tooltip.style.display = "none";
+  }
+});
+
+loadJsonp();
+setInterval(loadJsonp, REFRESH_MS);
+</script>
+</body>
+</html>

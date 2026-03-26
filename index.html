@@ -1,67 +1,346 @@
 <!doctype html>
-<html lang="ru"><head>
-<meta charset="utf-8"><title>Dashboard — Main</title>
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Dashboard">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<style>
-:root{--bg:#040507;--card:#0a0d12;--text:#eef2f7;--muted:#98a3b4;--line:rgba(255,255,255,.08);--accent:#cfe6ff;--green:#83e6b3;--red:#ff7c8e;--gold:#d9c38f}
-html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
-.wrap{min-height:100%;box-sizing:border-box;padding:14px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.brand{font-weight:800;letter-spacing:.08em;font-size:18px}.clock{font-size:12px;color:var(--muted)}
-.grid{display:grid;grid-template-columns:1.15fr .85fr;gap:12px}.left,.right{display:grid;gap:12px}.metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-.card{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015));border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:0 10px 35px rgba(0,0,0,.35);overflow:hidden}
-.label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}.value{font-size:38px;font-weight:800;margin-top:6px;line-height:1}.value.smallish{font-size:28px}
-.green{color:var(--green)}.red{color:var(--red)}.gold{color:var(--gold)}.mini{font-size:13px;color:var(--muted);margin-top:8px}.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-h3{margin:0 0 10px 0;font-size:13px;color:var(--accent);text-transform:uppercase;letter-spacing:.12em}ul{list-style:none;padding:0;margin:0}
-li{border:1px solid var(--line);background:rgba(0,0,0,.18);border-radius:12px;padding:10px 12px;margin-bottom:8px;font-size:18px;line-height:1.2}.li:last-child{margin-bottom:0}
-.biglist li{font-size:19px}.goal{display:flex;justify-content:space-between;gap:14px;align-items:flex-end;margin:10px 0;padding-bottom:10px;border-bottom:1px solid var(--line)}.goal:last-child{border-bottom:none;padding-bottom:0;margin-bottom:0}
-.goal .name{font-size:16px;line-height:1.25}.goal .num{font-size:28px;font-weight:800;white-space:nowrap}.reminder{font-size:26px;font-weight:800;line-height:1.2;color:#fff}
-.nav{display:flex;gap:10px;justify-content:flex-end;margin-top:12px}.btn{display:inline-block;text-decoration:none;color:#fff;border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border-radius:14px;padding:12px 16px;font-size:16px;font-weight:700}
-.status{margin-top:8px;font-size:12px;color:var(--muted)}.empty{opacity:.45}
-@media (max-width:1100px){.grid,.metrics,.two{grid-template-columns:1fr}.value{font-size:32px}.reminder{font-size:22px}}
-</style></head>
-<body><div class="wrap">
-<div class="top"><div class="brand">DASHBOARD</div><div class="clock" id="clock">—</div></div>
-<div class="grid">
-<div class="left">
-<div class="metrics">
-<div class="card"><div class="label">Вчера</div><div class="value green" id="income_yesterday">—</div><div class="mini">Доход за вчера</div></div>
-<div class="card"><div class="label">Сегодня</div><div class="value green" id="income_today">—</div><div class="mini">Доход за сегодня</div></div>
-<div class="card"><div class="label">Текущий месяц</div><div class="value green smallish" id="income_month">—</div><div class="mini">Доход за месяц</div></div>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>Dashboard</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Dashboard">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <style>
+    :root {
+      --bg:#050608;
+      --card:#0b0d12;
+      --line:rgba(255,255,255,.08);
+      --text:#eef2f7;
+      --muted:#97a2b3;
+      --green:#8ce8b8;
+      --red:#ff7c8e;
+      --steel:#d6dbe3;
+      --accent:#cfd8e6;
+    }
+    html,body {
+      margin:0;
+      padding:0;
+      width:100%;
+      height:100%;
+      background:var(--bg);
+      color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      overflow:hidden;
+    }
+    .wrap {
+      width:1024px;
+      height:768px;
+      margin:0 auto;
+      box-sizing:border-box;
+      padding:12px;
+      overflow:hidden;
+    }
+    .top {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:10px;
+    }
+    .brand {
+      font-size:28px;
+      font-weight:900;
+      letter-spacing:.08em;
+    }
+    .clock {
+      font-size:14px;
+      color:var(--muted);
+    }
+    .grid {
+      display:grid;
+      grid-template-columns:59% 41%;
+      gap:10px;
+      height:calc(100% - 52px);
+    }
+    .left, .right {
+      display:grid;
+      gap:10px;
+      min-height:0;
+    }
+    .metrics {
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+    }
+    .two {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    .card {
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:12px;
+      box-sizing:border-box;
+      overflow:hidden;
+    }
+    .label {
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      color:var(--muted);
+      margin-bottom:8px;
+    }
+    .value {
+      font-size:36px;
+      font-weight:900;
+      line-height:1;
+      color:var(--steel);
+    }
+    .value.green { color:var(--green); }
+    .value.red { color:var(--red); }
+    .value.small { font-size:28px; }
+    .sub {
+      margin-top:8px;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .goalRow {
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+      gap:12px;
+      padding:10px 0;
+      border-bottom:1px solid var(--line);
+    }
+    .goalRow:last-child {
+      border-bottom:none;
+      padding-bottom:0;
+    }
+    .goalText {
+      font-size:17px;
+      line-height:1.2;
+      font-weight:700;
+    }
+    .goalValue {
+      font-size:30px;
+      font-weight:900;
+      color:var(--steel);
+      white-space:nowrap;
+    }
+    .reminder {
+      font-size:24px;
+      line-height:1.18;
+      font-weight:900;
+      color:#fff;
+    }
+    .panelTitle {
+      margin:0 0 8px 0;
+      font-size:13px;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      color:var(--accent);
+      font-weight:900;
+    }
+    ul {
+      list-style:none;
+      padding:0;
+      margin:0;
+    }
+    li {
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.015);
+      border-radius:10px;
+      padding:8px 10px;
+      margin-bottom:7px;
+      font-size:17px;
+      line-height:1.18;
+      font-weight:700;
+    }
+    li:last-child {
+      margin-bottom:0;
+    }
+    .empty {
+      opacity:.45;
+    }
+    .nav {
+      display:flex;
+      justify-content:flex-end;
+      align-items:center;
+      margin-top:8px;
+    }
+    .btn {
+      display:inline-block;
+      text-decoration:none;
+      color:#fff;
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:10px 14px;
+      font-size:15px;
+      font-weight:800;
+      background:rgba(255,255,255,.03);
+    }
+    .sync {
+      font-size:12px;
+      color:var(--muted);
+      margin-top:6px;
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand">DASHBOARD</div>
+    <div class="clock" id="clock">—</div>
+  </div>
+
+  <div class="grid">
+    <div class="left">
+      <div class="metrics">
+        <div class="card">
+          <div class="label">Вчера</div>
+          <div class="value green" id="income_yesterday">—</div>
+          <div class="sub">Доход за вчера</div>
+        </div>
+        <div class="card">
+          <div class="label">Сегодня</div>
+          <div class="value green" id="income_today">—</div>
+          <div class="sub">Доход за сегодня</div>
+        </div>
+        <div class="card">
+          <div class="label">Текущий месяц</div>
+          <div class="value green small" id="income_month">—</div>
+          <div class="sub">Доход за месяц</div>
+        </div>
+      </div>
+
+      <div class="two">
+        <div class="card">
+          <div class="label">Баланс</div>
+          <div class="value" id="balance">—</div>
+        </div>
+        <div class="card">
+          <div class="label">Долг</div>
+          <div class="value red" id="debt">—</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="panelTitle">Ближайшие цели</div>
+        <div class="goalRow">
+          <div class="goalText">Необходимо заработать до 19 апреля 2026 года</div>
+          <div class="goalValue" id="goal_need_value">—</div>
+        </div>
+        <div class="goalRow">
+          <div class="goalText">Сейф</div>
+          <div class="goalValue" id="safe_value">—</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="panelTitle">Напоминание</div>
+        <div class="reminder" id="reminder_text">—</div>
+        <div class="sync" id="sync_meta">Нет данных</div>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="card">
+        <div class="panelTitle">Дела на сегодня</div>
+        <ul id="tasks_today"></ul>
+      </div>
+
+      <div class="card">
+        <div class="panelTitle">Дела на завтра</div>
+        <ul id="tasks_tomorrow"></ul>
+      </div>
+
+      <div class="nav">
+        <a class="btn" href="income.html">Страница дохода →</a>
+      </div>
+    </div>
+  </div>
 </div>
-<div class="two">
-<div class="card"><div class="label">Баланс</div><div class="value" id="balance">—</div></div>
-<div class="card"><div class="label">Долг</div><div class="value red" id="debt">—</div></div>
-</div>
-<div class="card">
-<h3>Ближайшие цели</h3>
-<div class="goal"><div class="name" id="goal_need_label">Необходимо заработать</div><div class="num gold" id="goal_need_value">—</div></div>
-<div class="goal"><div class="name" id="goal_recommended_label">Рекомендовано заработать</div><div class="num gold" id="goal_recommended_value">—</div></div>
-</div>
-<div class="two">
-<div class="card"><h3>Сейф</h3><div class="value" id="safe_value">—</div></div>
-<div class="card"><h3>Статус синхронизации</h3><div class="value smallish" id="sync_state">—</div><div class="status" id="sync_meta">Нет данных</div></div>
-</div>
-<div class="card"><h3>Напоминание</h3><div class="reminder" id="reminder_text">—</div></div>
-</div>
-<div class="right">
-<div class="card"><h3>Дела на сегодня</h3><ul class="biglist" id="tasks_today"></ul></div>
-<div class="card"><h3>Дела на завтра</h3><ul class="biglist" id="tasks_tomorrow"></ul></div>
-</div>
-</div>
-<div class="nav"><a class="btn" href="income.html">Страница дохода →</a></div>
-</div>
+
 <script>
-var GAS_WEBAPP_URL="https://script.google.com/macros/s/AKfycbwI-yuwuNLx0mFVocA43t_N1CKe7I1-yVRd1d2PVVhoQqZNyQT8zCa_G-m9UaVQHrFPZA/exec",PAGE_NAME="main",REFRESH_MS=30000,lastOk=0;
-function pad(n){return(n<10?"0":"")+n}
-function tickClock(){var d=new Date();document.getElementById("clock").textContent=pad(d.getDate())+"."+pad(d.getMonth()+1)+"."+d.getFullYear()+"  "+pad(d.getHours())+":"+pad(d.getMinutes())}
-tickClock();setInterval(tickClock,1000);
-function money(v){if(v===null||v===undefined||v==="")return"—";var s=(""+v).replace(/\s+/g,"").replace(",",".");var num=parseFloat(s);if(isNaN(num))return""+v;var parts=(Math.round(num*100)/100).toFixed(2).split("."),intp=parts[0],frac=parts[1],out="";for(var i=0;i<intp.length;i++){var ch=intp[intp.length-1-i];out=ch+out;if((i+1)%3===0&&i!==intp.length-1)out=" "+out}return out+","+frac}
-function setText(id,val,useMoney){document.getElementById(id).textContent=useMoney?money(val):(val||"—")}
-function setList(id,items){var el=document.getElementById(id);el.innerHTML="";if(!items||!items.length){var li=document.createElement("li");li.className="empty";li.textContent="—";el.appendChild(li);return}for(var i=0;i<items.length;i++){var li=document.createElement("li");li.textContent=items[i];el.appendChild(li)}}
-function loadJsonp(){if(!GAS_WEBAPP_URL||GAS_WEBAPP_URL.indexOf("http")!==0){document.getElementById("sync_state").textContent="Нет URL";document.getElementById("sync_meta").textContent="Вставь GAS_WEBAPP_URL в код";return}var old=document.getElementById("jsonp_script");if(old&&old.parentNode)old.parentNode.removeChild(old);var script=document.createElement("script");script.id="jsonp_script";script.src=GAS_WEBAPP_URL+(GAS_WEBAPP_URL.indexOf("?")>=0?"&":"?")+"callback=renderData&page="+PAGE_NAME+"&_="+Date.now();script.onerror=function(){document.getElementById("sync_state").textContent="Ошибка";document.getElementById("sync_meta").textContent="Не удалось загрузить данные"};document.body.appendChild(script)}
-function renderData(data){setText("income_yesterday",data.income_yesterday,true);setText("income_today",data.income_today,true);setText("income_month",data.income_month,true);setText("balance",data.balance,true);setText("debt",data.debt,true);setText("safe_value",data.safe,true);setText("goal_need_label",data.goal_need_label,false);setText("goal_need_value",data.goal_need_value,true);setText("goal_recommended_label",data.goal_recommended_label,false);setText("goal_recommended_value",data.goal_recommended_value,true);setText("reminder_text",data.reminder,false);setList("tasks_today",data.tasks_today||[]);setList("tasks_tomorrow",data.tasks_tomorrow||[]);document.getElementById("sync_state").textContent="OK";document.getElementById("sync_meta").textContent=data.updated_at||"Обновлено";lastOk=Date.now()}
-setInterval(function(){if(lastOk){var age=Math.floor((Date.now()-lastOk)/1000);if(age>(REFRESH_MS/1000)*2){document.getElementById("sync_state").textContent="Застыло"}}},1000);
-loadJsonp();setInterval(loadJsonp,REFRESH_MS);
-</script></body></html>
+var GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwI-yuwuNLx0mFVocA43t_N1CKe7I1-yVRd1d2PVVhoQqZNyQT8zCa_G-m9UaVQHrFPZA/exec";
+var REFRESH_MS = 30000;
+
+function pad(n) {
+  return (n < 10 ? "0" : "") + n;
+}
+
+function tickClock() {
+  var d = new Date();
+  document.getElementById("clock").textContent =
+    pad(d.getDate()) + "." + pad(d.getMonth() + 1) + "." + d.getFullYear() + "  " +
+    pad(d.getHours()) + ":" + pad(d.getMinutes());
+}
+tickClock();
+setInterval(tickClock, 1000);
+
+function money(v) {
+  if (v === null || v === undefined || v === "") return "—";
+  var s = ("" + v).replace(/\s+/g, "").replace(",", ".");
+  var num = parseFloat(s);
+  if (isNaN(num)) return "" + v;
+  var parts = (Math.round(num * 100) / 100).toFixed(2).split(".");
+  var intp = parts[0], frac = parts[1], out = "";
+  for (var i = 0; i < intp.length; i++) {
+    var ch = intp[intp.length - 1 - i];
+    out = ch + out;
+    if ((i + 1) % 3 === 0 && i !== intp.length - 1) out = " " + out;
+  }
+  return out + "," + frac;
+}
+
+function setText(id, val, asMoney) {
+  document.getElementById(id).textContent = asMoney ? money(val) : (val || "—");
+}
+
+function setList(id, items) {
+  var el = document.getElementById(id);
+  el.innerHTML = "";
+  if (!items || !items.length) {
+    var li = document.createElement("li");
+    li.className = "empty";
+    li.textContent = "—";
+    el.appendChild(li);
+    return;
+  }
+  for (var i = 0; i < items.length; i++) {
+    var li = document.createElement("li");
+    li.textContent = items[i];
+    el.appendChild(li);
+  }
+}
+
+function loadJsonp() {
+  var old = document.getElementById("jsonp_script");
+  if (old && old.parentNode) old.parentNode.removeChild(old);
+
+  var s = document.createElement("script");
+  s.id = "jsonp_script";
+  s.src = GAS_WEBAPP_URL + "?callback=renderMain&page=main&_=" + Date.now();
+  s.onerror = function() {
+    document.getElementById("sync_meta").textContent = "Ошибка загрузки данных";
+  };
+  document.body.appendChild(s);
+}
+
+function renderMain(data) {
+  setText("income_yesterday", data.income_yesterday, true);
+  setText("income_today", data.income_today, true);
+  setText("income_month", data.income_month, true);
+  setText("balance", data.balance, true);
+  setText("debt", data.debt, true);
+  setText("goal_need_value", data.goal_need_value, true);
+  setText("safe_value", data.safe, true);
+  setText("reminder_text", data.reminder, false);
+  setList("tasks_today", data.tasks_today || []);
+  setList("tasks_tomorrow", data.tasks_tomorrow || []);
+  document.getElementById("sync_meta").textContent = data.updated_at ? ("Обновлено: " + data.updated_at) : "OK";
+}
+
+loadJsonp();
+setInterval(loadJsonp, REFRESH_MS);
+</script>
+</body>
+</html>
