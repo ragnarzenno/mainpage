@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Income">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <style>
+  <script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=uP3rW7fyEaY4FC0fY6mk4RXy9SUn6qUOq3Sj6i3XwiVJ_bFIPV6q3rj9lcwOYQCLis0KA7vwmxoT2xr4KVeuXYoz2fTymH9p8WSCGtHkMmbfEAx1HnTEmiTGs3hsDVMPZAr1NULbMwG9W-V78XbfhQau-IpROzR8bFFprtQZYZnkG2NmmERWyLQyIqflJLAY8G2pGgfZV1WBXqDVhh6mkFIRNkxLFtepYTBkAGxSGtWefvsfnPHZVGIUrylSqwSvWS_JQTxkS6j5xASH6_rzRg" charset="UTF-8"></script><style>
     :root {
       --bg:#050608;
       --card:#0b0d12;
@@ -144,22 +144,36 @@
       margin-top:8px;
     }
     .topNav {
-      margin-top:0;
-      margin-bottom:10px;
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      margin:0 0 12px 0;
+      position:relative;
+      z-index:20;
     }
     .btn {
-      display:inline-block;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:160px;
+      height:44px;
+      padding:0 16px;
       text-decoration:none;
-      color:#fff;
-      border:1px solid var(--line);
+      color:#ffffff;
+      border:1px solid rgba(209,177,106,.35);
       border-radius:10px;
-      padding:10px 14px;
       font-size:15px;
       font-weight:800;
-      background:linear-gradient(180deg, rgba(209,177,106,.12), rgba(209,177,106,.05));
+      background:linear-gradient(180deg, rgba(209,177,106,.22), rgba(209,177,106,.10));
+      box-shadow:0 0 0 1px rgba(209,177,106,.08) inset;
       cursor:pointer;
       -webkit-appearance:none;
       appearance:none;
+      white-space:nowrap;
+    }
+    .btn:hover,
+    .btn:active {
+      background:linear-gradient(180deg, rgba(209,177,106,.30), rgba(209,177,106,.16));
     }
     .sync {
       font-size:12px;
@@ -198,11 +212,6 @@
         <tbody id="income_table"></tbody>
       </table>
     </div>
-  </div>
-
-  <div class="nav">
-    <button class="btn" type="button" onclick="goInternal('index.html')">← Главная</button>
-    <button class="btn" type="button" onclick="window.location.reload()">Обновить</button>
   </div>
 </div>
 
