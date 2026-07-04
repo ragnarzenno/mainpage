@@ -58,6 +58,7 @@ html,body{width:1024px;height:768px;background:#08070a;color:#f4f7fb;font-family
 .krow .kv.mn{color:var(--minus)}
 .krow.main .kv{font-size:26px}
 .krow .kv small{font-size:12px;color:var(--dim);font-weight:600}
+.kconv{float:left;font-size:13px;color:var(--dim);font-weight:600;line-height:34px;margin-left:12px}
 /* ── ДЕЛА (право-центр) ── */
 .tasks{position:absolute;top:246px;left:640px;width:354px;height:330px;padding:14px 16px;overflow:hidden;background:rgba(10,9,12,.72)}
 .tasks .pt{margin-bottom:11px}
@@ -72,8 +73,8 @@ html,body{width:1024px;height:768px;background:#08070a;color:#f4f7fb;font-family
  background:linear-gradient(180deg,rgba(30,23,14,.78),rgba(9,7,5,.58));border:1px solid var(--line);border-radius:16px;
  box-shadow:0 10px 34px rgba(0,0,0,.5), inset 0 1px 0 rgba(244,208,137,.14)}
 .rem .pt{position:absolute;top:10px;left:0;right:0;text-align:center}
-.rem .tx{position:absolute;top:28px;left:26px;right:26px;bottom:8px;display:table;width:auto}
-.rem .txin{display:table-cell;vertical-align:middle;text-align:center;font-size:27px;font-weight:900;color:#fff;line-height:1.2;text-shadow:0 1px 18px rgba(0,0,0,.6)}
+.rem .tx{position:absolute;top:28px;left:0;right:0;bottom:8px;display:table;width:100%}
+.rem .txin{display:table-cell;vertical-align:middle;text-align:center;font-size:23px;font-weight:900;color:#fff;line-height:1.25;padding:0 44px;text-shadow:0 1px 18px rgba(0,0,0,.6)}
 .rem .sy{position:absolute;bottom:6px;right:16px;font-size:11px;color:var(--dim)}
 </style></head><body>
 <div class="wrap">
@@ -100,7 +101,7 @@ html,body{width:1024px;height:768px;background:#08070a;color:#f4f7fb;font-family
 
   <div class="pan kazna">
     <div class="pt">ᚠ Казна</div>
-    <div class="krow main"><span class="kl">Баланс</span><span class="kv" id="balance">—</span></div>
+    <div class="krow main"><span class="kl">Баланс</span><span class="kconv" id="bal_rub"></span><span class="kv" id="balance">—</span></div>
     <div class="krow"><span class="kl">Долг</span><span class="kv mn" id="debt">—</span></div>
     <div class="krow"><span class="kl">Сейф</span><span class="kv" id="safe">—</span></div>
   </div>
@@ -127,6 +128,9 @@ function money(v){var n=parseNum(v);if(n==null)return(v&&(""+v).replace(/\s/g,""
   if(c==="IDR")return grp(n)+' Rp <small>(&#8776; '+grp(n*IDR_RUB)+' &#8381;)</small>';
   if(c==="USD")return "$"+grp(n);if(c==="EUR")return grp(n)+" &#8364;";return grp(n)+" &#8381;";}
 function setM(id,v){var e=document.getElementById(id);if(e)e.innerHTML=money(v);}
+function renderBalance(v){var n=parseNum(v),c=curOf(v),b=document.getElementById("balance"),cv=document.getElementById("bal_rub");
+  if(n!=null&&c==="IDR"){b.innerHTML=grp(n)+" Rp";cv.innerHTML='(&#8776; '+grp(n*IDR_RUB)+' &#8381;)';}
+  else{b.innerHTML=money(v);cv.innerHTML="";}}
 function setList(id,items){var e=document.getElementById(id);if(!e)return;e.innerHTML="";if(!items||!items.length){var li=document.createElement("li");li.className="empty";li.appendChild(document.createTextNode("— пусто —"));e.appendChild(li);return;}for(var i=0;i<items.length&&i<6;i++){var li=document.createElement("li");li.appendChild(document.createTextNode(items[i]));e.appendChild(li);}}
 function progress(m){
   var pct=Math.max(0,Math.min(100,Math.round(m/GOAL_MONTH*100)));
@@ -172,7 +176,7 @@ function drawWeek(points){
 var mainData=null;
 function renderMain(d){mainData=d;
   setM("income_today",d.income_today);setM("income_yesterday",d.income_yesterday);
-  setM("balance",d.balance);setM("debt",d.debt);setM("safe",d.safe);
+  renderBalance(d.balance);setM("debt",d.debt);setM("safe",d.safe);
   var r=document.getElementById("reminder");r.innerHTML="";r.appendChild(document.createTextNode(d.reminder||"—"));
   setList("tasks_today",d.tasks_today||[]);
   progress(parseNum(d.income_month)||0);
