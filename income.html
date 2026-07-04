@@ -1,375 +1,100 @@
-<!doctype html>
-<html lang="ru">
-<head>
-  <meta charset="utf-8">
-  <title>Income</title>
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Income">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <style>
-    :root{
-      --bg:#050608;
-      --card:#0b0d12;
-      --line:rgba(209,177,106,.30);
-      --text:#eef2f7;
-      --muted:#97a2b3;
-      --gold:#d1b16a;
-      --accent:#b89b5e;
-      --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-    }
-    html,body{
-      margin:0;padding:0;width:100%;height:100%;
-      background:var(--bg);color:var(--text);
-      font-family:var(--font);
-      overflow:hidden;
-    }
-    .wrap{
-      width:1024px;height:768px;margin:0 auto;box-sizing:border-box;
-      padding:28px 38px 32px;overflow:hidden;
-    }
-    .top{
-      display:flex;justify-content:flex-end;align-items:center;
-      margin-bottom:12px;height:22px;
-    }
-    .clock{font-size:14px;color:#c6ced9;letter-spacing:.03em;}
-    .stats{
-      display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:18px;
-    }
-    .card{
-      background:linear-gradient(180deg, rgba(13,16,22,.98), rgba(8,10,14,.98));
-      border:1px solid var(--line);
-      border-radius:14px;
-      box-shadow:0 0 0 1px rgba(209,177,106,.04) inset, 0 10px 30px rgba(0,0,0,.25);
-      padding:12px;box-sizing:border-box;overflow:hidden;
-    }
-    .metricCard{height:76px;display:flex;flex-direction:column;min-height:0;}
-    .label{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .value{font-size:32px;font-weight:900;line-height:1;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .value.moneyLong{font-size:25px;}
-    .grid{display:grid;grid-template-columns:62% 38%;gap:24px;height:calc(100% - 144px);}
-    .chartCard{height:100%;}
-    .tableCard{height:100%;display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;}
-    .panelTitle{
-      margin:0 0 10px 0;font-size:13px;text-transform:uppercase;letter-spacing:.12em;
-      color:var(--accent);font-weight:900;
-    }
-    .chartWrap{position:relative;height:100%;}
-    svg{width:100%;height:100%;display:block;}
-    .tooltip{
-      position:absolute;display:none;pointer-events:none;z-index:20;background:#0c1118;
-      border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:8px 10px;
-      box-shadow:0 10px 25px rgba(0,0,0,.4);font-size:14px;color:#fff;
-    }
-    table{width:100%;border-collapse:collapse;font-size:15px;}
-    th,td{border-bottom:1px solid rgba(255,255,255,.08);padding:8px 6px;text-align:left;}
-    th{color:var(--accent);font-size:12px;text-transform:uppercase;letter-spacing:.1em;}
-    .tableWrap{flex:0 0 auto;overflow:hidden;max-height:none;margin-bottom:10px;}
-    .tableNav{
-      display:flex;
-      justify-content:center;
-      align-items:flex-start;
-      padding-top:0;
-      padding-bottom:0;
-      min-height:52px;
-      flex:0 0 auto;
-      width:100%;
-      margin-top:0;
-    }
-    .backBtn{
-      position:relative;
-      z-index:50;
-      width:88%;
-      display:inline-flex;
-      visibility:visible;
-      opacity:1;
-      margin-top:0;
-    }
-    .btn{
-      display:inline-flex;align-items:center;justify-content:center;
-      width:88%;height:48px;color:#fff;border:2px solid rgba(209,177,106,.40);
-      border-radius:12px;font-size:26px;font-weight:900;
-      background:linear-gradient(180deg, rgba(209,177,106,.22), rgba(209,177,106,.08));
-      box-shadow:0 0 0 1px rgba(209,177,106,.05) inset;
-      cursor:pointer;-webkit-appearance:none;appearance:none;
-    }
-    .sync{margin-top:8px;font-size:12px;color:var(--muted);text-align:center;}
-  </style>
-</head>
-<body>
+<!doctype html><html lang="ru"><head>
+<meta charset="utf-8"><title>Путь Рагнарра · Доход по дням</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Доход по дням">
+<meta name="viewport" content="width=1024,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<style>
+/* iPad 3 / iOS 9: без CSS Grid и flex-gap. Абсолютное позиционирование в 1024x768. */
+:root{--gold:#d3ac68;--gold-br:#f4d089;--ink:#f4f7fb;--dim:#9aa2b0;--acc:#8fd07a;--line:rgba(211,172,104,.24);--soft:rgba(211,172,104,.12)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1024px;height:768px;background:#070605;color:#f4f7fb;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;overflow:hidden}
+.wrap{position:relative;width:1024px;height:768px;overflow:hidden}
+.bg{position:absolute;top:0;left:0;width:1024px;height:768px;background:#000 no-repeat;background-image:url('me.jpg');background-size:cover;background-position:82% 14%}
+.scrim{position:absolute;top:0;left:0;width:1024px;height:768px;background:linear-gradient(90deg,rgba(6,5,7,.97) 0%,rgba(6,5,7,.93) 52%,rgba(6,5,7,.75) 100%)}
+.hd{position:absolute;top:18px;left:30px;width:964px;height:26px}
+.hd .ru{font-family:Georgia,serif;font-size:20px;color:var(--gold);vertical-align:middle}
+.hd .t{font-weight:800;font-size:15px;letter-spacing:2px;color:var(--gold-br);vertical-align:middle;margin-left:8px}
+.hd .clk{float:right;font-size:14px;color:#cfd6e0;font-weight:700;margin-top:4px}
+.st{position:absolute;top:56px;height:70px;width:232px;border:1px solid var(--soft);border-radius:11px;background:rgba(14,11,7,.62);padding:11px 15px}
+.st .l{font-size:10px;letter-spacing:1.3px;text-transform:uppercase;color:var(--dim);font-weight:700}
+.st .v{font-size:25px;font-weight:900;margin-top:4px;color:var(--gold-br);white-space:nowrap}
+.st.tot .v{color:var(--acc)}
+.card{position:absolute;border:1px solid var(--line);border-radius:14px;background:rgba(12,10,8,.6)}
+.chartCard{top:142px;left:30px;width:614px;height:598px}
+.tableCard{top:142px;left:660px;width:334px;height:598px}
+.pt{position:absolute;top:14px;left:18px;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:800}
+.chartWrap{position:absolute;top:46px;left:14px;right:14px;bottom:34px}
+svg{width:100%;height:100%;display:block}
+.sync{position:absolute;bottom:10px;left:18px;font-size:11px;color:var(--dim)}
+.tblWrap{position:absolute;top:46px;left:16px;right:16px;bottom:82px;overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{border-bottom:1px solid rgba(255,255,255,.08);padding:7px 6px;text-align:left}
+th{color:var(--gold);font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+td.sum{color:var(--gold-br);font-weight:800;text-align:right}
+.navbtn{position:absolute;bottom:14px;left:16px;right:16px;height:50px;border:2px solid rgba(211,172,104,.42);border-radius:12px;background:linear-gradient(180deg,rgba(233,205,143,.24),rgba(209,177,106,.08));color:#fff;font-size:22px;font-weight:900;-webkit-appearance:none;appearance:none}
+</style></head><body>
 <div class="wrap">
-  <div class="top">
-    <div class="clock" id="clock"></div>
+  <div class="bg"></div><div class="scrim"></div>
+  <div class="hd"><span class="ru">ᚱ</span><span class="t">ПУТЬ РАГНАРРА · ДОХОД ПО ДНЯМ</span><span class="clk" id="clk"></span></div>
+  <div class="st" style="left:30px"><div class="l">Сегодня</div><div class="v" id="income_today">—</div></div>
+  <div class="st" style="left:274px"><div class="l">Вчера</div><div class="v" id="income_yesterday">—</div></div>
+  <div class="st" style="left:518px"><div class="l">Месяц</div><div class="v" id="income_month">—</div></div>
+  <div class="st tot" style="left:762px"><div class="l">Всего</div><div class="v" id="income_total">—</div></div>
+  <div class="card chartCard">
+    <div class="pt">График дохода</div>
+    <div class="chartWrap"><svg id="chart" viewBox="0 0 900 520" preserveAspectRatio="none"></svg></div>
+    <div class="sync" id="sync">Загрузка…</div>
   </div>
-
-  <div class="stats">
-    <div class="card metricCard">
-      <div class="label">Вчера</div>
-      <div class="value" id="income_yesterday">—</div>
-    </div>
-    <div class="card metricCard">
-      <div class="label">Сегодня</div>
-      <div class="value" id="income_today">—</div>
-    </div>
-    <div class="card metricCard">
-      <div class="label">Текущий месяц</div>
-      <div class="value" id="income_month">—</div>
-    </div>
-  </div>
-
-  <div class="grid">
-    <div class="card chartCard">
-      <div class="panelTitle">График дохода</div>
-      <div class="chartWrap">
-        <svg id="chart" viewBox="0 0 900 560" preserveAspectRatio="none"></svg>
-        <div class="tooltip" id="tooltip"></div>
-      </div>
-      <div class="sync" id="sync_meta">Нет данных</div>
-    </div>
-
-    <div class="card tableCard">
-      <div class="panelTitle">Таблица заработка</div>
-      <div class="tableWrap">
-        <table>
-          <thead><tr><th>Дата</th><th>Сумма</th></tr></thead>
-          <tbody id="income_table"></tbody>
-        </table>
-      </div>
-      <div class="tableNav">
-        <button class="btn backBtn" id="back_btn" type="button" style="width:88%;display:inline-flex;visibility:visible;opacity:1;margin-top:0;">←</button>
-      </div>
-    </div>
+  <div class="card tableCard">
+    <div class="pt">Таблица заработка</div>
+    <div class="tblWrap"><table><thead><tr><th>Дата</th><th style="text-align:right">Сумма</th></tr></thead><tbody id="tbody"></tbody></table></div>
+    <button class="navbtn" type="button" onclick="window.location.href='index.html'">← назад</button>
   </div>
 </div>
-
 <script>
-var GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwI-yuwuNLx0mFVocA43t_N1CKe7I1-yVRd1d2PVVhoQqZNyQT8zCa_G-m9UaVQHrFPZA/exec";
-var REFRESH_MS = 30000;
-var tooltip = null;
-var SVG_NS = "http://www.w3.org/2000/svg";
-var FONT_FAMILY = '-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif';
-
-function goInternal(url){
-  try{
-    window.location.href = url;
-  }catch(e){
-    try{ window.location.assign(url); }catch(e2){}
-  }
-}
-function pad(n){ return (n < 10 ? "0" : "") + n; }
-function tickClock(){
-  var d = new Date();
-  document.getElementById("clock").textContent =
-    pad(d.getDate()) + "." + pad(d.getMonth()+1) + "." + d.getFullYear() + " " +
-    pad(d.getHours()) + ":" + pad(d.getMinutes());
-}
-tickClock();
-setInterval(tickClock, 1000);
-
-function parseCurrencyValue(v){
-  if(v === null || v === undefined || v === "") return null;
-  var raw = ("" + v).replace(/ /g, " ").trim();
-  if(!raw) return null;
-  var currencyMatch = raw.match(/(₽|\$|€|£|₸|₴|₾|₺|₿|AED|USD|EUR|RUB|KZT|UAH|GEL|TRY|BYN|сом|сум|тенге|руб\.?|долл?\.?|евро)/i);
-  var currency = currencyMatch ? currencyMatch[0] : "";
-  var numPart = raw.replace(/[^0-9,\.\-]/g, "");
-  if(!numPart) return { text: raw, currency: currency, number: null };
-  var normalized = numPart.replace(/\s+/g, "").replace(/,/g, ".");
-  var firstDot = normalized.indexOf('.');
-  if(firstDot !== -1){
-    normalized = normalized.slice(0, firstDot + 1) + normalized.slice(firstDot + 1).replace(/\./g, '');
-  }
-  var n = parseFloat(normalized);
-  if(isNaN(n)) return { text: raw, currency: currency, number: null };
-  var text = n.toLocaleString("ru-RU", {minimumFractionDigits:0, maximumFractionDigits:0});
-  if(currency) text += " " + currency;
-  return { text: text, currency: currency, number: n };
-}
-function money(v){
-  var parsed = parseCurrencyValue(v);
-  return parsed ? parsed.text : "—";
-}
-function fitMoneyClass(el, text){
-  if(!el) return;
-  el.className = el.className.replace(/\s?moneyLong/g, '');
-  if((text || '').length >= 13) el.className += ' moneyLong';
-}
-function setText(id, val){
-  var el = document.getElementById(id);
-  if(el){
-    var txt = money(val);
-    el.textContent = txt;
-    fitMoneyClass(el, txt);
-  }
-}
-function loadJsonp(){
-  var old = document.getElementById("jsonp_script");
-  if(old && old.parentNode) old.parentNode.removeChild(old);
-  var s = document.createElement("script");
-  s.id = "jsonp_script";
-  s.src = GAS_WEBAPP_URL + "?callback=renderIncome&page=income&_=" + Date.now();
-  s.onerror = function(){ document.getElementById("sync_meta").textContent = "Ошибка загрузки данных"; };
-  document.body.appendChild(s);
-}
-function renderIncome(data){
-  try{
-    setText("income_yesterday", data.income_yesterday);
-    setText("income_today", data.income_today);
-    setText("income_month", data.income_month);
-    renderTable(data.chart_points || []);
-    drawChart(data.chart_points || []);
-    document.getElementById("sync_meta").textContent = data.updated_at ? ("Обновлено: " + data.updated_at) : "OK";
-  }catch(err){
-    document.getElementById("sync_meta").textContent = "Ошибка рендера: " + (err && err.message ? err.message : err);
-  }
-}
-function renderTable(points){
-  var tbody = document.getElementById("income_table");
-  tbody.innerHTML = "";
-  if(!points || !points.length){
-    var tr = document.createElement("tr");
-    tr.innerHTML = "<td>—</td><td>—</td>";
-    tbody.appendChild(tr);
-    return;
-  }
-  for(var i=0;i<points.length;i++){
-    var tr = document.createElement("tr");
-    tr.innerHTML = "<td>" + (points[i].label || "—") + "</td><td>" + money(points[i].value) + "</td>";
-    tbody.appendChild(tr);
-  }
-}
-function svgEl(name){
-  return document.createElementNS(SVG_NS, name);
-}
-function setFont(el, size, fill, anchor, weight){
-  el.setAttribute("font-family", FONT_FAMILY);
-  el.setAttribute("font-size", size);
-  el.setAttribute("fill", fill);
-  el.setAttribute("font-weight", weight || "700");
-  if(anchor) el.setAttribute("text-anchor", anchor);
-}
+var GAS="https://script.google.com/macros/s/AKfycbwI-yuwuNLx0mFVocA43t_N1CKe7I1-yVRd1d2PVVhoQqZNyQT8zCa_G-m9UaVQHrFPZA/exec";
+var REFRESH=30000,IDR_RUB=0.004315,GOAL_MONTH=347000,NS="http://www.w3.org/2000/svg";
+function p2(n){return(n<10?"0":"")+n}
+function clk(){var d=new Date();document.getElementById("clk").innerHTML=p2(d.getDate())+"."+p2(d.getMonth()+1)+"."+d.getFullYear()+" "+p2(d.getHours())+":"+p2(d.getMinutes())}
+clk();setInterval(clk,1000);
+function grp(n){n=Math.round(n);var neg=n<0;n=Math.abs(n);var s=""+n,o="";for(var i=0;i<s.length;i++){if(i>0&&(s.length-i)%3===0)o+=" ";o+=s.charAt(i);}return(neg?"-":"")+o;}
+function parseNum(v){if(v==null)return null;var raw=(""+v).replace(/ /g," ").replace(/ /g," ").trim();if(!raw)return null;var np=raw.replace(/[^0-9,\.\-]/g,"");if(!np)return null;np=np.replace(/\s+/g,"").replace(/,/g,".");var fd=np.indexOf(".");if(fd!==-1)np=np.slice(0,fd+1)+np.slice(fd+1).replace(/\./g,"");var n=parseFloat(np);return isNaN(n)?null:n;}
+function curOf(v){var s=""+v;if(/rp|idr|рупи/i.test(s))return"IDR";if(/\$|usd/i.test(s))return"USD";return"RUB";}
+function money(v){var n=parseNum(v);if(n==null)return"—";var c=curOf(v);if(c==="IDR")return grp(n)+" Rp";if(c==="USD")return "$"+grp(n);return grp(n)+" &#8381;";}
+function setM(id,v){var e=document.getElementById(id);if(e)e.innerHTML=money(v);}
+function el(n){return document.createElementNS(NS,n);}
+function txt(x,y,s,fill,anchor,size){var t=el("text");t.setAttribute("x",x);t.setAttribute("y",y);t.setAttribute("fill",fill);t.setAttribute("font-size",size||14);t.setAttribute("font-weight","700");t.setAttribute("font-family","-apple-system,Arial,sans-serif");if(anchor)t.setAttribute("text-anchor",anchor);t.appendChild(document.createTextNode(s));return t;}
+function rect_(x,y,w,h,rx,fill){var r=el("rect");r.setAttribute("x",x);r.setAttribute("y",y);r.setAttribute("width",w);r.setAttribute("height",h);r.setAttribute("rx",rx);r.setAttribute("fill",fill);return r;}
 function drawChart(points){
-  var svg = document.getElementById("chart");
-  svg.innerHTML = "";
-  tooltip = document.getElementById("tooltip");
-
-  if(!points || !points.length){
-    var txt = svgEl("text");
-    txt.setAttribute("x", "450");
-    txt.setAttribute("y", "280");
-    setFont(txt, "24", "#7f8a99", "middle");
-    txt.textContent = "Нет данных";
-    svg.appendChild(txt);
-    return;
+  var svg=document.getElementById("chart");svg.innerHTML="";
+  if(!points||!points.length){svg.appendChild(txt(450,260,"Нет данных","#7f8a99","middle",22));return;}
+  var W=900,H=520,L=86,R=26,T=36,B=60,n=points.length,vals=[],i;
+  for(i=0;i<n;i++){var m=parseNum(points[i].value);vals.push(m==null?0:m);}
+  var d=new Date(),dim=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
+  var targetDay=Math.round(GOAL_MONTH/dim);
+  var mx=Math.max.apply(null,vals);if(mx<targetDay)mx=targetDay;if(mx<=0)mx=1;mx=mx*1.14;
+  function Y(v){return T+(H-T-B)*(1-v/mx);}
+  var baseY=Y(0),step=(W-L-R)/n,bw=Math.min(48,step*0.58),labStep=Math.ceil(n/13);
+  var defs=el("defs"),lg=el("linearGradient");lg.setAttribute("id","barg");lg.setAttribute("x1","0");lg.setAttribute("y1","0");lg.setAttribute("x2","0");lg.setAttribute("y2","1");
+  var a1=el("stop");a1.setAttribute("offset","0");a1.setAttribute("stop-color","#f6d492");var a2=el("stop");a2.setAttribute("offset","1");a2.setAttribute("stop-color","#8a6a2f");
+  lg.appendChild(a1);lg.appendChild(a2);defs.appendChild(lg);svg.appendChild(defs);
+  for(i=0;i<=4;i++){var gv=mx*(i/4),gy=Y(gv);var ln=el("line");ln.setAttribute("x1",L);ln.setAttribute("x2",W-R);ln.setAttribute("y1",gy);ln.setAttribute("y2",gy);ln.setAttribute("stroke","rgba(255,255,255,.07)");svg.appendChild(ln);svg.appendChild(txt(L-10,gy+5,grp(gv),"#8b95a6","end",13));}
+  for(i=0;i<n;i++){
+    var cx=L+step*(i+0.5),v=vals[i],bx=cx-bw/2;
+    var isToday=(""+(points[i].label||"")).indexOf(p2(d.getDate())+"."+p2(d.getMonth()+1))===0;
+    if(v>0){var by=Y(v),bh=Math.max(2,baseY-by);var r=rect_(bx,by,bw,bh,6,"url(#barg)");if(isToday){r.setAttribute("stroke","#fff");r.setAttribute("stroke-width","2.5");}svg.appendChild(r);
+      if(n<=16)svg.appendChild(txt(cx,Math.max(T+14,by-8),grp(v),"#f4d089","middle",14));}
+    else{svg.appendChild(rect_(bx,baseY-3,bw,3,1.5,"rgba(211,172,104,.32)"));}
+    if(i%labStep===0||isToday){var lab=(points[i].label||"");if(lab.length>=5)lab=lab.substring(0,5);svg.appendChild(txt(cx,H-18,lab,isToday?"#f4d089":"#9aa7b8","middle",13));}
   }
-
-  var W = 900, H = 560, L = 92, R = 32, T = 28, B = 86;
-  var values = [], i;
-  for(i=0;i<points.length;i++){
-    var n = parseFloat(String(points[i].value).replace(/\s+/g, "").replace(",", "."));
-    values.push(isNaN(n) ? 0 : n);
-  }
-  var max = Math.max.apply(null, values);
-  if(max <= 0) max = 1;
-
-  function x(idx){
-    if(points.length === 1) return L + ((W - L - R) / 2);
-    return L + ((W - L - R) * idx / (points.length - 1));
-  }
-  function y(v){ return T + (H - T - B) * (1 - (v / max)); }
-
-  for(i=0;i<5;i++){
-    var gv = max * (i / 4);
-    var gy = y(gv);
-
-    var line = svgEl("line");
-    line.setAttribute("x1", L);
-    line.setAttribute("x2", W - R);
-    line.setAttribute("y1", gy);
-    line.setAttribute("y2", gy);
-    line.setAttribute("stroke", "rgba(255,255,255,.08)");
-    svg.appendChild(line);
-
-    var label = svgEl("text");
-    label.setAttribute("x", L - 12);
-    label.setAttribute("y", gy + 5);
-    setFont(label, "14", "#9aa7b8", "end", "600");
-    label.textContent = money(gv);
-    svg.appendChild(label);
-  }
-
-  var polyPts = "";
-  for(i=0;i<points.length;i++) polyPts += x(i) + "," + y(values[i]) + " ";
-  var areaPts = L + "," + y(0) + " " + polyPts + (W - R) + "," + y(0);
-
-  var area = svgEl("polygon");
-  area.setAttribute("points", areaPts);
-  area.setAttribute("fill", "rgba(209,177,106,.12)");
-  svg.appendChild(area);
-
-  var poly = svgEl("polyline");
-  poly.setAttribute("points", polyPts);
-  poly.setAttribute("fill", "none");
-  poly.setAttribute("stroke", "#d1b16a");
-  poly.setAttribute("stroke-width", "4");
-  poly.setAttribute("stroke-linecap", "round");
-  poly.setAttribute("stroke-linejoin", "round");
-  svg.appendChild(poly);
-
-  for(i=0;i<points.length;i++){
-    var cx = x(i), cy = y(values[i]);
-
-    var c = svgEl("circle");
-    c.setAttribute("cx", cx);
-    c.setAttribute("cy", cy);
-    c.setAttribute("r", 6);
-    c.setAttribute("fill", "#d1b16a");
-    c.setAttribute("stroke", "#0b0d12");
-    c.setAttribute("stroke-width", "3");
-    (function(point, el){
-      el.addEventListener("click", function(evt){
-        tooltip.style.display = "block";
-        tooltip.style.left = (evt.offsetX + 12) + "px";
-        tooltip.style.top = (evt.offsetY - 6) + "px";
-        tooltip.textContent = (point.label || "") + " — " + money(point.value);
-      });
-    })(points[i], c);
-    svg.appendChild(c);
-
-    var xl = svgEl("text");
-    xl.setAttribute("x", cx);
-    xl.setAttribute("y", H - 24);
-    var anchor = "middle";
-    if(i === 0) anchor = "start";
-    if(i === points.length - 1) anchor = "end";
-    setFont(xl, "14", "#9aa7b8", anchor, "600");
-    xl.textContent = points[i].label || "";
-    svg.appendChild(xl);
-  }
-
-  svg.addEventListener("click", function(e){
-    if(e.target.tagName !== "circle" && tooltip) tooltip.style.display = "none";
-  });
+  var ty=Y(targetDay),tl=el("line");tl.setAttribute("x1",L);tl.setAttribute("x2",W-R);tl.setAttribute("y1",ty);tl.setAttribute("y2",ty);tl.setAttribute("stroke","#8fd07a");tl.setAttribute("stroke-width","2");tl.setAttribute("stroke-dasharray","7 6");tl.setAttribute("opacity",".75");svg.appendChild(tl);
+  svg.appendChild(txt(W-R,ty-8,"цель ~ "+grp(targetDay)+" в день","#8fd07a","end",13));
 }
-
-var backBtnEl = document.getElementById("back_btn");
-if(backBtnEl){
-  var backHandler = function(ev){
-    if(ev && ev.preventDefault) ev.preventDefault();
-    goInternal('index.html');
-    return false;
-  };
-  backBtnEl.onclick = backHandler;
-  backBtnEl.setAttribute('href','index.html');
-  if(backBtnEl.addEventListener){
-    backBtnEl.addEventListener('touchstart', backHandler, false);
-    backBtnEl.addEventListener('touchend', backHandler, false);
-    backBtnEl.addEventListener('click', backHandler, false);
-  }
-}
-
-loadJsonp();
-setInterval(loadJsonp, REFRESH_MS);
-</script>
-</body>
-</html>
+function renderTable(points){var tb=document.getElementById("tbody");tb.innerHTML="";if(!points||!points.length){var tr=document.createElement("tr");tr.innerHTML="<td>—</td><td class='sum'>—</td>";tb.appendChild(tr);return;}var start=points.length>16?points.length-16:0;for(var i=start;i<points.length;i++){var tr=document.createElement("tr");tr.innerHTML="<td>"+(points[i].label||"—")+"</td><td class='sum'>"+money(points[i].value)+"</td>";tb.appendChild(tr);}}
+function renderIncome(d){var pts=d.chart_points||[];setM("income_today",d.income_today);setM("income_yesterday",d.income_yesterday);setM("income_month",d.income_month);
+  var tot=0,i;for(i=0;i<pts.length;i++){var n=parseNum(pts[i].value);if(n)tot+=n;}setM("income_total",tot);
+  renderTable(pts);drawChart(pts);document.getElementById("sync").innerHTML=d.updated_at?("Обновлено: "+d.updated_at):"OK";}
+function load(){var id="js1",old=document.getElementById(id);if(old&&old.parentNode)old.parentNode.removeChild(old);var s=document.createElement("script");s.id=id;s.src=GAS+"?callback=renderIncome&page=income&_="+(new Date().getTime());s.onerror=function(){document.getElementById("sync").innerHTML="Ошибка загрузки";};document.body.appendChild(s);}
+load();setInterval(load,REFRESH);
+</script></body></html>

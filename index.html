@@ -1,494 +1,131 @@
-<!doctype html>
-<html lang="ru">
-<head>
-  <meta charset="utf-8">
-  <title>Dashboard</title>
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Dashboard">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <style>
-    :root{
-      --bg:#050608;
-      --cardTop:#10141b;
-      --cardBottom:#090c12;
-      --line:rgba(209,177,106,.30);
-      --lineSoft:rgba(209,177,106,.14);
-      --text:#eef2f7;
-      --muted:#97a2b3;
-      --gold:#d1b16a;
-      --accent:#b89b5e;
-      --gap:26px;
-      --radius:18px;
-      --pad:14px;
-    }
-    html,body{
-      margin:0;padding:0;width:100%;height:100%;
-      background:var(--bg);color:var(--text);
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-      overflow:hidden;
-    }
-    body{
-      display:flex;
-      justify-content:center;
-      align-items:flex-start;
-    }
-    .wrap{
-      width:1024px;height:768px;box-sizing:border-box;
-      padding:28px 38px 32px;
-      overflow:hidden;
-      position:relative;
-    }
-    .top{
-      display:flex;justify-content:flex-end;align-items:center;
-      height:26px;margin-bottom:16px;
-    }
-    .clock{
-      font-size:14px;
-      color:#d3d9e2;
-      letter-spacing:.03em;
-      font-weight:700;
-    }
-
-    .layout{
-      height:calc(100% - 42px);
-      display:grid;
-      grid-template-columns:minmax(0, 62%) minmax(0, 38%);
-      grid-template-rows:auto 1fr;
-      gap:var(--gap);
-      min-height:0;
-    }
-
-    .left,.right{
-      min-height:0;
-      display:flex;
-      flex-direction:column;
-      gap:var(--gap);
-    }
-    .left{grid-column:1;grid-row:1;}
-    .right{grid-column:2;grid-row:1;}
-
-    .card{
-      position:relative;
-      background:linear-gradient(180deg, rgba(16,20,27,.98), rgba(9,12,18,.98));
-      border:2px solid var(--line);
-      border-radius:18px;
-      box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,.025),
-        inset 0 1px 0 rgba(255,255,255,.035),
-        0 8px 20px rgba(0,0,0,.18);
-      padding:16px;
-      box-sizing:border-box;
-      overflow:hidden;
-      -webkit-background-clip:padding-box;
-      background-clip:padding-box;
-    }
-    .card:before{
-      content:"";
-      position:absolute;left:1px;top:1px;right:1px;bottom:1px;
-      border-radius:16px;
-      border:1px solid var(--lineSoft);
-      pointer-events:none;
-    }
-
-    .stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap);}
-    .stats2{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--gap);}
-
-    .metricCard{
-      height:116px;
-      display:flex;
-      flex-direction:column;
-      justify-content:flex-start;
-      min-height:0;
-    }
-    .wideCard{
-      height:92px;
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-      min-height:0;
-    }
-    .goalsCard{
-      height:124px;
-      display:flex;
-      flex-direction:column;
-      justify-content:flex-start;
-      min-height:0;
-    }
-
-    .label{
-      font-size:10px;
-      text-transform:uppercase;
-      letter-spacing:.18em;
-      color:#a9b4c5;
-      margin-bottom:12px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .panelTitle{
-      margin:0 0 10px 0;
-      font-size:12px;
-      text-transform:uppercase;
-      letter-spacing:.16em;
-      color:var(--accent);
-      font-weight:900;
-      line-height:1;
-    }
-
-    .value{
-      font-size:29px;
-      font-weight:900;
-      line-height:1;
-      color:var(--gold);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      margin-top:2px;
-    }
-    .value.small{font-size:28px;}
-    .value.moneyLong{font-size:25px;}
-    .value.moneyXL{font-size:22px;}
-    .value.white{color:#ffffff;}
-    .sub{
-      margin-top:auto;
-      padding-top:14px;
-      font-size:12px;
-      line-height:1.05;
-      color:#ecf2fb;
-    }
-
-    .wideRow,.goalRow{
-      display:grid;
-      grid-template-columns:minmax(0,1fr) auto;
-      gap:14px;
-      align-items:center;
-      min-height:0;
-      flex:1;
-    }
-    .wideText,.goalText{
-      overflow:hidden;
-      font-weight:800;
-      line-height:1.12;
-      color:#f4f7fb;
-    }
-    .wideText{font-size:17px;}
-    .goalText{font-size:18px;}
-    .wideValue,.goalValue{
-      font-size:30px;
-      font-weight:900;
-      color:var(--gold);
-      white-space:nowrap;
-      text-align:right;
-    }
-    .wideValue.moneyLong,.goalValue.moneyLong{font-size:26px;}
-    .wideValue.moneyXL,.goalValue.moneyXL{font-size:23px;}
-
-    .tasksCard{
-      height:180px;
-      display:flex;
-      flex-direction:column;
-      min-height:0;
-    }
-    .tasksCardToday{
-      height:388px;
-    }
-    ul{list-style:none;padding:0;margin:0;}
-    .taskList{
-      flex:1;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      min-height:0;
-    }
-    .taskList.compact li{font-size:15px;line-height:1.12;padding:7px 10px;}
-    .taskList.tight li{font-size:13px;line-height:1.08;padding:6px 8px;}
-    li{
-      border:1px solid rgba(255,255,255,.08);
-      background:rgba(255,255,255,.02);
-      border-radius:12px;
-      padding:9px 11px;
-      font-size:17px;
-      line-height:1.14;
-      font-weight:800;
-      overflow:hidden;
-      display:-webkit-box;
-      -webkit-line-clamp:2;
-      -webkit-box-orient:vertical;
-    }
-    .empty{opacity:.45;}
-
-    .nav{
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      height:56px;
-      flex:0 0 56px;
-      margin-top:0;
-      width:100%;
-    }
-    .navLower{
-      margin-top:auto;
-      padding-bottom:12px;
-      width:100%;
-    }
-    .btn{
-      display:inline-flex;align-items:center;justify-content:center;
-      width:88%;height:50px;
-      color:#fff;
-      border:2px solid rgba(209,177,106,.42);
-      border-radius:15px;
-      font-size:24px;font-weight:900;
-      letter-spacing:.02em;
-      background:linear-gradient(180deg, rgba(233,205,143,.28), rgba(209,177,106,.10));
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.08),
-        0 8px 20px rgba(0,0,0,.18);
-      cursor:pointer;-webkit-appearance:none;appearance:none;
-    }
-
-    .reminderSlot{
-      grid-column:1 / span 2;
-      grid-row:2;
-      min-height:0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:0 2px 8px;
-    }
-    .reminderCard{
-      width:100%;
-      height:124px;
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-      align-items:center;
-      padding:14px 22px 26px;
-    }
-    .reminderTitle{
-      width:100%;
-      text-align:center;
-      font-size:12px;
-      text-transform:uppercase;
-      letter-spacing:.16em;
-      color:var(--accent);
-      font-weight:900;
-      margin-bottom:12px;
-      line-height:1;
-    }
-    .reminderInner{
-      flex:1;
-      width:100%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      min-height:0;
-    }
-    .reminder{
-      width:100%;
-      font-size:23px;
-      line-height:1.12;
-      font-weight:900;
-      color:#fff;
-      text-align:center;
-      overflow:hidden;
-      word-break:break-word;
-    }
-    .sync{
-      position:absolute;
-      left:0;right:0;bottom:10px;
-      font-size:12px;
-      color:var(--muted);
-      text-align:center;
-    }
-  </style>
-</head>
-<body>
+<!doctype html><html lang="ru"><head>
+<meta charset="utf-8"><title>Путь Рагнарра · Деньги</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Путь Рагнарра">
+<meta name="viewport" content="width=1024,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<style>
+/* iPad 3 / iOS 9 Safari: без CSS Grid и без flex-gap. Всё на абсолютном позиционировании в 1024x768. */
+:root{--gold:#d3ac68;--gold-br:#f4d089;--ink:#f4f7fb;--dim:#9aa2b0;--acc:#8fd07a;--minus:#e78a63;--line:rgba(211,172,104,.24);--soft:rgba(211,172,104,.12)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1024px;height:768px;background:#08070a;color:#f4f7fb;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;overflow:hidden}
+.wrap{position:relative;width:1024px;height:768px;overflow:hidden}
+.bg{position:absolute;top:0;left:0;width:1024px;height:768px;background:#000 no-repeat;background-image:url('me.jpg');background-size:cover;background-position:82% 14%}
+.scrim{position:absolute;top:0;left:0;width:1024px;height:768px;background:linear-gradient(90deg,rgba(6,5,7,.97) 0%,rgba(6,5,7,.93) 42%,rgba(6,5,7,.66) 66%,rgba(6,5,7,.92) 100%)}
+.hd{position:absolute;top:18px;left:30px;width:964px;height:26px}
+.hd .ru{font-family:Georgia,serif;font-size:20px;color:var(--gold);vertical-align:middle}
+.hd .t{font-weight:800;font-size:15px;letter-spacing:2px;color:var(--gold-br);vertical-align:middle;margin-left:8px}
+.hd .clk{float:right;font-size:14px;color:#cfd6e0;font-weight:700;margin-top:4px}
+/* HERO слева */
+.hero{position:absolute;top:56px;left:30px;width:590px}
+.gh{font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--gold)}
+.dest{font-weight:900;font-size:42px;color:var(--gold-br);line-height:1;margin-top:3px;text-shadow:0 0 30px rgba(211,172,104,.3)}
+.dest small{font-size:17px;color:var(--dim);font-weight:700;margin-left:6px}
+.pnum{margin-top:12px}
+.pnum .big{font-size:38px;font-weight:900;color:#fff}
+.pnum .of{font-size:16px;color:var(--dim);font-weight:700;margin-left:8px}
+.bar{height:18px;border-radius:10px;background:rgba(255,255,255,.06);overflow:hidden;margin-top:11px;width:560px;border:1px solid rgba(211,172,104,.18)}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#8a6a2f,var(--gold-br));border-radius:10px}
+.pline{margin-top:9px;font-size:14px;color:var(--dim);font-weight:600}
+.pline span{margin-right:22px}
+.pline b{color:var(--gold-br)}
+.mom{margin-top:13px;font-size:16px;font-weight:700;color:var(--ink)}
+.mom .fire{color:#f0a04e}.mom .up{color:var(--acc)}.mom .dn{color:var(--minus)}
+/* карточки доход слева */
+.icard{position:absolute;top:284px;width:287px;height:76px;border:1px solid var(--soft);border-radius:12px;background:rgba(12,10,8,.64);padding:11px 15px}
+.icard.a{left:30px}.icard.b{left:333px}
+.icard .l{font-size:10px;letter-spacing:1.4px;text-transform:uppercase;color:var(--dim);font-weight:700}
+.icard .v{font-size:26px;font-weight:900;margin-top:5px;color:var(--gold-br)}
+/* напоминание слева-низ */
+.rem{position:absolute;top:372px;left:30px;width:590px;height:372px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,rgba(26,20,13,.72),rgba(10,8,5,.5));padding:22px}
+.rem .pt{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:800;text-align:center}
+.rem .tx{position:absolute;top:44px;left:22px;right:22px;bottom:34px;display:table;width:auto}
+.rem .txin{display:table-cell;vertical-align:middle;text-align:center;font-size:30px;font-weight:900;color:#fff;line-height:1.25}
+.rem .sy{position:absolute;left:0;right:0;bottom:14px;text-align:center;font-size:12px;color:var(--dim)}
+/* КАЗНА справа */
+.kazna{position:absolute;top:56px;left:640px;width:354px;height:212px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,rgba(28,21,13,.85),rgba(12,9,6,.6));padding:14px 18px}
+.kazna .kh{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:800;margin-bottom:8px}
+.krow{padding:9px 0;border-bottom:1px solid var(--soft);overflow:hidden}
+.krow:last-child{border-bottom:none}
+.krow .kl{float:left;font-size:14px;color:var(--dim);font-weight:600;line-height:30px}
+.krow .kv{float:right;font-size:21px;font-weight:900;color:var(--gold-br)}
+.krow .kv.mn{color:var(--minus)}
+.krow.main .kv{font-size:27px}
+.krow .kv small{font-size:12px;color:var(--dim);font-weight:600}
+/* дела справа */
+.tasks{position:absolute;top:284px;left:640px;width:354px;height:398px;border:1px solid var(--line);border-radius:14px;background:rgba(10,9,12,.74);padding:14px 16px;overflow:hidden}
+.tasks .pt{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:800;margin-bottom:10px}
+.tasks ul{list-style:none}
+.tasks li{border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);border-radius:9px;padding:9px 12px;margin-bottom:8px;font-size:15px;font-weight:600;line-height:1.2}
+.tasks li.empty{opacity:.4}
+.navbtn{position:absolute;top:694px;left:640px;width:354px;height:52px;border:2px solid rgba(211,172,104,.42);border-radius:12px;background:linear-gradient(180deg,rgba(233,205,143,.24),rgba(209,177,106,.08));color:#fff;font-size:22px;font-weight:900;-webkit-appearance:none;appearance:none}
+</style></head><body>
 <div class="wrap">
-  <div class="top">
-    <div class="clock" id="clock"></div>
+  <div class="bg"></div><div class="scrim"></div>
+  <div class="hd"><span class="ru">ᚱ</span><span class="t">ПУТЬ РАГНАРРА · ДЕНЬГИ</span><span class="clk" id="clk"></span></div>
+  <div class="hero">
+    <div class="dest">Доход <small id="goal_month">347 000 ₽ / мес</small></div>
+    <div class="pnum"><span class="big" id="p_income">—</span><span class="of" id="p_of">/ 347 000 ₽ в этом месяце</span></div>
+    <div class="bar"><i id="p_bar"></i></div>
+    <div class="pline"><span><b id="p_pct">—</b> пути</span><span>осталось <b id="p_left">—</b></span><span>нужно <b id="p_day">—</b></span></div>
+    <div class="mom" id="mom">—</div>
   </div>
-
-  <div class="layout">
-    <div class="left">
-      <div class="stats3">
-        <div class="card metricCard">
-          <div class="label">Вчера</div>
-          <div class="value" id="income_yesterday">—</div>
-          <div class="sub">Доход за вчера</div>
-        </div>
-        <div class="card metricCard">
-          <div class="label">Сегодня</div>
-          <div class="value" id="income_today">—</div>
-          <div class="sub">Доход за сегодня</div>
-        </div>
-        <div class="card metricCard">
-          <div class="label">Текущий месяц</div>
-          <div class="value small" id="income_month">—</div>
-          <div class="sub">Доход за месяц</div>
-        </div>
-      </div>
-
-      <div class="stats2">
-        <div class="card metricCard">
-          <div class="label" id="balance_label">Баланс</div>
-          <div class="value" id="balance">—</div>
-        </div>
-        <div class="card metricCard">
-          <div class="label" id="debt_label">Долг</div>
-          <div class="value white" id="debt">—</div>
-        </div>
-      </div>
-
-      <div class="card wideCard">
-        <div class="wideRow">
-          <div class="wideText" id="safe_label">Сейф</div>
-          <div class="wideValue" id="safe_value">—</div>
-        </div>
-      </div>
-
-      <div class="card goalsCard">
-        <div class="panelTitle">Ближайшие цели</div>
-        <div class="goalRow">
-          <div class="goalText" id="goal_need_label">Необходимый доход</div>
-          <div class="goalValue" id="goal_need_value">—</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="right">
-      <div class="card tasksCard tasksCardToday">
-        <div class="panelTitle">Дела на сегодня</div>
-        <ul id="tasks_today" class="taskList"></ul>
-      </div>
-
-      <div class="nav navLower">
-        <button class="btn" type="button" onclick="goInternal('income.html')">→</button>
-      </div>
-    </div>
-
-    <div class="reminderSlot">
-      <div class="card reminderCard">
-        <div class="reminderTitle" id="reminder_label">Главное напоминание</div>
-        <div class="reminderInner">
-          <div class="reminder" id="reminder_text">—</div>
-        </div>
-        <div class="sync" id="sync_meta">Нет данных</div>
-      </div>
-    </div>
+  <div class="icard a"><div class="l">Сегодня</div><div class="v" id="income_today">—</div></div>
+  <div class="icard b"><div class="l">Вчера</div><div class="v" id="income_yesterday">—</div></div>
+  <div class="rem"><div class="pt">Главное напоминание</div><div class="tx"><div class="txin" id="reminder">—</div></div><div class="sy" id="sync">Загрузка…</div></div>
+  <div class="kazna">
+    <div class="kh">ᚠ Казна</div>
+    <div class="krow main"><span class="kl">Баланс</span><span class="kv" id="balance">—</span></div>
+    <div class="krow"><span class="kl">Долг</span><span class="kv mn" id="debt">—</span></div>
+    <div class="krow"><span class="kl">Сейф</span><span class="kv" id="safe">—</span></div>
   </div>
+  <div class="tasks"><div class="pt">Дела на сегодня</div><ul id="tasks_today"></ul></div>
+  <button class="navbtn" type="button" onclick="window.location.href='income.html'">→ по дням</button>
 </div>
-
 <script>
-var GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwI-yuwuNLx0mFVocA43t_N1CKe7I1-yVRd1d2PVVhoQqZNyQT8zCa_G-m9UaVQHrFPZA/exec";
-var REFRESH_MS = 30000;
-
-function goInternal(url){ window.location.href = url; }
-
-function pad(n){ return (n < 10 ? "0" : "") + n; }
-function tickClock(){
-  var d = new Date();
-  document.getElementById("clock").textContent =
-    pad(d.getDate()) + "." + pad(d.getMonth()+1) + "." + d.getFullYear() + " " +
-    pad(d.getHours()) + ":" + pad(d.getMinutes());
+var GAS="https://script.google.com/macros/s/AKfycbwI-yuwuNLx0mFVocA43t_N1CKe7I1-yVRd1d2PVVhoQqZNyQT8zCa_G-m9UaVQHrFPZA/exec";
+var REFRESH=30000,GOAL_MONTH=347000,IDR_RUB=0.004315;
+function p2(n){return(n<10?"0":"")+n}
+function clk(){var d=new Date();document.getElementById("clk").innerHTML=p2(d.getDate())+"."+p2(d.getMonth()+1)+"."+d.getFullYear()+" "+p2(d.getHours())+":"+p2(d.getMinutes())}
+clk();setInterval(clk,1000);
+function grp(n){n=Math.round(n);var neg=n<0;n=Math.abs(n);var s=""+n,o="";for(var i=0;i<s.length;i++){if(i>0&&(s.length-i)%3===0)o+=" ";o+=s.charAt(i);}return(neg?"-":"")+o;}
+function parseNum(v){if(v==null)return null;var raw=(""+v).replace(/ /g," ").replace(/ /g," ").trim();if(!raw)return null;var np=raw.replace(/[^0-9,\.\-]/g,"");if(!np)return null;np=np.replace(/\s+/g,"").replace(/,/g,".");var fd=np.indexOf(".");if(fd!==-1)np=np.slice(0,fd+1)+np.slice(fd+1).replace(/\./g,"");var n=parseFloat(np);return isNaN(n)?null:n;}
+function curOf(v){var s=""+v;if(/rp|idr|рупи/i.test(s))return"IDR";if(/\$|usd|долл/i.test(s))return"USD";if(/€|eur|евро/i.test(s))return"EUR";return"RUB";}
+function money(v){var n=parseNum(v);if(n==null)return(v&&(""+v).replace(/\s/g,""))?(""+v):"—";var c=curOf(v);
+  if(c==="IDR")return grp(n)+" Rp <small>(&#8776; "+grp(n*IDR_RUB)+" &#8381;)</small>";
+  if(c==="USD")return "$"+grp(n);if(c==="EUR")return grp(n)+" &#8364;";return grp(n)+" &#8381;";}
+function setM(id,v){var e=document.getElementById(id);if(e)e.innerHTML=money(v);}
+function setList(id,items){var e=document.getElementById(id);if(!e)return;e.innerHTML="";if(!items||!items.length){var li=document.createElement("li");li.className="empty";li.appendChild(document.createTextNode("—"));e.appendChild(li);return;}for(var i=0;i<items.length&&i<8;i++){var li=document.createElement("li");li.appendChild(document.createTextNode(items[i]));e.appendChild(li);}}
+function progress(m){
+  var pct=Math.max(0,Math.min(100,Math.round(m/GOAL_MONTH*100)));
+  var left=Math.max(0,GOAL_MONTH-m);
+  var d=new Date(),dim=new Date(d.getFullYear(),d.getMonth()+1,0).getDate(),dl=Math.max(1,dim-d.getDate()+1);
+  document.getElementById("p_income").innerHTML=grp(m)+" &#8381;";
+  document.getElementById("p_of").innerHTML="/ "+grp(GOAL_MONTH)+" &#8381; в этом месяце";
+  document.getElementById("goal_month").innerHTML=grp(GOAL_MONTH)+" &#8381; / мес";
+  document.getElementById("p_bar").style.width=pct+"%";
+  document.getElementById("p_pct").innerHTML=pct+"%";
+  document.getElementById("p_left").innerHTML=grp(left)+" &#8381;";
+  document.getElementById("p_day").innerHTML=grp(Math.round(left/dl))+" &#8381;/день";
 }
-tickClock();
-setInterval(tickClock, 1000);
-
-function parseCurrencyValue(v){
-  if(v === null || v === undefined || v === "") return null;
-  var raw = ("" + v).replace(/ /g, " ").trim();
-  if(!raw) return null;
-  var currencyMatch = raw.match(/(₽|\$|€|£|₸|₴|₾|₺|₿|AED|USD|EUR|RUB|KZT|UAH|GEL|TRY|BYN|сом|сум|тенге|руб\.?|долл?\.?|евро)/i);
-  var currency = currencyMatch ? currencyMatch[0] : "";
-  var numPart = raw.replace(/[^0-9,\.\-]/g, "");
-  if(!numPart) return { text: raw, currency: currency, number: null };
-  var normalized = numPart.replace(/\s+/g, "").replace(/,/g, ".");
-  var firstDot = normalized.indexOf('.');
-  if(firstDot !== -1){
-    normalized = normalized.slice(0, firstDot + 1) + normalized.slice(firstDot + 1).replace(/\./g, '');
-  }
-  var n = parseFloat(normalized);
-  if(isNaN(n)) return { text: raw, currency: currency, number: null };
-  var text = n.toLocaleString("ru-RU", {minimumFractionDigits:0, maximumFractionDigits:0});
-  if(currency) text += " " + currency;
-  return { text: text, currency: currency, number: n };
+function momentum(today,yest,points){
+  var streak=0,i;if(points&&points.length){for(i=points.length-1;i>=0;i--){var n=parseNum(points[i].value);if(n&&n>0)streak++;else break;}}
+  var arrow=today>yest?'<span class="up">&#8599; темп растёт</span>':(today<yest?'<span class="dn">&#8600; спад</span>':'&#8594; ровно');
+  var fire=streak>0?('<span class="fire">&#128293; '+streak+' дн. подряд</span> &middot; '):'';
+  document.getElementById("mom").innerHTML=fire+'сегодня <span class="up">+'+grp(today)+' &#8381;</span> &middot; '+arrow;
 }
-function money(v){
-  var parsed = parseCurrencyValue(v);
-  return parsed ? parsed.text : "—";
+var mainData=null;
+function renderMain(d){mainData=d;
+  setM("income_today",d.income_today);setM("income_yesterday",d.income_yesterday);
+  setM("balance",d.balance);setM("debt",d.debt);setM("safe",d.safe);
+  var r=document.getElementById("reminder");r.innerHTML="";r.appendChild(document.createTextNode(d.reminder||"—"));
+  setList("tasks_today",d.tasks_today||[]);
+  progress(parseNum(d.income_month)||0);
+  document.getElementById("sync").innerHTML=d.updated_at?("Обновлено: "+d.updated_at):"OK";
+  jsonp("renderInc","income");
 }
-function fitMoneyClass(el, text){
-  if(!el) return;
-  el.className = el.className.replace(/\s?moneyLong/g, '').replace(/\s?moneyXL/g, '');
-  var len = (text || '').length;
-  if(len >= 16) el.className += ' moneyXL';
-  else if(len >= 13) el.className += ' moneyLong';
-}
-function setText(id, val, isMoney){
-  var el = document.getElementById(id);
-  if(!el) return;
-  if(isMoney){
-    var txt = money(val);
-    el.textContent = txt;
-    fitMoneyClass(el, txt);
-  } else {
-    el.textContent = val || "—";
-  }
-}
-function setList(id, items){
-  var el = document.getElementById(id);
-  if(!el) return;
-  el.className = "taskList";
-  el.innerHTML = "";
-  if(!items || !items.length){
-    var li = document.createElement("li");
-    li.className = "empty";
-    li.textContent = "—";
-    el.appendChild(li);
-    return;
-  }
-  if(items.length >= 4) el.className = "taskList compact";
-  if(items.length >= 6) el.className = "taskList tight";
-
-  for(var i=0;i<items.length;i++){
-    var li = document.createElement("li");
-    li.textContent = items[i];
-    el.appendChild(li);
-  }
-}
-function loadJsonp(){
-  var old = document.getElementById("jsonp_script");
-  if(old && old.parentNode) old.parentNode.removeChild(old);
-  var s = document.createElement("script");
-  s.id = "jsonp_script";
-  s.src = GAS_WEBAPP_URL + "?callback=renderMain&page=main&_=" + Date.now();
-  s.onerror = function(){ document.getElementById("sync_meta").textContent = "Ошибка загрузки данных"; };
-  document.body.appendChild(s);
-}
-function renderMain(data){
-  try{
-    setText("income_yesterday", data.income_yesterday, true);
-    setText("income_today", data.income_today, true);
-    setText("income_month", data.income_month, true);
-    setText("balance", data.balance, true);
-    setText("debt", data.debt, true);
-    setText("goal_need_value", data.goal_need_value, true);
-    setText("safe_value", data.safe, true);
-    setText("reminder_text", data.reminder, false);
-    setText("balance_label", data.balance_label, false);
-    setText("debt_label", data.debt_label, false);
-    setText("goal_need_label", data.goal_need_label, false);
-    setText("safe_label", data.safe_label, false);
-    setText("reminder_label", data.reminder_label, false);
-    setList("tasks_today", data.tasks_today || []);
-    document.getElementById("sync_meta").textContent = data.updated_at ? ("Обновлено: " + data.updated_at) : "OK";
-  }catch(err){
-    document.getElementById("sync_meta").textContent = "Ошибка рендера: " + (err && err.message ? err.message : err);
-  }
-}
-loadJsonp();
-setInterval(loadJsonp, REFRESH_MS);
-</script>
-</body>
-</html>
+function renderInc(d){momentum(parseNum(mainData&&mainData.income_today)||0,parseNum(mainData&&mainData.income_yesterday)||0,d.chart_points||[]);}
+function jsonp(cb,page){var id="js_"+cb,old=document.getElementById(id);if(old&&old.parentNode)old.parentNode.removeChild(old);var s=document.createElement("script");s.id=id;s.src=GAS+"?callback="+cb+"&page="+page+"&_="+(new Date().getTime());s.onerror=function(){document.getElementById("sync").innerHTML="Ошибка загрузки";};document.body.appendChild(s);}
+function load(){jsonp("renderMain","main");}
+load();setInterval(load,REFRESH);
+</script></body></html>
