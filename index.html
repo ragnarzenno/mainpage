@@ -48,7 +48,7 @@ html,body{width:1024px;height:768px;background:#08070a;color:#f4f7fb;font-family
 .week svg{position:absolute;left:12px;right:12px;bottom:12px;top:44px;width:auto;height:auto}
 .weekwrap{position:absolute;left:14px;right:14px;top:44px;bottom:14px}
 /* ── КАЗНА (право-верх) ── */
-.kazna{position:absolute;top:34px;left:640px;width:354px;height:212px;padding:15px 18px;
+.kazna{position:absolute;top:34px;left:640px;width:354px;height:204px;padding:15px 18px;
  background:linear-gradient(180deg,rgba(30,22,13,.85),rgba(12,9,6,.6))}
 .kazna .pt{margin-bottom:6px}
 .krow{padding:9px 0;border-bottom:1px solid var(--soft);overflow:hidden}
@@ -59,13 +59,8 @@ html,body{width:1024px;height:768px;background:#08070a;color:#f4f7fb;font-family
 .krow.main .kv{font-size:26px}
 .krow .kv small{font-size:12px;color:var(--dim);font-weight:600}
 .kconv{float:left;font-size:13px;color:var(--dim);font-weight:600;line-height:34px;margin-left:12px}
-.krow.balrow{display:flex;align-items:center;gap:9px;padding:7px 0}
-.krow.balrow .kl{line-height:1.15;align-self:flex-start;margin-top:3px}
-.balbreak{flex:1;display:flex;flex-direction:column;gap:1px;text-align:right;font-size:13.5px;font-weight:700;color:var(--gold-br)}
-.balbreak .bl{white-space:nowrap}
-.brace{font-size:40px;color:var(--dim);line-height:.8}
-.krow.balrow .kv{font-size:22px;white-space:nowrap}
-.krow.balrow .kv .cur{font-size:15px;color:var(--dim)}
+.balcap{clear:both;text-align:right;font-size:12px;color:var(--dim);font-weight:600;padding-top:5px;letter-spacing:.02em;white-space:nowrap}
+.krow.main .kv .cur{font-size:16px;color:var(--dim);font-weight:700}
 /* ── ДЕЛА (право-центр) ── */
 .tasks{position:absolute;top:246px;left:640px;width:354px;height:330px;padding:14px 16px;overflow:hidden;background:rgba(10,9,12,.72)}
 .tasks .pt{margin-bottom:11px}
@@ -108,7 +103,7 @@ html,body{width:1024px;height:768px;background:#08070a;color:#f4f7fb;font-family
 
   <div class="pan kazna">
     <div class="pt">ᚠ Казна</div>
-    <div class="krow main balrow"><span class="kl">Баланс</span><div class="balbreak" id="balbreak"></div><span class="brace" id="brace"></span><span class="kv" id="balance">—</span></div>
+    <div class="krow main"><span class="kl">Баланс</span><span class="kv" id="balance">—</span><div class="balcap" id="balbreak"></div></div>
     <div class="krow"><span class="kl">Долг</span><span class="kv mn" id="debt">—</span></div>
     <div class="krow"><span class="kl">Сейф</span><span class="kv" id="safe">—</span></div>
   </div>
@@ -135,11 +130,12 @@ function money(v){var n=parseNum(v);if(n==null)return(v&&(""+v).replace(/\s/g,""
   if(c==="IDR")return grp(n)+' Rp <small>(&#8776; '+grp(n*IDR_RUB)+' &#8381;)</small>';
   if(c==="USD")return "$"+grp(n);if(c==="EUR")return grp(n)+" &#8364;";return grp(n)+" &#8381;";}
 function setM(id,v){var e=document.getElementById(id);if(e)e.innerHTML=money(v);}
-function renderBalance(v){var s=(""+v),b=document.getElementById("balance"),bb=document.getElementById("balbreak"),br=document.getElementById("brace");
+function renderBalance(v){var s=(""+v),b=document.getElementById("balance"),cap=document.getElementById("balbreak");
+  function fp(x){var n=parseNum(x),suf=(""+x).replace(/[0-9\s.,]/g,"").trim();return (n!=null?grp(n):x)+(suf?" "+suf:"");}
   if(s.indexOf("|")>-1){var p=s.split("|");
-    bb.innerHTML='<div class="bl">'+p[0]+'</div><div class="bl">'+(p[1]||'')+'</div><div class="bl">'+(p[2]||'')+'</div>';
-    br.innerHTML='}';b.innerHTML=grp(parseNum(p[3])||0)+' <span class="cur">&#8381;</span>';return;}
-  bb.innerHTML='';br.innerHTML='';var n=parseNum(v),c=curOf(v);
+    b.innerHTML=grp(parseNum(p[3])||0)+' <span class="cur">&#8381;</span>';
+    cap.innerHTML=fp(p[0])+' &middot; '+fp(p[1])+' &middot; '+fp(p[2]);return;}
+  cap.innerHTML='';var n=parseNum(v),c=curOf(v);
   if(n!=null&&c==="IDR"){b.innerHTML=grp(n)+' Rp <small>(&#8776; '+grp(n*IDR_RUB)+' &#8381;)</small>';}
   else{b.innerHTML=money(v);}}
 function setList(id,items){var e=document.getElementById(id);if(!e)return;e.innerHTML="";if(!items||!items.length){var li=document.createElement("li");li.className="empty";li.appendChild(document.createTextNode("— пусто —"));e.appendChild(li);return;}for(var i=0;i<items.length&&i<6;i++){var li=document.createElement("li");li.appendChild(document.createTextNode(items[i]));e.appendChild(li);}}
