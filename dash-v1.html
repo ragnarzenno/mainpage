@@ -1,0 +1,65 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><title>Dash V1 · Северное табло</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0906;--gold:#d3ac68;--gold-br:#f0cd88;--ink:#eef2f7;--dim:#9a8e76;--line:rgba(211,172,104,.28);--soft:rgba(211,172,104,.12);--plus:#8fd07a;--minus:#e78a63}
+*{box-sizing:border-box;margin:0}html,body{width:100%;height:100%;background:var(--bg);color:var(--ink);font-family:Inter,-apple-system,sans-serif;overflow:hidden}
+body{background:radial-gradient(120% 90% at 50% -10%,#171208,#070605 62%);display:flex;justify-content:center;align-items:flex-start}
+#e{position:fixed;inset:0;z-index:0}
+.wrap{position:relative;z-index:1;width:1024px;height:768px;padding:22px 30px}
+.hd{display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:16px}
+.hd .ru{font-family:Cinzel;font-size:22px;color:var(--gold)}
+.hd .ti{font-family:Cinzel;font-weight:800;font-size:19px;color:var(--gold-br);letter-spacing:1px}
+.hd .sp{flex:1}.hd .streak{font-size:14px;color:var(--gold);font-weight:700}.hd .clk{font-size:14px;color:#cfd6e0;font-weight:700;margin-left:14px}
+.hero{border:1px solid var(--line);border-radius:16px;padding:18px 22px;margin-bottom:16px;background:linear-gradient(180deg,rgba(26,20,13,.85),rgba(12,9,6,.5));position:relative;overflow:hidden}
+.hero .lab{font-family:Cinzel;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--dim)}
+.hero .big{font-size:52px;font-weight:800;color:var(--gold-br);line-height:1;margin:6px 0 4px;letter-spacing:-1px}
+.hero .goal{font-size:15px;color:var(--ink)}
+.hero .goal b{color:var(--gold)}
+.bar{height:16px;border-radius:9px;background:rgba(255,255,255,.06);overflow:hidden;margin-top:12px;border:1px solid var(--soft)}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#8a6a2f,var(--gold-br));border-radius:9px}
+.pctline{display:flex;justify-content:space-between;font-size:13px;color:var(--dim);margin-top:6px}
+.pctline b{color:var(--gold-br)}
+.grid{display:grid;grid-template-columns:1.15fr .85fr;gap:16px}
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px}
+.st{border:1px solid var(--soft);border-radius:12px;padding:12px 14px;background:rgba(20,16,11,.6)}
+.st .i{font-size:18px}.st .l{font-family:Cinzel;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-top:4px}
+.st .v{font-size:24px;font-weight:800;margin-top:2px;color:var(--gold-br)}.st.dim .v{color:#fff}
+.tasks{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:rgba(16,20,27,.6);height:280px}
+.tasks .pt{font-family:Cinzel;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.tasks li{list-style:none;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.02);border-radius:10px;padding:9px 12px;margin-bottom:8px;font-size:15px;font-weight:600}
+.rem{border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:16px;text-align:center;background:linear-gradient(180deg,rgba(26,20,13,.7),rgba(12,9,6,.4))}
+.rem .pt{font-family:Cinzel;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.rem .tx{font-size:20px;font-weight:800;color:#fff}
+</style></head><body>
+<canvas id="e"></canvas>
+<div class="wrap">
+  <div class="hd"><span class="ru">ᚠ</span><span class="ti">ПУТЬ РАГНАРРА · ДЕНЬГИ</span><span class="sp"></span>
+    <span class="streak">🔥 12 дней подряд</span><span class="clk" id="clk"></span></div>
+  <div class="hero">
+    <div class="lab">Доход · текущий месяц</div>
+    <div class="big">87 500 ₽</div>
+    <div class="goal">Цель до Бали — <b>347 000 ₽/мес</b> · осталось заработать <b>259 500 ₽</b></div>
+    <div class="bar"><i style="width:25%"></i></div>
+    <div class="pctline"><span><b>25%</b> пути</span><span>нужно <b>17 300 ₽/день</b> до конца месяца</span></div>
+  </div>
+  <div class="grid">
+    <div>
+      <div class="stats">
+        <div class="st"><div class="i">☀️</div><div class="l">Сегодня</div><div class="v">5 000 ₽</div></div>
+        <div class="st"><div class="i">🌙</div><div class="l">Вчера</div><div class="v">2 500 ₽</div></div>
+        <div class="st"><div class="i">⚖️</div><div class="l">Баланс</div><div class="v">43 000 ₽</div></div>
+        <div class="st dim"><div class="i">⛓️</div><div class="l">Долг</div><div class="v">222 000 ₽</div></div>
+        <div class="st"><div class="i">🛡️</div><div class="l">Сейф</div><div class="v">15 000 ₽</div></div>
+        <div class="st"><div class="i">🎯</div><div class="l">До цели</div><div class="v">259 500</div></div>
+      </div>
+      <div class="rem"><div class="pt">Главное напоминание</div><div class="tx">Я возвращаю людям их душу. Деньги идут за силой.</div></div>
+    </div>
+    <div class="tasks"><div class="pt">Дела на сегодня</div><ul>
+      <li>Прогон Telegrand — 8 воркеров</li><li>Сессия с Анастасией 15:00</li><li>Записать пост «Путь Рагнарра»</li><li>Тренировка + снятие зажимов</li></ul></div>
+  </div>
+</div>
+<script>
+function p(n){return(n<10?'0':'')+n}function ck(){var d=new Date();document.getElementById('clk').textContent=p(d.getDate())+'.'+p(d.getMonth()+1)+' '+p(d.getHours())+':'+p(d.getMinutes())}ck();setInterval(ck,1000);
+(function(){var c=document.getElementById('e'),x=c.getContext('2d'),W,H,ps=[];function rs(){W=c.width=innerWidth;H=c.height=innerHeight}rs();onresize=rs;for(var i=0;i<30;i++)ps.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.3+.3,s:Math.random()*.3+.1,o:Math.random()*.35+.12,p:Math.random()*6.28});function lp(){x.clearRect(0,0,W,H);x.globalCompositeOperation='lighter';for(var i=0;i<ps.length;i++){var q=ps[i];q.y-=q.s;q.p+=.02;q.x+=Math.sin(q.p)*.2;if(q.y<-5){q.y=H+5;q.x=Math.random()*W}x.beginPath();x.fillStyle='rgba(220,175,95,'+(q.o*(.6+.4*Math.sin(q.p*1.7)))+')';x.arc(q.x,q.y,q.r,0,6.29);x.fill()}requestAnimationFrame(lp)}lp()})();
+</script></body></html>
