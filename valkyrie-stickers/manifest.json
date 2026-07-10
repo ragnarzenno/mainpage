@@ -1,0 +1,69 @@
+{
+  "name": "Valkyrie & Vikings",
+  "short_name_hint": "valkyrie_saga",
+  "type": "static",
+  "format": "512x512 PNG, transparent, white sticker outline",
+  "count": 12,
+  "stickers": [
+    {
+      "file": "stickers/01_burning_ship.png",
+      "emoji": "🔥",
+      "title": "Валькирия сжигает корабль"
+    },
+    {
+      "file": "stickers/02_valkyrie_sword.png",
+      "emoji": "⚔️",
+      "title": "Валькирия с мечом"
+    },
+    {
+      "file": "stickers/03_raven.png",
+      "emoji": "🐦‍⬛",
+      "title": "Ворон Одина"
+    },
+    {
+      "file": "stickers/04_axe.png",
+      "emoji": "🪓",
+      "title": "Секира"
+    },
+    {
+      "file": "stickers/05_horn.png",
+      "emoji": "🍺",
+      "title": "Skål!"
+    },
+    {
+      "file": "stickers/06_mjolnir.png",
+      "emoji": "⚡",
+      "title": "Мьёльнир"
+    },
+    {
+      "file": "stickers/07_skull.png",
+      "emoji": "💀",
+      "title": "Череп воина"
+    },
+    {
+      "file": "stickers/08_longship.png",
+      "emoji": "⛵",
+      "title": "Драккар"
+    },
+    {
+      "file": "stickers/09_heart.png",
+      "emoji": "❤️",
+      "title": "Сердце валькирии"
+    },
+    {
+      "file": "stickers/10_rage.png",
+      "emoji": "😤",
+      "title": "Ярость"
+    },
+    {
+      "file": "stickers/11_valhalla.png",
+      "emoji": "🏰",
+      "title": "Вальхалла"
+    },
+    {
+      "file": "stickers/12_valknut.png",
+      "emoji": "✨",
+      "title": "Валькнут"
+    }
+  ]
+}
