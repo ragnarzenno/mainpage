@@ -1,0 +1,7 @@
+# host	ssh_port	ipv6_prefix	mode	ports
+# mode: anyip (routed-префикс, ndppd не нужен) | ndppd (on-link префикс)
+# ports: сколько уникальных /64-адресов отдать с этого узла
+203.0.113.10	22	2a0e:1234:5678::/48	anyip	5000
+203.0.113.11	22	2001:470:8abc::/48	anyip	5000
+198.51.100.20	2222	2a01:4f8:aaaa:bbbb::/64	ndppd	200
+192.0.2.30	22	2a0e:9999:1::/56	anyip	1000
