@@ -67,6 +67,9 @@ html,body{width:1024px;height:768px;background:#08070a;color:#f4f7fb;font-family
 .tasks ul{list-style:none}
 .tasks li{border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);border-radius:9px;padding:9px 12px;margin-bottom:8px;font-size:15px;font-weight:600;line-height:1.2;color:#e9edf3}
 .tasks li.empty{opacity:.35;text-align:center}
+.tasks{cursor:pointer;-webkit-tap-highlight-color:rgba(0,0,0,0)}
+.tasks .tc{float:right;font-size:12px;color:var(--dim);font-weight:700;letter-spacing:.02em}
+.tasks .thint{position:absolute;left:0;right:0;bottom:6px;text-align:center;font-size:11px;color:var(--dim);opacity:.75}
 /* ── кнопка (право-низ) ── */
 .navbtn{position:absolute;top:588px;left:640px;width:354px;height:48px;border:1.5px solid rgba(211,172,104,.42);border-radius:12px;
  background:linear-gradient(180deg,rgba(233,205,143,.22),rgba(209,177,106,.06));color:#fff;font-size:19px;font-weight:900;letter-spacing:.02em;-webkit-appearance:none;appearance:none;box-shadow:0 6px 20px rgba(0,0,0,.35)}
@@ -108,7 +111,7 @@ html,body{width:1024px;height:768px;background:#08070a;color:#f4f7fb;font-family
     <div class="krow"><span class="kl">Сейф</span><span class="kv" id="safe">—</span></div>
   </div>
 
-  <div class="pan tasks"><div class="pt">Дела на сегодня</div><ul id="tasks_today"></ul></div>
+  <div class="pan tasks" id="tasks_pan"><div class="pt">Дела на сегодня<span class="tc" id="tasks_pg"></span></div><ul id="tasks_today"></ul><div class="thint" id="tasks_hint"></div></div>
   <button class="navbtn" type="button" onclick="window.location.href='income.html'">Доход по дням →</button>
 
   <div class="rem">
@@ -138,7 +141,20 @@ function renderBalance(v){var s=(""+v),b=document.getElementById("balance"),cap=
   cap.innerHTML='';var n=parseNum(v),c=curOf(v);
   if(n!=null&&c==="IDR"){b.innerHTML=grp(n)+' Rp <small>(&#8776; '+grp(n*IDR_RUB)+' &#8381;)</small>';}
   else{b.innerHTML=money(v);}}
-function setList(id,items){var e=document.getElementById(id);if(!e)return;e.innerHTML="";if(!items||!items.length){var li=document.createElement("li");li.className="empty";li.appendChild(document.createTextNode("— пусто —"));e.appendChild(li);return;}for(var i=0;i<items.length&&i<6;i++){var li=document.createElement("li");li.appendChild(document.createTextNode(items[i]));e.appendChild(li);}}
+var TPAGE=6,tasksAll=[],tPage=0;
+function renderTasks(){
+  var e=document.getElementById("tasks_today"),pg=document.getElementById("tasks_pg"),hn=document.getElementById("tasks_hint");
+  if(!e)return;e.innerHTML="";
+  var n=tasksAll.length,i,li;
+  if(!n){li=document.createElement("li");li.className="empty";li.appendChild(document.createTextNode("— пусто —"));e.appendChild(li);
+    if(pg)pg.innerHTML="";if(hn)hn.innerHTML="";return;}
+  var pages=Math.ceil(n/TPAGE);
+  if(tPage>=pages)tPage=0;if(tPage<0)tPage=pages-1;
+  for(i=tPage*TPAGE;i<n&&i<tPage*TPAGE+TPAGE;i++){li=document.createElement("li");li.appendChild(document.createTextNode(tasksAll[i]));e.appendChild(li);}
+  if(pg)pg.innerHTML=pages>1?((tPage+1)+"/"+pages+" · "+n+" дел"):(n+" дел");
+  if(hn)hn.innerHTML=pages>1?"нажми, чтобы листать":"";
+}
+function tapTasks(){if(tasksAll.length>TPAGE){tPage++;renderTasks();}}
 function progress(m){
   var pct=Math.max(0,Math.min(100,Math.round(m/GOAL_MONTH*100)));
   var left=Math.max(0,GOAL_MONTH-m);
@@ -185,7 +201,7 @@ function renderMain(d){mainData=d;
   setM("income_today",d.income_today);setM("income_yesterday",d.income_yesterday);
   renderBalance(d.balance);setM("debt",d.debt);setM("safe",d.safe);
   var r=document.getElementById("reminder");r.innerHTML="";r.appendChild(document.createTextNode(d.reminder||"—"));
-  setList("tasks_today",d.tasks_today||[]);
+  tasksAll=d.tasks_today||[];renderTasks();
   progress(parseNum(d.income_month)||0);
   document.getElementById("sync").innerHTML=d.updated_at?("обновлено "+d.updated_at):"OK";
   jsonp("renderInc","income");
@@ -198,6 +214,9 @@ function renderInc(d){var pts=d.chart_points||[];
   drawWeek(pts);
 }
 function jsonp(cb,page){var id="js_"+cb,old=document.getElementById(id);if(old&&old.parentNode)old.parentNode.removeChild(old);var s=document.createElement("script");s.id=id;s.src=GAS+"?callback="+cb+"&page="+page+"&_="+(new Date().getTime());s.onerror=function(){document.getElementById("sync").innerHTML="ошибка загрузки";};document.body.appendChild(s);}
+(function(){var p=document.getElementById("tasks_pan");if(!p)return;
+  if("ontouchend" in window)p.addEventListener("touchend",function(e){e.preventDefault();tapTasks();},false);
+  p.addEventListener("click",tapTasks,false);})();
 function load(){jsonp("renderMain","main");}
 load();setInterval(load,REFRESH);
 </script></body></html>
