@@ -63,13 +63,15 @@ html,body{width:1024px;height:768px;background:#08070a;color:#f4f7fb;font-family
 .krow.main .kv .cur{font-size:16px;color:var(--dim);font-weight:700}
 /* ── ДЕЛА (право-центр) ── */
 .tasks{position:absolute;top:246px;left:640px;width:354px;height:330px;padding:14px 16px;overflow:hidden;background:rgba(10,9,12,.72)}
-.tasks .pt{margin-bottom:11px}
+.tasks .pt{margin-bottom:11px;position:relative;line-height:18px}
 .tasks ul{list-style:none;position:absolute;left:16px;right:14px;top:42px;bottom:10px;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .tasks li{border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);border-radius:9px;padding:9px 12px;margin-bottom:8px;font-size:15px;font-weight:600;line-height:1.2;color:#e9edf3}
 .tasks li.empty{opacity:.35;text-align:center}
 .tasks li.doing{border:1.5px solid rgba(255,255,255,.92);background:rgba(255,255,255,.07);color:#fff;box-shadow:0 0 14px rgba(255,255,255,.14)}
 .tasks li.done{opacity:.55}
-.tasks .tc{float:right;font-size:12px;color:var(--dim);font-weight:700;letter-spacing:.02em}
+.tasks .tc{position:absolute;right:0;top:50%;margin-top:-10px;height:20px;line-height:19px;
+ min-width:44px;padding:0 9px;text-align:center;font-size:12px;font-weight:800;letter-spacing:.06em;
+ color:#f0d9a6;border:1px solid rgba(211,172,104,.38);border-radius:10px;background:rgba(233,205,143,.09)}
 /* ── кнопка (право-низ) ── */
 .navbtn{position:absolute;top:588px;left:640px;width:354px;height:48px;border:1.5px solid rgba(211,172,104,.42);border-radius:12px;
  background:linear-gradient(180deg,rgba(233,205,143,.22),rgba(209,177,106,.06));color:#fff;font-size:19px;font-weight:900;letter-spacing:.02em;-webkit-appearance:none;appearance:none;box-shadow:0 6px 20px rgba(0,0,0,.35)}
@@ -162,7 +164,7 @@ function renderTasks(){
     li.appendChild(document.createTextNode((all[i].cls==="done"?"\u2713 ":"")+all[i].txt));
     e.appendChild(li);
   }
-  if(pg)pg.innerHTML=dn.length?(up.length+" осталось · "+dn.length+" сделано"):(n+" дел");
+  if(pg)pg.innerHTML=dn.length+"/"+n;
 }
 function progress(m){
   var pct=Math.max(0,Math.min(100,Math.round(m/GOAL_MONTH*100)));
