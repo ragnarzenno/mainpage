@@ -64,12 +64,12 @@ html,body{width:1024px;height:768px;background:#08070a;color:#f4f7fb;font-family
 /* ── ДЕЛА (право-центр) ── */
 .tasks{position:absolute;top:246px;left:640px;width:354px;height:330px;padding:14px 16px;overflow:hidden;background:rgba(10,9,12,.72)}
 .tasks .pt{margin-bottom:11px}
-.tasks ul{list-style:none}
+.tasks ul{list-style:none;position:absolute;left:16px;right:14px;top:42px;bottom:10px;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .tasks li{border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);border-radius:9px;padding:9px 12px;margin-bottom:8px;font-size:15px;font-weight:600;line-height:1.2;color:#e9edf3}
 .tasks li.empty{opacity:.35;text-align:center}
-.tasks{cursor:pointer;-webkit-tap-highlight-color:rgba(0,0,0,0)}
+.tasks li.doing{border:1.5px solid rgba(255,255,255,.92);background:rgba(255,255,255,.07);color:#fff;box-shadow:0 0 14px rgba(255,255,255,.14)}
+.tasks li.done{opacity:.55}
 .tasks .tc{float:right;font-size:12px;color:var(--dim);font-weight:700;letter-spacing:.02em}
-.tasks .thint{position:absolute;left:0;right:0;bottom:6px;text-align:center;font-size:11px;color:var(--dim);opacity:.75}
 /* ── кнопка (право-низ) ── */
 .navbtn{position:absolute;top:588px;left:640px;width:354px;height:48px;border:1.5px solid rgba(211,172,104,.42);border-radius:12px;
  background:linear-gradient(180deg,rgba(233,205,143,.22),rgba(209,177,106,.06));color:#fff;font-size:19px;font-weight:900;letter-spacing:.02em;-webkit-appearance:none;appearance:none;box-shadow:0 6px 20px rgba(0,0,0,.35)}
@@ -111,7 +111,7 @@ html,body{width:1024px;height:768px;background:#08070a;color:#f4f7fb;font-family
     <div class="krow"><span class="kl">Сейф</span><span class="kv" id="safe">—</span></div>
   </div>
 
-  <div class="pan tasks" id="tasks_pan"><div class="pt">Дела на сегодня<span class="tc" id="tasks_pg"></span></div><ul id="tasks_today"></ul><div class="thint" id="tasks_hint"></div></div>
+  <div class="pan tasks" id="tasks_pan"><div class="pt">Дела на сегодня<span class="tc" id="tasks_pg"></span></div><ul id="tasks_today"></ul></div>
   <button class="navbtn" type="button" onclick="window.location.href='income.html'">Доход по дням →</button>
 
   <div class="rem">
@@ -141,20 +141,29 @@ function renderBalance(v){var s=(""+v),b=document.getElementById("balance"),cap=
   cap.innerHTML='';var n=parseNum(v),c=curOf(v);
   if(n!=null&&c==="IDR"){b.innerHTML=grp(n)+' Rp <small>(&#8776; '+grp(n*IDR_RUB)+' &#8381;)</small>';}
   else{b.innerHTML=money(v);}}
-var TPAGE=6,tasksAll=[],tPage=0;
-function renderTasks(){
-  var e=document.getElementById("tasks_today"),pg=document.getElementById("tasks_pg"),hn=document.getElementById("tasks_hint");
-  if(!e)return;e.innerHTML="";
-  var n=tasksAll.length,i,li;
-  if(!n){li=document.createElement("li");li.className="empty";li.appendChild(document.createTextNode("— пусто —"));e.appendChild(li);
-    if(pg)pg.innerHTML="";if(hn)hn.innerHTML="";return;}
-  var pages=Math.ceil(n/TPAGE);
-  if(tPage>=pages)tPage=0;if(tPage<0)tPage=pages-1;
-  for(i=tPage*TPAGE;i<n&&i<tPage*TPAGE+TPAGE;i++){li=document.createElement("li");li.appendChild(document.createTextNode(tasksAll[i]));e.appendChild(li);}
-  if(pg)pg.innerHTML=pages>1?((tPage+1)+"/"+pages+" · "+n+" дел"):(n+" дел");
-  if(hn)hn.innerHTML=pages>1?"нажми, чтобы листать":"";
+var tasksAll=[];
+function taskKind(t){
+  var s=""+t;
+  if(s.indexOf("\u25b6")===0)return{cls:"doing",txt:s.substring(1).replace(/^\s+/,"")};
+  if(s.indexOf("\u2713")===0)return{cls:"done",txt:s.substring(1).replace(/^\s+/,"")};
+  return{cls:"",txt:s};
 }
-function tapTasks(){if(tasksAll.length>TPAGE){tPage++;renderTasks();}}
+function renderTasks(){
+  var e=document.getElementById("tasks_today"),pg=document.getElementById("tasks_pg");
+  if(!e)return;e.innerHTML="";
+  var n=tasksAll.length,i,li,k,up=[],dn=[];
+  if(!n){li=document.createElement("li");li.className="empty";li.appendChild(document.createTextNode("— пусто —"));e.appendChild(li);
+    if(pg)pg.innerHTML="";return;}
+  for(i=0;i<n;i++){k=taskKind(tasksAll[i]);(k.cls==="done"?dn:up).push(k);}
+  var all=up.concat(dn);
+  for(i=0;i<all.length;i++){
+    li=document.createElement("li");
+    if(all[i].cls)li.className=all[i].cls;
+    li.appendChild(document.createTextNode((all[i].cls==="done"?"\u2713 ":"")+all[i].txt));
+    e.appendChild(li);
+  }
+  if(pg)pg.innerHTML=dn.length?(up.length+" осталось · "+dn.length+" сделано"):(n+" дел");
+}
 function progress(m){
   var pct=Math.max(0,Math.min(100,Math.round(m/GOAL_MONTH*100)));
   var left=Math.max(0,GOAL_MONTH-m);
@@ -214,9 +223,6 @@ function renderInc(d){var pts=d.chart_points||[];
   drawWeek(pts);
 }
 function jsonp(cb,page){var id="js_"+cb,old=document.getElementById(id);if(old&&old.parentNode)old.parentNode.removeChild(old);var s=document.createElement("script");s.id=id;s.src=GAS+"?callback="+cb+"&page="+page+"&_="+(new Date().getTime());s.onerror=function(){document.getElementById("sync").innerHTML="ошибка загрузки";};document.body.appendChild(s);}
-(function(){var p=document.getElementById("tasks_pan");if(!p)return;
-  if("ontouchend" in window)p.addEventListener("touchend",function(e){e.preventDefault();tapTasks();},false);
-  p.addEventListener("click",tapTasks,false);})();
 function load(){jsonp("renderMain","main");}
 load();setInterval(load,REFRESH);
 </script></body></html>
