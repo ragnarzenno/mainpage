@@ -235,7 +235,8 @@ footer p{margin:0 0 6px;max-width:70ch}
 }
 @media (max-width:620px){.throw{grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center}}
 
-.scene{width:132px;height:132px;perspective:640px;flex:none;touch-action:none;cursor:grab;position:relative}
+.scene{width:132px;height:132px;perspective:640px;flex:none;touch-action:none;cursor:grab;position:relative;
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
 .scene:active{cursor:grabbing}
 .scene:focus-visible{outline:2px solid var(--lapis);outline-offset:6px;border-radius:8px}
 .die{
@@ -510,7 +511,8 @@ const SEED = {
     {seq:17, die:5, from:41, to:62, kind:'arrow',   note:'стрела 46 → 62, Счастье'},
     {seq:18, die:2, from:62, to:64, kind:'none',    note:''},
     {seq:19, die:5, from:64, to:69, kind:'none',    note:''},
-    {seq:20, die:1, from:69, to:70, kind:'none',    note:''}
+    {seq:20, die:1, from:69, to:70, kind:'none',    note:''},
+    {seq:21, die:5, from:70, to:70, kind:'blocked', note:'перелёт — стоишь, ждёшь точное число'}
   ]
 };
 
@@ -849,17 +851,52 @@ function startHold(e){
   };
   raf = requestAnimationFrame(tick);
 }
+const hintEl = document.getElementById('hint');
+let hintSaved = null, tapMode = false;
+function tempHint(txt){ if(hintSaved === null) hintSaved = hintEl.textContent; hintEl.textContent = txt; }
+function restoreHint(){ if(hintSaved !== null){ hintEl.textContent = hintSaved; hintSaved = null; } }
+
 function endHold(){
   if(!holding) return;
-  holding = false; cancelAnimationFrame(raf);
+  holding = false; tapMode = false; cancelAnimationFrame(raf);
   feed(performance.now() - t0);
   charge.style.setProperty('--co', 0);
   charge.style.setProperty('--c', 0);
+  restoreHint();
   throwDie();
 }
-scene.addEventListener('pointerdown', startHold);
-scene.addEventListener('pointerup', endHold);
-scene.addEventListener('pointercancel', endHold);
+/* браузер перехватил касание (долгое нажатие, выделение, меню): бросок не засчитывается */
+function abortHold(){
+  if(!holding) return;
+  holding = false; tapMode = false; cancelAnimationFrame(raf);
+  charge.style.setProperty('--co', 0);
+  charge.style.setProperty('--c', 0);
+  const d = document.getElementById('die');
+  d.classList.remove('charging');
+  d.style.transform = 'rotateX(' + spinX + 'deg) rotateY(' + spinY + 'deg)';
+  tempHint('Браузер перехватил касание, бросок не засчитан. Зажми кубик ещё раз.');
+}
+function onDown(e){
+  if(rolling) return;
+  if(holding && tapMode) return;          // второй тап: бросок уйдёт на его отпускании
+  startHold(e);
+}
+function onUp(){
+  if(!holding) return;
+  if(!tapMode && performance.now() - t0 < 250){
+    /* короткий тап (тачпад, быстрое касание): кубик продолжает заряжаться до второго нажатия */
+    tapMode = true;
+    tempHint('Кубик заряжается. Нажми на него ещё раз, чтобы бросить.');
+    return;
+  }
+  endHold();
+}
+scene.addEventListener('pointerdown', onDown);
+scene.addEventListener('pointerup', onUp);
+scene.addEventListener('pointercancel', abortHold);
+scene.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+scene.addEventListener('selectstart', function(e){ e.preventDefault(); });
+scene.addEventListener('dragstart', function(e){ e.preventDefault(); });
 scene.addEventListener('pointermove', function(e){ if(holding) feed(e.clientX*31 + e.clientY*17); });
 scene.addEventListener('keydown', function(e){
   if((e.key === ' ' || e.key === 'Enter') && !holding){ e.preventDefault(); startHold(null); }
