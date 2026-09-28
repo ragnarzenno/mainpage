@@ -49,11 +49,15 @@ td.sum{color:var(--gold-br);font-weight:800;text-align:right}
   <div class="card tableCard">
     <div class="pt">Таблица заработка</div>
     <div class="tblWrap"><table><thead><tr><th>Дата</th><th style="text-align:right">Сумма</th></tr></thead><tbody id="tbody"></tbody></table></div>
-    <button class="navbtn" type="button" onclick="window.location.href='index.html'">← назад</button>
+    <button class="navbtn" type="button" onclick="window.location.href='index.html'+location.search+location.hash">← назад</button>
   </div>
 </div>
 <script>
 var GAS="https://script.google.com/macros/s/AKfycbwI-yuwuNLx0mFVocA43t_N1CKe7I1-yVRd1d2PVVhoQqZNyQT8zCa_G-m9UaVQHrFPZA/exec";
+/* Доступ к данным по ключу: ключ приходит в ссылке (?k=… или #k=…) и запоминается на устройстве. В коде ключа нет. */
+var KEY=(function(){var k="",m=/[?&#]k=([^&#]+)/.exec(location.search+"&"+location.hash);if(m){try{k=decodeURIComponent(m[1]);}catch(e){k=m[1];}}try{if(k)localStorage.setItem("dash_k",k);else k=localStorage.getItem("dash_k")||"";}catch(e){}return k;})();
+function kq(){return KEY?"&k="+encodeURIComponent(KEY):"";}
+function denied(d){if(d&&d.error){var s=document.getElementById("sync");if(s)s.innerHTML=(d.error==="forbidden")?"нет доступа: открой ссылку с ключом":("ошибка: "+d.error);return true;}return false;}
 var REFRESH=30000,IDR_RUB=0.004315,GOAL_MONTH=347000,NS="http://www.w3.org/2000/svg";
 function p2(n){return(n<10?"0":"")+n}
 function clk(){var d=new Date();document.getElementById("clk").innerHTML=p2(d.getDate())+"."+p2(d.getMonth()+1)+"."+d.getFullYear()+" "+p2(d.getHours())+":"+p2(d.getMinutes())}
@@ -92,9 +96,9 @@ function drawChart(points){
   svg.appendChild(txt(W-R,ty-8,"цель ~ "+grp(targetDay)+" в день","#8fd07a","end",13));
 }
 function renderTable(points){var tb=document.getElementById("tbody");tb.innerHTML="";if(!points||!points.length){var tr=document.createElement("tr");tr.innerHTML="<td>—</td><td class='sum'>—</td>";tb.appendChild(tr);return;}var start=points.length>16?points.length-16:0;for(var i=start;i<points.length;i++){var tr=document.createElement("tr");tr.innerHTML="<td>"+(points[i].label||"—")+"</td><td class='sum'>"+money(points[i].value)+"</td>";tb.appendChild(tr);}}
-function renderIncome(d){var pts=d.chart_points||[];setM("income_today",d.income_today);setM("income_yesterday",d.income_yesterday);setM("income_month",d.income_month);
+function renderIncome(d){if(denied(d))return;var pts=d.chart_points||[];setM("income_today",d.income_today);setM("income_yesterday",d.income_yesterday);setM("income_month",d.income_month);
   var tot=0,i;for(i=0;i<pts.length;i++){var n=parseNum(pts[i].value);if(n)tot+=n;}setM("income_total",tot);
   renderTable(pts);drawChart(pts);document.getElementById("sync").innerHTML=d.updated_at?("Обновлено: "+d.updated_at):"OK";}
-function load(){var id="js1",old=document.getElementById(id);if(old&&old.parentNode)old.parentNode.removeChild(old);var s=document.createElement("script");s.id=id;s.src=GAS+"?callback=renderIncome&page=income&_="+(new Date().getTime());s.onerror=function(){document.getElementById("sync").innerHTML="Ошибка загрузки";};document.body.appendChild(s);}
+function load(){var id="js1",old=document.getElementById(id);if(old&&old.parentNode)old.parentNode.removeChild(old);var s=document.createElement("script");s.id=id;s.src=GAS+"?callback=renderIncome&page=income"+kq()+"&_="+(new Date().getTime());s.onerror=function(){document.getElementById("sync").innerHTML="Ошибка загрузки";};document.body.appendChild(s);}
 load();setInterval(load,REFRESH);
 </script></body></html>

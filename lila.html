@@ -219,6 +219,7 @@ button.toggle{
   background:none;border:1px solid var(--line);border-radius:2px;padding:7px 12px;cursor:pointer;
 }
 button.toggle:hover{color:var(--text);border-color:var(--muted)}
+button.toggle.primary{color:var(--text);border-color:var(--gold)}
 button.toggle:focus-visible{outline:2px solid var(--lapis);outline-offset:2px}
 .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 
@@ -324,7 +325,8 @@ footer p{margin:0 0 6px;max-width:70ch}
       <p class="hint" id="hint">Кубик раскручивается из твоего жеста: длительность удержания и дрожь руки идут в бросок. На телефоне можно встряхнуть.</p>
       <p class="hint" id="syncstate"></p>
       <div class="throwbtns">
-        <button class="toggle" id="copymove">Скопировать ход для ведущего</button>
+        <button class="toggle primary" id="copymove">Скопировать ход для ведущего</button>
+        <button class="toggle" id="sharemove" hidden>Поделиться ходом</button>
         <button class="toggle" id="pushall">Отправить партию ведущему</button>
         <button class="toggle" id="motionbtn" hidden>Включить встряхивание</button>
       </div>
@@ -479,9 +481,11 @@ const GAME = {
   moves: []
 };
 
-/* ── партия от 24.09.2026: перенесена из базы страницы на claude.ai ──
-   Стартовое состояние страницы. Если в localStorage этого браузера партия
-   ушла дальше (ходов больше), берётся она. */
+/* ── партия ведущего ──
+   Каноническое состояние: ходы, которые игрок прислал ведущему в чат.
+   Ведущий дописывает сюда новые ходы, чтобы партия открывалась одинаково на любом устройстве.
+   Если в localStorage браузера партия продолжает эту (те же первые ходы) и ушла дальше, берётся она.
+   Первые 16 ходов перенесены из базы страницы на claude.ai (24.09.2026). */
 const SEED = {
   intention: 'Где и как мне жить, чтобы не предавать себя и не терять свою силу?',
   started: '24.09.2026',
@@ -927,18 +931,65 @@ if(typeof DeviceMotionEvent !== 'undefined' && HAS_SENSOR_DEVICE){
   }
 }
 
-/* --- ход для ведущего --- */
-document.getElementById('copymove').addEventListener('click', function(){
-  const m = GAME.moves[GAME.moves.length-1];
-  const txt = m
-    ? 'Ход ' + m.seq + ': кость ' + m.die + ', ' + m.from + ' → ' + m.to + ' (' + byN[m.to].name + ')' + (m.note ? ' — ' + m.note : '')
-    : 'Ходов пока нет.';
-  navigator.clipboard.writeText(txt).then(function(){
-    const b = document.getElementById('copymove');
-    b.textContent = 'Скопировано';
-    setTimeout(function(){ b.textContent = 'Скопировать ход для ведущего'; }, 1600);
+/* --- ходы для ведущего: всё, что ещё не отправлено, одним куском --- */
+function moveLine(m){
+  return 'Ход ' + m.seq + ': кость ' + m.die + ', ' + m.from + ' → ' + m.to + ' (' + byN[m.to].name + ')' + (m.note ? ' — ' + m.note : '');
+}
+function pendingMoves(){
+  const from = GAME.reported || 0;
+  const list = GAME.moves.filter(function(m){ return m.seq > from; });
+  return list.length ? list : GAME.moves.slice(-1);
+}
+function movesText(list){
+  const cell = byN[GAME.position];
+  const range = list.length === 1 ? 'ход ' + list[0].seq : 'ходы ' + list[0].seq + '–' + list[list.length-1].seq;
+  let tail = 'Фишка: ' + cell.n + ' · ' + cell.name;
+  if(GAME.finished) tail += ' · партия завершена';
+  else if(GAME.sixes > 0) tail += ' · шестёрка, бросаю ещё';
+  else if(!GAME.inGame) tail += ' · жду шестёрку';
+  return 'Лила · ' + range + '\n' + list.map(moveLine).join('\n') + '\n' + tail;
+}
+function markReported(list){
+  const last = list[list.length-1].seq;
+  if(last > (GAME.reported || 0)){ GAME.reported = last; backupLocal(); }
+}
+function copyText(txt){
+  if(navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(txt);
+  return new Promise(function(ok, fail){
+    try{
+      const ta = document.createElement('textarea');
+      ta.value = txt; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, txt.length);
+      const done = document.execCommand('copy'); document.body.removeChild(ta);
+      if(done) ok(); else fail(new Error('copy'));
+    }catch(err){ fail(err); }
   });
+}
+function flash(id, txt, back){
+  const b = document.getElementById(id); b.textContent = txt;
+  setTimeout(function(){ b.textContent = back; }, 1600);
+}
+document.getElementById('copymove').addEventListener('click', function(){
+  if(!GAME.moves.length){ syncNote('Ходов пока нет.'); return; }
+  const list = pendingMoves();
+  copyText(movesText(list)).then(function(){
+    markReported(list);
+    flash('copymove', 'Скопировано', 'Скопировать ход для ведущего');
+    syncNote('Скопировано. Вставь ведущему в чат вместе со своим ответом.');
+  }).catch(function(){ syncNote('Скопировать не вышло. Назови ходы ведущему из журнала.'); });
 });
+
+const shareBtn = document.getElementById('sharemove');
+if(navigator.share){
+  shareBtn.hidden = false;
+  shareBtn.addEventListener('click', function(){
+    if(!GAME.moves.length){ syncNote('Ходов пока нет.'); return; }
+    const list = pendingMoves();
+    navigator.share({text: movesText(list)})
+      .then(function(){ markReported(list); syncNote('Отправлено ведущему.'); })
+      .catch(function(){});
+  });
+}
 
 document.getElementById('pushall').addEventListener('click', pushAll);
 
@@ -950,11 +1001,14 @@ function initDB(){
   if(typeof claude === 'undefined' || !claude.use){
     document.getElementById('pushall').textContent = 'Скопировать партию для ведущего';
     const local = readLocal();
-    const useLocal = !!(local && Array.isArray(local.moves) && local.moves.length > SEED.moves.length);
+    const useLocal = extendsSeed(local);
+    const clash = !useLocal && !!(local && local.moves.length > SEED.moves.length);
     applyState(useLocal ? local : SEED);
-    syncNote(useLocal
-      ? 'Партия восстановлена из памяти этого браузера: ' + GAME.moves.length + ' ход(ов). Новые ходы копируй ведущему.'
-      : 'Загружена партия от ' + GAME.started + ': ' + GAME.moves.length + ' ход(ов). Новые ходы копируй ведущему.');
+    GAME.reported = Math.max(SEED.moves.length, useLocal ? (local.reported || 0) : 0);
+    if(!useLocal) backupLocal();
+    syncNote((clash ? 'В памяти браузера была другая партия, загружена партия ведущего. ' : '') +
+      (useLocal ? 'Партия продолжается из памяти этого браузера: ' : 'Партия от ' + GAME.started + ': ') +
+      GAME.moves.length + ' ход(ов). После броска нажми «Скопировать ход для ведущего».');
     return;
   }
   claude.use('db').then(function(db){
@@ -984,9 +1038,19 @@ function backupLocal(){
     localStorage.setItem('lila_game', JSON.stringify({
       intention: GAME.intention, position: GAME.position, inGame: GAME.inGame,
       finished: GAME.finished, sixes: GAME.sixes, beforeSixes: GAME.beforeSixes,
+      started: GAME.started, reported: GAME.reported || 0,
       moves: GAME.moves
     }));
   }catch(_){}
+}
+/* локальная партия годится, только если она продолжает партию ведущего, а не расходится с ней */
+function extendsSeed(d){
+  if(!d || !Array.isArray(d.moves) || d.moves.length <= SEED.moves.length) return false;
+  for(let i = 0; i < SEED.moves.length; i++){
+    const a = d.moves[i], b = SEED.moves[i];
+    if(!a || a.seq !== b.seq || a.die !== b.die || a.to !== b.to) return false;
+  }
+  return true;
 }
 function readLocal(){
   try{
@@ -1013,14 +1077,11 @@ function gameText(){
     '\nФишка: ' + GAME.position + ' · ' + byN[GAME.position].name +
     (GAME.finished ? ' · партия завершена' : (GAME.inGame ? '' : ' · ждёт шестёрку')) +
     '\nХодов: ' + GAME.moves.length;
-  const lines = GAME.moves.map(function(m){
-    return 'Ход ' + m.seq + ': кость ' + m.die + ', ' + m.from + ' → ' + m.to + ' (' + byN[m.to].name + ')' + (m.note ? ' — ' + m.note : '');
-  });
-  return head + '\n' + lines.join('\n');
+  return head + '\n' + GAME.moves.map(moveLine).join('\n');
 }
 function copyGame(){
   if(!GAME.moves.length){ syncNote('Ходов пока нет.'); return; }
-  navigator.clipboard.writeText(gameText())
+  copyText(gameText())
     .then(function(){ syncNote('Партия скопирована (' + GAME.moves.length + ' ход(ов)) — вставь её ведущему.'); })
     .catch(function(){ syncNote('Скопировать не вышло — назови ходы ведущему из журнала.'); });
 }
@@ -1053,7 +1114,9 @@ function syncNote(t){
 function saveGame(mv){
   if(!mv) return;
   if(!DB){
-    syncNote('Ход ' + mv.seq + ' сохранён в этом браузере — назови число ведущему.');
+    syncNote(GAME.finished ? 'Партия завершена. Скопируй ход для ведущего.'
+      : GAME.sixes > 0 ? 'Шестёрка: бросай ещё. Потом скопируй все ходы разом.'
+      : 'Ход ' + mv.seq + ' сохранён. Скопируй его для ведущего и пришли в чат вместе с ответом.');
     return;
   }
   syncNote('Записываю ход ' + mv.seq + '…');

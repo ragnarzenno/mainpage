@@ -116,7 +116,7 @@ html,body{width:1024px;height:768px;background:#08070a;color:#f4f7fb;font-family
   </div>
 
   <div class="pan tasks" id="tasks_pan"><div class="pt">Дела на сегодня<span class="tc" id="tasks_pg"></span></div><ul id="tasks_today"></ul></div>
-  <button class="navbtn" type="button" onclick="window.location.href='income.html'">Доход по дням →</button>
+  <button class="navbtn" type="button" onclick="window.location.href='income.html'+location.search+location.hash">Доход по дням →</button>
 
   <div class="rem">
     <div class="pt">Главное напоминание</div>
@@ -126,6 +126,10 @@ html,body{width:1024px;height:768px;background:#08070a;color:#f4f7fb;font-family
 </div>
 <script>
 var GAS="https://script.google.com/macros/s/AKfycbwI-yuwuNLx0mFVocA43t_N1CKe7I1-yVRd1d2PVVhoQqZNyQT8zCa_G-m9UaVQHrFPZA/exec";
+/* Доступ к данным по ключу: ключ приходит в ссылке (?k=… или #k=…) и запоминается на устройстве. В коде ключа нет. */
+var KEY=(function(){var k="",m=/[?&#]k=([^&#]+)/.exec(location.search+"&"+location.hash);if(m){try{k=decodeURIComponent(m[1]);}catch(e){k=m[1];}}try{if(k)localStorage.setItem("dash_k",k);else k=localStorage.getItem("dash_k")||"";}catch(e){}return k;})();
+function kq(){return KEY?"&k="+encodeURIComponent(KEY):"";}
+function denied(d){if(d&&d.error){var s=document.getElementById("sync");if(s)s.innerHTML=(d.error==="forbidden")?"нет доступа: открой ссылку с ключом":("ошибка: "+d.error);return true;}return false;}
 var REFRESH=30000,GOAL_MONTH=347000,IDR_RUB=0.004315,NS="http://www.w3.org/2000/svg";
 function p2(n){return(n<10?"0":"")+n}
 function clk(){var d=new Date();document.getElementById("clk").innerHTML=p2(d.getDate())+"."+p2(d.getMonth()+1)+"."+d.getFullYear()+"  "+p2(d.getHours())+":"+p2(d.getMinutes())}
@@ -234,7 +238,7 @@ function drawWeek(points){
   }
 }
 var mainData=null;
-function renderMain(d){mainData=d;
+function renderMain(d){if(denied(d))return;mainData=d;
   setM("income_today",d.income_today);setM("income_yesterday",d.income_yesterday);
   renderBalance(d.balance);setM("debt",d.debt);setM("safe",d.safe);
   var r=document.getElementById("reminder");r.innerHTML="";r.appendChild(document.createTextNode(d.reminder||"—"));
@@ -243,14 +247,14 @@ function renderMain(d){mainData=d;
   document.getElementById("sync").innerHTML=d.updated_at?("обновлено "+d.updated_at):"OK";
   jsonp("renderInc","income");
 }
-function renderInc(d){var pts=d.chart_points||[];
+function renderInc(d){if(denied(d))return;var pts=d.chart_points||[];
   var st=streakOf(pts);document.getElementById("streak").innerHTML=st+(st===1?" день":(st>=2&&st<=4?" дня":" дн."));
   momentum(parseNum(mainData&&mainData.income_today)||0,parseNum(mainData&&mainData.income_yesterday)||0);
   var wk=0,i;for(i=Math.max(0,pts.length-7);i<pts.length;i++){var n=parseNum(pts[i].value);if(n)wk+=n;}
   document.getElementById("week_sum").innerHTML=wk>0?("+"+grp(wk)+" &#8381; за 7 дней"):"";
   drawWeek(pts);
 }
-function jsonp(cb,page){var id="js_"+cb,old=document.getElementById(id);if(old&&old.parentNode)old.parentNode.removeChild(old);var s=document.createElement("script");s.id=id;s.src=GAS+"?callback="+cb+"&page="+page+"&_="+(new Date().getTime());s.onerror=function(){document.getElementById("sync").innerHTML="ошибка загрузки";};document.body.appendChild(s);}
+function jsonp(cb,page){var id="js_"+cb,old=document.getElementById(id);if(old&&old.parentNode)old.parentNode.removeChild(old);var s=document.createElement("script");s.id=id;s.src=GAS+"?callback="+cb+"&page="+page+kq()+"&_="+(new Date().getTime());s.onerror=function(){document.getElementById("sync").innerHTML="ошибка загрузки";};document.body.appendChild(s);}
 function load(){jsonp("renderMain","main");}
 load();setInterval(load,REFRESH);
 </script></body></html>
