@@ -479,6 +479,33 @@ const GAME = {
   moves: []
 };
 
+/* ── партия от 24.09.2026: перенесена из базы страницы на claude.ai ──
+   Стартовое состояние страницы. Если в localStorage этого браузера партия
+   ушла дальше (ходов больше), берётся она. */
+const SEED = {
+  intention: 'Где и как мне жить, чтобы не предавать себя и не терять свою силу?',
+  started: '24.09.2026',
+  position: 41, inGame: true, finished: false, sixes: 0, beforeSixes: 71,
+  moves: [
+    {seq:1,  die:4, from:68, to:68, kind:'notborn', note:'не рождён — нужна шестёрка'},
+    {seq:2,  die:2, from:68, to:68, kind:'notborn', note:'не рождён — нужна шестёрка'},
+    {seq:3,  die:2, from:68, to:68, kind:'notborn', note:'не рождён — нужна шестёрка'},
+    {seq:4,  die:6, from:68, to:6,  kind:'birth',   note:'рождение → клетка 6, Заблуждение. Бросай ещё'},
+    {seq:5,  die:3, from:6,  to:9,  kind:'none',    note:''},
+    {seq:6,  die:5, from:9,  to:14, kind:'none',    note:''},
+    {seq:7,  die:3, from:14, to:69, kind:'arrow',   note:'стрела 17 → 69, План Абсолюта'},
+    {seq:8,  die:2, from:69, to:71, kind:'none',    note:''},
+    {seq:9,  die:6, from:71, to:71, kind:'blocked', note:'перелёт — стоишь, ждёшь точное число. шестёрка — бросай ещё'},
+    {seq:10, die:3, from:71, to:71, kind:'blocked', note:'перелёт — стоишь, ждёшь точное число'},
+    {seq:11, die:3, from:71, to:71, kind:'blocked', note:'перелёт — стоишь, ждёшь точное число'},
+    {seq:12, die:4, from:71, to:71, kind:'blocked', note:'перелёт — стоишь, ждёшь точное число'},
+    {seq:13, die:1, from:71, to:51, kind:'snake',   note:'змея 72 → 51, Земля'},
+    {seq:14, die:1, from:51, to:35, kind:'snake',   note:'змея 52 → 35, Чистилище'},
+    {seq:15, die:3, from:35, to:38, kind:'none',    note:''},
+    {seq:16, die:3, from:38, to:41, kind:'none',    note:''}
+  ]
+};
+
 /* ── шапка состояния ───────────────────── */
 function renderState(){
   const cell = byN[GAME.position];
@@ -921,11 +948,13 @@ document.getElementById('pushall').addEventListener('click', pushAll);
 let DB = null;
 function initDB(){
   if(typeof claude === 'undefined' || !claude.use){
-    document.getElementById('pushall').hidden = true;
-    const restored = restoreLocal();
-    syncNote(restored
-      ? 'Партия восстановлена из памяти этого браузера. Ходы называй ведущему.'
-      : 'Ходы сохраняются в памяти этого браузера. Называй их ведущему.');
+    document.getElementById('pushall').textContent = 'Скопировать партию для ведущего';
+    const local = readLocal();
+    const useLocal = !!(local && Array.isArray(local.moves) && local.moves.length > SEED.moves.length);
+    applyState(useLocal ? local : SEED);
+    syncNote(useLocal
+      ? 'Партия восстановлена из памяти этого браузера: ' + GAME.moves.length + ' ход(ов). Новые ходы копируй ведущему.'
+      : 'Загружена партия от ' + GAME.started + ': ' + GAME.moves.length + ' ход(ов). Новые ходы копируй ведущему.');
     return;
   }
   claude.use('db').then(function(db){
@@ -959,24 +988,45 @@ function backupLocal(){
     }));
   }catch(_){}
 }
-function restoreLocal(){
+function readLocal(){
   try{
     const raw = localStorage.getItem('lila_game');
-    if(!raw) return false;
+    if(!raw) return null;
     const d = JSON.parse(raw);
-    if(!d || !Array.isArray(d.moves) || !d.moves.length) return false;
-    if(d.intention) GAME.intention = d.intention;
-    if(typeof d.position === 'number' && byN[d.position]) GAME.position = d.position;
-    GAME.inGame = !!d.inGame; GAME.finished = !!d.finished;
-    GAME.sixes = d.sixes || 0; GAME.beforeSixes = d.beforeSixes || 1;
-    GAME.moves = d.moves;
-    renderState(); renderLog(); markHere(); select(GAME.position);
-    return true;
-  }catch(_){ return false; }
+    return (d && Array.isArray(d.moves)) ? d : null;
+  }catch(_){ return null; }
+}
+function applyState(d){
+  if(d.intention) GAME.intention = d.intention;
+  if(d.started) GAME.started = d.started;
+  if(typeof d.position === 'number' && byN[d.position]) GAME.position = d.position;
+  GAME.inGame = !!d.inGame; GAME.finished = !!d.finished;
+  GAME.sixes = d.sixes || 0; GAME.beforeSixes = d.beforeSixes || 1;
+  GAME.moves = d.moves.slice();
+  renderState(); renderLog(); markHere(); select(GAME.position);
+}
+
+/* --- вся партия текстом: чтобы принести её ведущему в любой чат --- */
+function gameText(){
+  const head = 'Лила · партия от ' + GAME.started +
+    '\nНамерение: ' + GAME.intention +
+    '\nФишка: ' + GAME.position + ' · ' + byN[GAME.position].name +
+    (GAME.finished ? ' · партия завершена' : (GAME.inGame ? '' : ' · ждёт шестёрку')) +
+    '\nХодов: ' + GAME.moves.length;
+  const lines = GAME.moves.map(function(m){
+    return 'Ход ' + m.seq + ': кость ' + m.die + ', ' + m.from + ' → ' + m.to + ' (' + byN[m.to].name + ')' + (m.note ? ' — ' + m.note : '');
+  });
+  return head + '\n' + lines.join('\n');
+}
+function copyGame(){
+  if(!GAME.moves.length){ syncNote('Ходов пока нет.'); return; }
+  navigator.clipboard.writeText(gameText())
+    .then(function(){ syncNote('Партия скопирована (' + GAME.moves.length + ' ход(ов)) — вставь её ведущему.'); })
+    .catch(function(){ syncNote('Скопировать не вышло — назови ходы ведущему из журнала.'); });
 }
 
 function pushAll(){
-  if(!DB){ syncNote('База недоступна — назови ходы ведущему.'); return; }
+  if(!DB){ copyGame(); return; }
   if(!GAME.moves.length){ syncNote('Ходов пока нет.'); return; }
   syncNote('Отправляю ' + GAME.moves.length + ' ход(ов)…');
   const jobs = GAME.moves.map(function(m){
