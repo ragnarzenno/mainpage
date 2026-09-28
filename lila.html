@@ -489,7 +489,7 @@ const GAME = {
 const SEED = {
   intention: 'Где и как мне жить, чтобы не предавать себя и не терять свою силу?',
   started: '24.09.2026',
-  position: 41, inGame: true, finished: false, sixes: 0, beforeSixes: 71,
+  position: 62, inGame: true, finished: false, sixes: 0, beforeSixes: 71,
   moves: [
     {seq:1,  die:4, from:68, to:68, kind:'notborn', note:'не рождён — нужна шестёрка'},
     {seq:2,  die:2, from:68, to:68, kind:'notborn', note:'не рождён — нужна шестёрка'},
@@ -506,7 +506,8 @@ const SEED = {
     {seq:13, die:1, from:71, to:51, kind:'snake',   note:'змея 72 → 51, Земля'},
     {seq:14, die:1, from:51, to:35, kind:'snake',   note:'змея 52 → 35, Чистилище'},
     {seq:15, die:3, from:35, to:38, kind:'none',    note:''},
-    {seq:16, die:3, from:38, to:41, kind:'none',    note:''}
+    {seq:16, die:3, from:38, to:41, kind:'none',    note:''},
+    {seq:17, die:5, from:41, to:62, kind:'arrow',   note:'стрела 46 → 62, Счастье'}
   ]
 };
 
@@ -1068,6 +1069,10 @@ function applyState(d){
   GAME.sixes = d.sixes || 0; GAME.beforeSixes = d.beforeSixes || 1;
   GAME.moves = d.moves.slice();
   renderState(); renderLog(); markHere(); select(GAME.position);
+  const fn = document.getElementById('facename');
+  if(fn && GAME.moves.length) fn.textContent = GAME.finished ? 'Партия завершена.'
+    : GAME.inGame ? 'Ты в игре. Фишка на ' + GAME.position + ', ' + byN[GAME.position].name + '.'
+    : 'Пока не выпадет шестёрка, ты не рождён.';
 }
 
 /* --- вся партия текстом: чтобы принести её ведущему в любой чат --- */
