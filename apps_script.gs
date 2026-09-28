@@ -43,7 +43,31 @@ var CONFIG = {
   }
 };
 
+/**
+ * Доступ по ключу.
+ * Ключ лежит в свойствах скрипта: Настройки проекта → Свойства скрипта → ACCESS_KEY.
+ * В коде его нет, потому что код лежит в публичном репозитории.
+ * Пока ACCESS_KEY не задан, доступ открыт как раньше, и дашборд не ломается.
+ */
+function denyWithoutKey_(e) {
+  var need = PropertiesService.getScriptProperties().getProperty("ACCESS_KEY");
+  if (!need) return null;
+  var p = (e && e.parameter) || {};
+  if (p.k === need) return null;
+  var body = JSON.stringify({ error: "forbidden" });
+  var cb = p.callback || "";
+  if (/^[A-Za-z_$][0-9A-Za-z_$]*$/.test(cb)) {
+    return ContentService.createTextOutput(cb + "(" + body + ");")
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return ContentService.createTextOutput(body)
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
 function doGet(e) {
+  var denied = denyWithoutKey_(e);
+  if (denied) return denied;
+
   var cb = (e && e.parameter && e.parameter.callback) ? e.parameter.callback : "";
   var page = (e && e.parameter && e.parameter.page) ? e.parameter.page : "main";
   var payload = page === "income" ? getIncomeData_() : getMainData_();
