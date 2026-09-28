@@ -1,0 +1,1188 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Лила">
+<title>Лила · партия 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prata&family=Alegreya:ital,wght@0,400;0,500;0,700;1,400&family=Commissioner:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  color-scheme:light dark;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --ground:#E8E4D8;
+  --surface:#F4F1E7;
+  --surface-2:#DCD6C6;
+  --line:#C3BBA6;
+  --line-soft:#D4CDBB;
+  --text:#1E2333;
+  --muted:#61657A;
+  --gold:#8A6210;
+  --gold-soft:#EBD9AE;
+  --vermilion:#A93A22;
+  --vermilion-soft:#EFD1C7;
+  --malachite:#2A6349;
+  --lapis:#274686;
+  --shadow:0 10px 30px -24px rgba(30,35,51,.75);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0E1526;
+    --surface:#16203A;
+    --surface-2:#1E2B4A;
+    --line:#2E3E64;
+    --line-soft:#243154;
+    --text:#E6DFCC;
+    --muted:#97A1BC;
+    --gold:#D9A441;
+    --gold-soft:#3A2F16;
+    --vermilion:#D75B3E;
+    --vermilion-soft:#3B2019;
+    --malachite:#5AA582;
+    --lapis:#8FAAEC;
+    --shadow:0 14px 40px -26px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0E1526;
+  --surface:#16203A;
+  --surface-2:#1E2B4A;
+  --line:#2E3E64;
+  --line-soft:#243154;
+  --text:#E6DFCC;
+  --muted:#97A1BC;
+  --gold:#D9A441;
+  --gold-soft:#3A2F16;
+  --vermilion:#D75B3E;
+  --vermilion-soft:#3B2019;
+  --malachite:#5AA582;
+  --lapis:#8FAAEC;
+  --shadow:0 14px 40px -26px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--text);
+  font-family:"Alegreya",Georgia,serif;
+  font-size:17px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%}
+[hidden]{display:none!important}
+.wrap{max-width:1240px;margin:0 auto;padding:36px 22px 72px;display:flex;flex-direction:column;gap:30px}
+
+/* ── header ─────────────────────────────── */
+header{display:flex;flex-direction:column;gap:14px;border-bottom:1px solid var(--line);padding-bottom:24px}
+.eyebrow{
+  font-family:"Commissioner",system-ui,sans-serif;
+  font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--muted);margin:0;
+}
+h1{
+  font-family:"Prata",Georgia,serif;font-weight:400;
+  font-size:clamp(38px,7vw,60px);line-height:1;margin:0;
+  text-wrap:balance;letter-spacing:.01em;
+}
+.lede{margin:0;max-width:62ch;color:var(--muted);font-size:18px}
+
+.state{
+  display:flex;flex-wrap:wrap;gap:10px 34px;align-items:baseline;
+  background:var(--surface);border:1px solid var(--line);border-radius:2px;
+  padding:16px 20px;box-shadow:var(--shadow);
+}
+.state div{display:flex;flex-direction:column;gap:2px}
+.state dt,.k{
+  font-family:"Commissioner",system-ui,sans-serif;
+  font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);
+}
+.v{font-family:"Prata",Georgia,serif;font-size:20px;line-height:1.2}
+.v.pending{font-family:"Alegreya",Georgia,serif;font-style:italic;color:var(--muted);font-size:18px}
+
+/* ── layout ─────────────────────────────── */
+.cols{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:28px;align-items:start}
+@media (max-width:1020px){.cols{grid-template-columns:minmax(0,1fr)}}
+
+.boardwrap{overflow-x:auto;padding-bottom:6px}
+.board{position:relative;min-width:720px}
+.grid{
+  display:grid;
+  grid-template-columns:26px repeat(9,minmax(0,1fr));
+  gap:6px;
+}
+.rowlabel{
+  display:flex;align-items:center;justify-content:center;
+  font-family:"Commissioner",system-ui,sans-serif;
+  font-size:9px;font-weight:600;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;
+  writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;overflow:hidden;
+  padding:2px 0;
+}
+.cell{
+  position:relative;aspect-ratio:1/.94;
+  background:var(--surface);border:1px solid var(--line-soft);border-radius:2px;
+  padding:6px 7px;display:flex;flex-direction:column;justify-content:space-between;
+  text-align:left;cursor:pointer;color:inherit;font:inherit;
+  transition:border-color .16s ease, background .16s ease, transform .16s ease;
+}
+.cell:hover{border-color:var(--muted);transform:translateY(-1px)}
+.cell:focus-visible{outline:2px solid var(--lapis);outline-offset:2px}
+.cell .num{
+  font-family:"Commissioner",system-ui,sans-serif;font-size:11px;font-weight:600;
+  font-variant-numeric:tabular-nums;color:var(--muted);
+}
+.cell .nm{
+  font-size:12px;line-height:1.16;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+}
+.cell.arrow{background:linear-gradient(180deg,var(--gold-soft),var(--surface) 72%);border-color:var(--gold)}
+.cell.snake{background:linear-gradient(180deg,var(--vermilion-soft),var(--surface) 72%);border-color:var(--vermilion)}
+.cell.arrow .num{color:var(--gold)}
+.cell.snake .num{color:var(--vermilion)}
+.cell.loka .nm{color:var(--malachite)}
+.cell.goal{border-color:var(--lapis);border-width:2px;background:var(--surface-2)}
+.cell.sel{border-color:var(--lapis);border-width:2px;box-shadow:0 0 0 3px color-mix(in srgb,var(--lapis) 22%,transparent)}
+.cell .top{display:flex;align-items:baseline;justify-content:space-between;gap:4px}
+.cell .tag{
+  font-family:"Commissioner",system-ui,sans-serif;font-size:10px;font-weight:600;
+  letter-spacing:.04em;font-variant-numeric:tabular-nums;
+}
+.cell.arrow .tag{color:var(--gold)}
+.cell.snake .tag{color:var(--vermilion)}
+
+svg.links{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+svg.links.off{display:none}
+.rowcaptions{
+  display:grid;grid-template-columns:26px 1fr;gap:6px;margin-top:10px;
+  font-family:"Commissioner",system-ui,sans-serif;font-size:11px;color:var(--muted);
+}
+
+/* ── side panel ────────────────────────── */
+aside{display:flex;flex-direction:column;gap:18px;position:sticky;top:24px}
+@media (max-width:1020px){aside{position:static}}
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:2px;
+  padding:18px 20px;box-shadow:var(--shadow);
+}
+.card h2{
+  font-family:"Commissioner",system-ui,sans-serif;
+  font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--muted);margin:0 0 12px;
+}
+#detail .cnum{
+  font-family:"Commissioner",system-ui,sans-serif;font-size:12px;font-weight:600;
+  letter-spacing:.14em;color:var(--muted);font-variant-numeric:tabular-nums;
+}
+#detail .cname{font-family:"Prata",Georgia,serif;font-size:26px;line-height:1.15;margin:4px 0 2px;text-wrap:balance}
+#detail .skt{font-style:italic;color:var(--muted);margin:0 0 12px}
+#detail p.sub{margin:0 0 14px}
+#detail .meta{
+  display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line-soft);padding-top:12px;
+  font-family:"Commissioner",system-ui,sans-serif;font-size:12.5px;color:var(--muted);
+}
+#detail .meta b{color:var(--text);font-weight:600}
+.link-arrow{color:var(--gold);font-weight:600}
+.link-snake{color:var(--vermilion);font-weight:600}
+
+ul.legend{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px;font-size:15px}
+ul.legend li{display:flex;gap:10px;align-items:flex-start}
+.swatch{width:14px;height:14px;border-radius:2px;flex:none;margin-top:4px;border:1px solid var(--line)}
+.swatch.a{background:var(--gold-soft);border-color:var(--gold)}
+.swatch.s{background:var(--vermilion-soft);border-color:var(--vermilion)}
+.swatch.g{background:var(--surface-2);border-color:var(--lapis)}
+.swatch.p{background:var(--surface)}
+
+ol.rules{margin:0;padding-left:1.15em;display:flex;flex-direction:column;gap:9px;font-size:15px}
+ol.rules b{font-weight:700}
+
+.log{font-size:15px;color:var(--muted);font-style:italic;margin:0}
+table.moves{width:100%;border-collapse:collapse;font-size:14px}
+table.moves th{
+  text-align:left;font-family:"Commissioner",system-ui,sans-serif;font-size:10px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;
+  padding-bottom:6px;border-bottom:1px solid var(--line-soft);
+}
+table.moves td{padding:6px 0;border-bottom:1px solid var(--line-soft);vertical-align:top}
+table.moves td.n{font-family:"Commissioner",system-ui,sans-serif;font-variant-numeric:tabular-nums;color:var(--muted);width:2.2em}
+table.moves td.d{font-family:"Commissioner",system-ui,sans-serif;font-variant-numeric:tabular-nums;width:2.2em}
+
+button.toggle{
+  font-family:"Commissioner",system-ui,sans-serif;font-size:11px;font-weight:600;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+  background:none;border:1px solid var(--line);border-radius:2px;padding:7px 12px;cursor:pointer;
+}
+button.toggle:hover{color:var(--text);border-color:var(--muted)}
+button.toggle.primary{color:var(--text);border-color:var(--gold)}
+button.toggle:focus-visible{outline:2px solid var(--lapis);outline-offset:2px}
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+footer{border-top:1px solid var(--line);padding-top:18px;color:var(--muted);font-size:14px}
+footer p{margin:0 0 6px;max-width:70ch}
+
+
+/* ── кубик ──────────────────────────────────── */
+.throw{
+  display:grid;grid-template-columns:auto minmax(0,1fr);gap:26px;align-items:center;
+  background:var(--surface);border:1px solid var(--line);border-radius:2px;
+  padding:22px 24px;box-shadow:var(--shadow);
+}
+@media (max-width:620px){.throw{grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center}}
+
+.scene{width:132px;height:132px;perspective:640px;flex:none;touch-action:none;cursor:grab;position:relative;
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+.scene:active{cursor:grabbing}
+.scene:focus-visible{outline:2px solid var(--lapis);outline-offset:6px;border-radius:8px}
+.die{
+  position:absolute;inset:0;transform-style:preserve-3d;
+  transform:rotateX(-18deg) rotateY(24deg);
+  transition:transform 1.5s cubic-bezier(.16,.9,.28,1);
+}
+.die.charging{transition:transform .08s linear}
+.face{
+  position:absolute;width:96px;height:96px;left:18px;top:18px;
+  background:linear-gradient(150deg,var(--bone-hi),var(--bone) 62%);
+  border:1px solid var(--bone-edge);border-radius:12px;
+  display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);
+  padding:11px;gap:2px;box-shadow:inset 0 0 22px -8px rgba(0,0,0,.45);
+}
+.pip{width:15px;height:15px;border-radius:50%;background:var(--pip);align-self:center;justify-self:center;
+     box-shadow:inset 0 -1px 2px rgba(0,0,0,.35)}
+.face .rune{
+  position:absolute;right:7px;bottom:4px;font-size:11px;color:var(--pip);opacity:.5;
+  font-family:"Commissioner",system-ui,sans-serif;
+}
+.f1{transform:rotateY(0deg) translateZ(48px)}
+.f6{transform:rotateY(180deg) translateZ(48px)}
+.f3{transform:rotateY(90deg) translateZ(48px)}
+.f4{transform:rotateY(-90deg) translateZ(48px)}
+.f5{transform:rotateX(90deg) translateZ(48px)}
+.f2{transform:rotateX(-90deg) translateZ(48px)}
+
+.charge{
+  position:absolute;left:50%;top:50%;width:150px;height:150px;margin:-75px 0 0 -75px;
+  border-radius:50%;pointer-events:none;
+  background:conic-gradient(var(--gold) calc(var(--c,0)*1turn), transparent 0);
+  opacity:var(--co,0);
+  -webkit-mask:radial-gradient(circle, transparent 66px, #000 68px);
+          mask:radial-gradient(circle, transparent 66px, #000 68px);
+  transition:opacity .2s ease;
+}
+.throwtext{display:flex;flex-direction:column;gap:9px;min-width:0}
+.throwtext h2{
+  font-family:"Commissioner",system-ui,sans-serif;font-size:10px;font-weight:600;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin:0;
+}
+.result{font-family:"Prata",Georgia,serif;font-size:23px;line-height:1.25;margin:0;text-wrap:balance}
+.result .die-n{color:var(--gold)}
+.hint{margin:0;color:var(--muted);font-size:15px}
+.face-name{margin:0;font-size:15px;color:var(--muted);font-style:italic}
+.throwbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
+:root{--bone:#E3DAC4;--bone-hi:#F3EDDF;--bone-edge:#B8A987;--pip:#2A2417}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bone:#171E33;--bone-hi:#22304F;--bone-edge:#3C4E7A;--pip:#D9A441}
+}
+:root[data-theme="dark"]{--bone:#171E33;--bone-hi:#22304F;--bone-edge:#3C4E7A;--pip:#D9A441}
+.cell.here{box-shadow:0 0 0 3px var(--gold);border-color:var(--gold)}
+.cell .mark{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:26px;color:var(--gold);pointer-events:none}
+.badge{font-family:"Commissioner",system-ui,sans-serif;font-size:11px;color:var(--muted)}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Джняна-чаупада · партия 2</p>
+    <h1>Лила</h1>
+    <p class="lede">Семьдесят две клетки — семьдесят два состояния сознания. Стрелы поднимают, змеи возвращают к невыученному. Доска в редакции Хариша Джохари: восемь рядов снизу вверх, нумерация змейкой, как на оригинальном поле.</p>
+    <div class="state" id="state"></div>
+  </header>
+
+
+  <section class="throw">
+    <div class="scene" id="scene" tabindex="0" role="button" aria-label="Бросить кубик: зажать и отпустить">
+      <div class="die" id="die">
+        <div class="face f1"><span class="pip" style="grid-area:2/2"></span><span class="rune">ᚨ</span></div>
+        <div class="face f2"><span class="pip" style="grid-area:1/1"></span><span class="pip" style="grid-area:3/3"></span><span class="rune">ᚱ</span></div>
+        <div class="face f3"><span class="pip" style="grid-area:1/1"></span><span class="pip" style="grid-area:2/2"></span><span class="pip" style="grid-area:3/3"></span><span class="rune">ᛁ</span></div>
+        <div class="face f4"><span class="pip" style="grid-area:1/1"></span><span class="pip" style="grid-area:1/3"></span><span class="pip" style="grid-area:3/1"></span><span class="pip" style="grid-area:3/3"></span><span class="rune">ᛜ</span></div>
+        <div class="face f5"><span class="pip" style="grid-area:1/1"></span><span class="pip" style="grid-area:1/3"></span><span class="pip" style="grid-area:2/2"></span><span class="pip" style="grid-area:3/1"></span><span class="pip" style="grid-area:3/3"></span><span class="rune">ᛖ</span></div>
+        <div class="face f6"><span class="pip" style="grid-area:1/1"></span><span class="pip" style="grid-area:1/3"></span><span class="pip" style="grid-area:2/1"></span><span class="pip" style="grid-area:2/3"></span><span class="pip" style="grid-area:3/1"></span><span class="pip" style="grid-area:3/3"></span><span class="rune">ᛟ</span></div>
+      </div>
+      <div class="charge" id="charge"></div>
+    </div>
+    <div class="throwtext">
+      <h2>Бросок</h2>
+      <p class="result" id="result">Зажми кубик, держи — и отпусти.</p>
+      <p class="face-name" id="facename">Пока не выпадет шестёрка, ты не рождён.</p>
+      <p class="hint" id="hint">Кубик раскручивается из твоего жеста: длительность удержания и дрожь руки идут в бросок. На телефоне можно встряхнуть.</p>
+      <p class="hint" id="syncstate"></p>
+      <div class="throwbtns">
+        <button class="toggle primary" id="copymove">Скопировать ход для ведущего</button>
+        <button class="toggle" id="sharemove" hidden>Поделиться ходом</button>
+        <button class="toggle" id="pushall">Отправить партию ведущему</button>
+        <button class="toggle" id="motionbtn" hidden>Включить встряхивание</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="cols">
+    <section>
+      <div class="controls" style="margin-bottom:14px">
+        <button class="toggle" id="tlinks" aria-pressed="true">Связи: показаны</button>
+        <span class="k">клик по клетке — толкование</span>
+      </div>
+      <div class="boardwrap">
+        <div class="board">
+          <div class="grid" id="grid"></div>
+          <svg class="links" id="links" aria-hidden="true"></svg>
+        </div>
+      </div>
+    </section>
+
+    <aside>
+      <div class="card" id="detail"></div>
+
+      <div class="card">
+        <h2>Обозначения</h2>
+        <ul class="legend">
+          <li><span class="swatch a"></span><span>Стрела — добродетель, поднимает выше по доске</span></li>
+          <li><span class="swatch s"></span><span>Змея — то, что возвращает к пройденному уроку</span></li>
+          <li><span class="swatch g"></span><span>Клетка 68 — Космическое Сознание, цель игры</span></li>
+          <li><span class="swatch p"></span><span>Остальные — планы бытия и состояния</span></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>Правила партии</h2>
+        <ol class="rules">
+          <li>Фишка стоит на <b>68</b>, пока не выпадет <b>шестёрка</b>: она рождает игрока — клетка 1, затем клетка 6.</li>
+          <li>Шестёрка всегда даёт <b>дополнительный бросок</b>. Три шестёрки подряд и другое число четвёртым — возврат к точке до серии.</li>
+          <li>Попал на начало стрелы — поднимаешься к её острию. Попал на голову змеи — опускаешься к хвосту.</li>
+          <li>Игра кончается <b>точным</b> попаданием на 68 — по стреле с 54 или шагами. С 69 на 68 уже не попасть: ждёшь змею тамогуны.</li>
+          <li>Намерение формулируется до входа и <b>не переписывается</b> по ходу партии.</li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <h2>Журнал ходов</h2>
+        <div id="movelog"></div>
+      </div>
+    </aside>
+  </div>
+
+  <footer>
+    <p>Поле, названия клеток, стрелы и змеи — по описанию игры в редакции Хариша Джохари («Лила. Игра самопознания», 1980). Расположение номеров сверено с раскладкой оригинального поля.</p>
+  </footer>
+</div>
+
+<script>
+const ROWS = [
+  {n:1, title:"основы бытия",              short:"основы", chakra:"1 чакра"},
+  {n:2, title:"сфера фантазии",            short:"фантазия", chakra:"2 чакра"},
+  {n:3, title:"театр кармы",               short:"карма", chakra:"3 чакра"},
+  {n:4, title:"достижение равновесия",     short:"равновесие", chakra:"4 чакра"},
+  {n:5, title:"человек становится собой",  short:"свой путь", chakra:"5 чакра"},
+  {n:6, title:"время покаяния",            short:"покаяние", chakra:"6 чакра"},
+  {n:7, title:"план реальности",           short:"реальность", chakra:"7 чакра"},
+  {n:8, title:"сами боги",                 short:"боги", chakra:"за пределами"}
+];
+
+const C = [
+ [1,"Рождение","джанма","Вход в игру: сознание принимает форму и вместе с ней — кармический цикл.","plain"],
+ [2,"Майя","","Иллюзия отдельности: единое кажется множественным.","plain"],
+ [3,"Гнев","кродха","Реакция эго на угрозу. Сюда же сбрасывает змея эгоизма.","plain"],
+ [4,"Жадность","лобха","Ненасытная тяга брать, растущая из неуверенности.","plain"],
+ [5,"Физический план","бху-лока","Земля, тело, выживание — базовый план существования.","loka"],
+ [6,"Заблуждение","моха","Принять явленный мир за единственную реальность. Отсюда начинается путь.","plain"],
+ [7,"Тщеславие","мада","Опьянение собой и своими достижениями.","plain"],
+ [8,"Алчность","матсара","Жадность, приправленная завистью к чужому.","plain"],
+ [9,"Чувственный план","кама-лока","Мир желаний и органов чувств.","loka"],
+ [10,"Очищение","тапа","Отвод чувств от внешнего — первая стрела на доске.","arrow",23],
+ [11,"Развлечения","гандхарвы","Музыка, игра, внутренняя гармония.","plain"],
+ [12,"Зависть","ирасья","Чужое кажется выше своего — энергия падает в алчность.","snake",8],
+ [13,"Ничтожность","антарикша","Подвешенность между небом и землёй, потеря опоры.","plain"],
+ [14,"Астральный план","бхувар-лока","Сны, образы, множество возможных путей.","loka"],
+ [15,"План фантазии","нага-лока","Воображение без границ и без последствий.","loka"],
+ [16,"Ревность","двеша","Неуверенность, обращённая на близкого.","snake",4],
+ [17,"Сострадание","дайя","Любовь, поднимающая прямо к плану Абсолюта.","arrow",69],
+ [18,"План радости","харша-лока","Удовлетворение от пройденного уровня.","loka"],
+ [19,"План кармы","карма-лока","Встреча с законом причины и следствия.","loka"],
+ [20,"Благотворительность","дана","Отдавать без расчёта на выгоду.","arrow",32],
+ [21,"Искупление","самана папа","Раскаяние и работа по исправлению сделанного.","plain"],
+ [22,"План Дхармы","дхарма-лока","Действие в согласии с порядком вещей.","loka"],
+ [23,"Небесный план","сварга-лока","Награда и царство богов — но не конечная точка.","loka"],
+ [24,"Плохая компания","ку-санг-лока","Окружение против Дхармы тянет на первый уровень.","snake",7],
+ [25,"Хорошая компания","су-санг-лока","Среда, которая держит взятый уровень.","loka"],
+ [26,"Печаль","дукха","Сжатие энергии, разрыв между собой и целью.","plain"],
+ [27,"Самоотверженное служение","парамартха","Жизнь без заботы о себе, ради высшего.","arrow",41],
+ [28,"Истинная религиозность","судхарма","Свой собственный путь, а не общий устав.","arrow",50],
+ [29,"Неправедность","адхарма","Слепая вера и действие против собственной природы.","snake",6],
+ [30,"Хорошие тенденции","уттама гати","Движение в ритме с целым.","plain"],
+ [31,"План святости","якша-лока","Прямое касание божественной милости.","loka"],
+ [32,"План равновесия","махар-лока","Сердечная чакра, точка баланса доски.","loka"],
+ [33,"План ароматов","гандха-лока","Очищенное обоняние, тонкое восприятие.","loka"],
+ [34,"План вкуса","раса-лока","Эстетика, поэзия, вкус переживания.","loka"],
+ [35,"Чистилище","нарака-лока","Место ответственности за сделанное.","loka"],
+ [36,"Ясность сознания","сваччха","Прозрачность, незамутнённый взгляд.","plain"],
+ [37,"Джняна","гьяна","Знание истины и верных средств.","arrow",66],
+ [38,"Прана-лока","прана","Жизненная сила, энергия дыхания.","loka"],
+ [39,"Апана-лока","апана","Энергия выведения и очищения.","loka"],
+ [40,"Вьяна-лока","вьяна","Распределение энергии по всему телу.","loka"],
+ [41,"Человеческий план","джана-лока","Обитель святых, зрелая человечность.","loka"],
+ [42,"План Агни","агни-лока","Огонь как дух, душа и тело одновременно.","loka"],
+ [43,"Рождение человека","манушья-джанма","Принятие формы — редкий и дорогой шанс.","plain"],
+ [44,"Неведение","авидья","Забыть об иллюзорности и прилипнуть к переживанию.","snake",9],
+ [45,"Правильное знание","сувидья","Знание, соединённое с практикой.","arrow",67],
+ [46,"Различение","вивека","Способность отделить реальное от преходящего.","arrow",62],
+ [47,"План нейтральности","сарасвати","Центральный канал: поток без перекоса.","loka"],
+ [48,"Солнечный план","ямуна","Мужской, солнечный принцип.","loka"],
+ [49,"Лунный план","ганга","Женский, лунный принцип.","loka"],
+ [50,"План аскетизма","тапа-лока","Тяжёлая работа над собой, горение.","loka"],
+ [51,"Земля","притхиви","Материнский принцип, сцена всей игры.","plain"],
+ [52,"План насилия","химса-лока","Жар аскезы, обращённый в жестокость.","snake",35],
+ [53,"План жидкостей","джала-лока","Прохлада, смягчающая жар.","loka"],
+ [54,"План духовной преданности","бхакти-лока","Единственный прямой путь к цели: любовь как встреча.","arrow",68],
+ [55,"Эгоизм","ахамкара","«Я» как отдельная форма — падение в самый низ.","snake",3],
+ [56,"План изначальных вибраций","омкара","Ом: тончайшая форма, в которой существует энергия.","loka"],
+ [57,"План газов","вайю-лока","Тонкий ветер, не земной воздух.","loka"],
+ [58,"План сияния","теджа-лока","Свет и состояния сознания.","loka"],
+ [59,"План реальности","сатья-лока","Последняя из семи лок позвоночного столба.","loka"],
+ [60,"Позитивный интеллект","субуддхи","Понимание, свободное от двойственности.","plain"],
+ [61,"Негативный интеллект","дурбуддхи","Сомнение в божественном сбрасывает в ничтожность.","snake",13],
+ [62,"Счастье","сукха","Равновесие тела и психики.","plain"],
+ [63,"Тамас","","Тьма и инерция возвращают в майю.","snake",2],
+ [64,"Феноменальный план","пракрити-лока","Двойственная природа проявленного мира.","loka"],
+ [65,"План внутреннего пространства","уранта-лока","Двойственность исчезает, остаётся источник.","loka"],
+ [66,"План блаженства","ананда-лока","Сатчитананда: истина, бытие, блаженство.","loka"],
+ [67,"План космического блага","рудра-лока","Шива и три фазы творения.","loka"],
+ [68,"Космическое Сознание","вайкунтха-лока","Цель игры. Отсюда начинают и сюда возвращаются.","goal"],
+ [69,"План Абсолюта","брахма-лока","Рядом с целью — но мимо неё.","loka"],
+ [70,"Саттвагуна","","Чистота и истина в сознании.","plain"],
+ [71,"Раджогуна","","Активность, влекущая дальше по кругу.","plain"],
+ [72,"Тамогуна","","Тьма возвращает на землю за новым путём.","snake",51]
+].map(([n,name,skt,sub,kind,to])=>({n,name,skt,sub,kind,to}));
+
+const byN = Object.fromEntries(C.map(c=>[c.n,c]));
+
+/* ── состояние партии ──────────────────── */
+const GAME = {
+  intention: '',
+  started: '',
+  inGame: false,
+  position: 68,
+  moves: []
+};
+
+/* ── партия ведущего: вторая партия ──
+   Каноническое состояние: ходы, которые игрок прислал ведущему в чат.
+   Ведущий вписывает сюда намерение и новые ходы, чтобы партия открывалась одинаково на любом устройстве.
+   Если в localStorage браузера партия продолжает эту (те же первые ходы) и ушла дальше, берётся она.
+   Первая партия живёт в lila.html и сюда не относится. */
+const SEED = {
+  intention: '',
+  started: '',
+  position: 68, inGame: false, finished: false, sixes: 0, beforeSixes: 1,
+  moves: []
+};
+
+/* ── шапка состояния ───────────────────── */
+function renderState(){
+  const cell = byN[GAME.position];
+  const el = document.getElementById('state');
+  el.innerHTML = `
+    <div style="flex:1 1 260px">
+      <span class="k">Намерение</span>
+      ${GAME.intention
+        ? `<span class="v">${GAME.intention}</span>`
+        : `<span class="v pending">ещё не сформулировано</span>`}
+    </div>
+    <div>
+      <span class="k">Фишка</span>
+      <span class="v">${cell.n} · ${cell.name}</span>
+    </div>
+    <div>
+      <span class="k">Ходов</span>
+      <span class="v" style="font-variant-numeric:tabular-nums">${GAME.moves.length}</span>
+    </div>
+    <div>
+      <span class="k">Статус</span>
+      <span class="v">${GAME.inGame ? 'в игре' : 'ждёт шестёрку'}</span>
+    </div>`;
+}
+
+/* ── доска ─────────────────────────────── */
+function renderBoard(){
+  const grid = document.getElementById('grid');
+  const frag = document.createDocumentFragment();
+  for(let r=8;r>=1;r--){
+    const label = document.createElement('div');
+    label.className = 'rowlabel';
+    label.textContent = ROWS[r-1].short;
+    frag.appendChild(label);
+
+    const start = (r-1)*9+1;
+    let nums = Array.from({length:9},(_,i)=>start+i);
+    if(r % 2 === 0) nums.reverse();      // чётные ряды идут справа налево
+    for(const n of nums){
+      const c = byN[n];
+      const b = document.createElement('button');
+      b.className = 'cell ' + (c.kind === 'arrow' ? 'arrow' : c.kind === 'snake' ? 'snake' : c.kind === 'goal' ? 'goal' : c.kind === 'loka' ? 'loka' : '');
+      b.dataset.n = n;
+      b.setAttribute('aria-label', `${n}. ${c.name}`);
+      b.innerHTML = `<span class="top"><span class="num">${n}</span>` +
+        (c.to ? `<span class="tag">${c.kind==='arrow'?'↑':'↓'}${c.to}</span>` : '') +
+        `</span><span class="nm">${c.name}</span>`;
+      b.addEventListener('click', ()=>select(n));
+      frag.appendChild(b);
+    }
+  }
+  grid.appendChild(frag);
+}
+
+/* ── стрелы и змеи ─────────────────────── */
+function centerOf(n, box){
+  const el = document.querySelector(`.cell[data-n="${n}"]`);
+  const r = el.getBoundingClientRect();
+  return {x: r.left - box.left + r.width/2, y: r.top - box.top + r.height/2, w:r.width, h:r.height};
+}
+
+function drawLinks(){
+  const svg = document.getElementById('links');
+  const board = document.querySelector('.board');
+  const box = board.getBoundingClientRect();
+  svg.setAttribute('viewBox', `0 0 ${box.width} ${box.height}`);
+  svg.innerHTML = `<defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,1 L9,5 L0,9 z" fill="var(--gold)"/>
+    </marker>
+    <marker id="sh" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <circle cx="5" cy="5" r="3.4" fill="var(--vermilion)"/>
+    </marker>
+  </defs>`;
+
+  for(const c of C){
+    if(!c.to) continue;
+    const a = centerOf(c.n, box), b = centerOf(c.to, box);
+    if(c.kind === 'arrow'){
+      const p = document.createElementNS('http://www.w3.org/2000/svg','line');
+      p.setAttribute('x1',a.x); p.setAttribute('y1',a.y);
+      p.setAttribute('x2',b.x); p.setAttribute('y2',b.y);
+      p.setAttribute('stroke','var(--gold)');
+      p.setAttribute('stroke-width','1.6');
+      p.setAttribute('opacity','.7');
+      p.setAttribute('marker-end','url(#ah)');
+      p.dataset.from = c.n;
+      svg.appendChild(p);
+    } else {
+      // змея — волна вдоль линии падения
+      const dx = b.x-a.x, dy = b.y-a.y;
+      const len = Math.hypot(dx,dy) || 1;
+      const nx = -dy/len, ny = dx/len;
+      const amp = Math.min(26, len*0.10);
+      const seg = 4, pts = [];
+      for(let i=0;i<=seg;i++){
+        const t = i/seg;
+        const off = Math.sin(t*Math.PI*2) * amp;
+        pts.push([a.x+dx*t+nx*off, a.y+dy*t+ny*off]);
+      }
+      let d = `M${pts[0][0]},${pts[0][1]}`;
+      for(let i=1;i<pts.length;i++){
+        const p0=pts[i-1],p1=pts[i];
+        const cx=(p0[0]+p1[0])/2, cy=(p0[1]+p1[1])/2;
+        d += ` Q${p0[0]},${p0[1]} ${cx},${cy}`;
+      }
+      d += ` L${pts[pts.length-1][0]},${pts[pts.length-1][1]}`;
+      const p = document.createElementNS('http://www.w3.org/2000/svg','path');
+      p.setAttribute('d',d);
+      p.setAttribute('fill','none');
+      p.setAttribute('stroke','var(--vermilion)');
+      p.setAttribute('stroke-width','1.6');
+      p.setAttribute('opacity','.7');
+      p.setAttribute('stroke-linecap','round');
+      p.setAttribute('marker-start','url(#sh)');
+      p.dataset.from = c.n;
+      svg.appendChild(p);
+    }
+  }
+}
+
+/* ── панель клетки ─────────────────────── */
+let selected = 68;
+function select(n){
+  selected = n;
+  document.querySelectorAll('.cell.sel').forEach(e=>e.classList.remove('sel'));
+  const el = document.querySelector(`.cell[data-n="${n}"]`);
+  if(el) el.classList.add('sel');
+  renderDetail();
+  document.querySelectorAll('#links [data-from]').forEach(p=>{
+    p.setAttribute('opacity', p.dataset.from == n ? '1' : '.35');
+    p.setAttribute('stroke-width', p.dataset.from == n ? '2.6' : '1.6');
+  });
+}
+
+function renderDetail(){
+  const c = byN[selected];
+  const row = Math.ceil(c.n/9);
+  const inbound = C.filter(x=>x.to === c.n);
+  const d = document.getElementById('detail');
+  let link = '';
+  if(c.kind === 'arrow') link = `<div><b class="link-arrow">Стрела</b> — поднимает на ${c.to}. ${byN[c.to].name}</div>`;
+  if(c.kind === 'snake') link = `<div><b class="link-snake">Змея</b> — низводит на ${c.to}. ${byN[c.to].name}</div>`;
+  if(c.kind === 'goal') link = `<div><b>Цель игры.</b> Попасть сюда можно только точным числом или по стреле с 54.</div>`;
+  const inb = inbound.length
+    ? `<div>Сюда ведут: ${inbound.map(x=>`<span class="${x.kind==='arrow'?'link-arrow':'link-snake'}">${x.n}</span>`).join(', ')}</div>`
+    : '';
+  d.innerHTML = `
+    <h2>Клетка</h2>
+    <span class="cnum">${String(c.n).padStart(2,'0')}</span>
+    <div class="cname">${c.name}</div>
+    ${c.skt ? `<p class="skt">${c.skt}</p>` : '<p class="skt">&nbsp;</p>'}
+    <p class="sub">${c.sub}</p>
+    <div class="meta">
+      <div>Ряд ${row} — ${ROWS[row-1].title} · ${ROWS[row-1].chakra}</div>
+      ${link}${inb}
+    </div>`;
+}
+
+/* ── журнал ────────────────────────────── */
+function renderLog(){
+  const el = document.getElementById('movelog');
+  if(!GAME.moves.length){
+    el.innerHTML = `<p class="log">Партия не начата. Первый бросок — вход в игру: нужна шестёрка.</p>`;
+    return;
+  }
+  el.innerHTML = `<table class="moves"><thead><tr><th>#</th><th>кость</th><th>клетка</th></tr></thead><tbody>` +
+    GAME.moves.map((m,i)=>`<tr><td class="n">${i+1}</td><td class="d">${m.die}</td><td>${m.to}. ${byN[m.to].name}${m.note?` <span style="color:var(--muted)">— ${m.note}</span>`:''}</td></tr>`).join('') +
+    `</tbody></table>`;
+}
+
+/* ── init ──────────────────────────────── */
+/* --- грани кубика --- */
+const FACES = {
+  1:{sign:'ᚨ', name:'Ансуз · Один', note:'Всеотец. Единое, из которого всё.'},
+  2:{sign:'ᚱ', name:'Хугин и Мунин', note:'Два ворона: мысль и память.'},
+  3:{sign:'ᛁ', name:'Норны', note:'Три пряхи: было, есть, станет.'},
+  4:{sign:'ᛜ', name:'Четыре крестража', note:'Опоры, на которых стоит род.'},
+  5:{sign:'ᛖ', name:'Пять элементов', note:'Эфир, воздух, огонь, вода, земля.'},
+  6:{sign:'ᛟ', name:'Сознание', note:'Шестое к пяти элементам. Оно рождает игрока.'}
+};
+
+/* --- энтропия из жеста --- */
+const ENT = {pool:new Uint32Array(16), i:0};
+function feed(x){
+  ENT.pool[ENT.i % ENT.pool.length] ^= (Math.imul(Math.round(x*1e4)|0, 2654435761) >>> 0);
+  ENT.i++;
+}
+function rollDie(){
+  const c = new Uint32Array(2);
+  crypto.getRandomValues(c);
+  let h = (c[0] ^ c[1]) >>> 0;
+  for(const v of ENT.pool){ h = (Math.imul(h ^ v, 2246822519) >>> 0); h = ((h << 13) | (h >>> 19)) >>> 0; }
+  const lim = 4294967295 - (4294967296 % 6);
+  while(h > lim){ crypto.getRandomValues(c); h = (h ^ c[0] ^ c[1]) >>> 0; }
+  return (h % 6) + 1;
+}
+
+/* --- движок правил --- */
+function linkOf(n){ const c = byN[n]; return (c.kind==='arrow'||c.kind==='snake') ? c : null; }
+
+function applyRoll(die){
+  if(GAME.finished) return null;
+  const seq = GAME.moves.length + 1;
+  const from = GAME.position;
+  let to = from, kind = 'none', note = '';
+
+  const land = (target)=>{
+    if(target > 72) return {to:from, kind:'blocked', note:'перелёт — стоишь, ждёшь точное число'};
+    let t = target, k = 'none', nt = '';
+    const L = linkOf(t);
+    if(L){ k = L.kind; nt = (L.kind==='arrow' ? 'стрела ' : 'змея ') + t + ' → ' + L.to + ', ' + byN[L.to].name; t = L.to; }
+    return {to:t, kind:k, note:nt};
+  };
+
+  if(!GAME.inGame){
+    if(die !== 6){
+      const m0 = {seq, die, from, to:from, kind:'notborn', note:'не рождён — нужна шестёрка'};
+      GAME.moves.push(m0);
+      return m0;
+    }
+    GAME.inGame = true;
+    GAME.sixes = 1;
+    GAME.beforeSixes = 1;
+    GAME.position = 6;
+    const m1 = {seq, die, from, to:6, kind:'birth', note:'рождение → клетка 6, Заблуждение. Бросай ещё'};
+    GAME.moves.push(m1);
+    return m1;
+  }
+
+  if(die === 6){
+    if(GAME.sixes === 0) GAME.beforeSixes = from;
+    GAME.sixes++;
+    const r = land(from + 6);
+    to = r.to; kind = r.kind;
+    note = (r.note ? r.note + '. ' : '') + 'шестёрка — бросай ещё';
+  } else if(GAME.sixes >= 3){
+    const base = GAME.beforeSixes;
+    const sum  = GAME.sixes === 3 ? die : GAME.sixes*6 + die;
+    const r = land(base + sum);
+    to = r.to; kind = r.kind;
+    note = (GAME.sixes === 3
+      ? 'три шестёрки подряд — откат к ' + base + ' и ход на ' + die
+      : GAME.sixes + ' шестёрок — ход на сумму ' + sum + ' от ' + base) + (r.note ? '. ' + r.note : '');
+    GAME.sixes = 0;
+  } else {
+    GAME.sixes = 0;
+    const r = land(from + die);
+    to = r.to; kind = r.kind; note = r.note;
+  }
+
+  GAME.position = to;
+  if(to === 68){ GAME.finished = true; note = (note ? note + '. ' : '') + 'Космическое Сознание — партия завершена'; }
+  const mv = {seq, die, from, to, kind, note};
+  GAME.moves.push(mv);
+  return mv;
+}
+
+/* --- бросок с анимацией --- */
+const ORIENT = {1:[0,0], 2:[90,0], 3:[0,-90], 4:[0,90], 5:[-90,0], 6:[0,180]};
+let spinX = -18, spinY = 24, rolling = false;
+
+function throwDie(){
+  if(rolling) return;
+  rolling = true;
+  const die = rollDie();
+  const o = ORIENT[die];
+  spinX = o[0] - 360*(2 + Math.floor(Math.random()*2));
+  spinY = o[1] + 360*(2 + Math.floor(Math.random()*2));
+  const el = document.getElementById('die');
+  el.classList.remove('charging');
+  el.style.transform = 'rotateX(' + spinX + 'deg) rotateY(' + spinY + 'deg)';
+  setTimeout(function(){ rolling = false; landRoll(die); }, 1520);
+}
+
+function landRoll(die){
+  const mv = applyRoll(die);
+  const f = FACES[die];
+  const cell = byN[GAME.position];
+  const res = document.getElementById('result');
+  const fn  = document.getElementById('facename');
+
+  if(!mv){
+    res.textContent = 'Партия завершена.';
+  } else if(mv.kind === 'notborn'){
+    res.innerHTML = 'Выпало <span class="die-n">' + die + '</span> — ты ещё не рождён.';
+    fn.textContent = f.sign + ' ' + f.name + '. ' + f.note;
+  } else {
+    res.innerHTML = '<span class="die-n">' + die + '</span> → клетка ' + cell.n + '. ' + cell.name;
+    fn.textContent = mv.note || (f.sign + ' ' + f.name + '. ' + f.note);
+  }
+  renderState(); renderLog(); select(GAME.position); markHere();
+  backupLocal();
+  syncNote('Ход ' + (mv ? mv.seq : '?') + ' посчитан, пишу в базу…');
+  saveGame(mv);
+}
+
+function markHere(){
+  document.querySelectorAll('.cell.here').forEach(function(e){
+    e.classList.remove('here');
+    const m = e.querySelector('.mark'); if(m) m.remove();
+  });
+  if(!GAME.inGame) return;
+  const el = document.querySelector('.cell[data-n="' + GAME.position + '"]');
+  if(el){
+    el.classList.add('here');
+    const m = document.createElement('span');
+    m.className = 'mark'; m.textContent = '◈';
+    el.appendChild(m);
+  }
+}
+
+/* --- жест: зажать, подержать, отпустить --- */
+const scene = document.getElementById('scene');
+const charge = document.getElementById('charge');
+let holding = false, t0 = 0, raf = 0;
+
+function startHold(e){
+  if(rolling || holding) return;
+  holding = true; t0 = performance.now();
+  if(e && e.pointerId != null && scene.setPointerCapture) scene.setPointerCapture(e.pointerId);
+  document.getElementById('die').classList.add('charging');
+  const tick = function(){
+    if(!holding) return;
+    const t = Math.min((performance.now()-t0)/1400, 1);
+    charge.style.setProperty('--c', t);
+    charge.style.setProperty('--co', 1);
+    const j = 2.5*t;
+    document.getElementById('die').style.transform =
+      'rotateX(' + (spinX + (Math.random()-0.5)*j*6) + 'deg) rotateY(' + (spinY + (Math.random()-0.5)*j*6) + 'deg)';
+    feed(performance.now());
+    raf = requestAnimationFrame(tick);
+  };
+  raf = requestAnimationFrame(tick);
+}
+const hintEl = document.getElementById('hint');
+let hintSaved = null, tapMode = false;
+function tempHint(txt){ if(hintSaved === null) hintSaved = hintEl.textContent; hintEl.textContent = txt; }
+function restoreHint(){ if(hintSaved !== null){ hintEl.textContent = hintSaved; hintSaved = null; } }
+
+function endHold(){
+  if(!holding) return;
+  holding = false; tapMode = false; cancelAnimationFrame(raf);
+  feed(performance.now() - t0);
+  charge.style.setProperty('--co', 0);
+  charge.style.setProperty('--c', 0);
+  restoreHint();
+  throwDie();
+}
+/* браузер перехватил касание (долгое нажатие, выделение, меню): бросок не засчитывается */
+function abortHold(){
+  if(!holding) return;
+  holding = false; tapMode = false; cancelAnimationFrame(raf);
+  charge.style.setProperty('--co', 0);
+  charge.style.setProperty('--c', 0);
+  const d = document.getElementById('die');
+  d.classList.remove('charging');
+  d.style.transform = 'rotateX(' + spinX + 'deg) rotateY(' + spinY + 'deg)';
+  tempHint('Браузер перехватил касание, бросок не засчитан. Зажми кубик ещё раз.');
+}
+function onDown(e){
+  if(rolling) return;
+  if(holding && tapMode) return;          // второй тап: бросок уйдёт на его отпускании
+  startHold(e);
+}
+function onUp(){
+  if(!holding) return;
+  if(!tapMode && performance.now() - t0 < 250){
+    /* короткий тап (тачпад, быстрое касание): кубик продолжает заряжаться до второго нажатия */
+    tapMode = true;
+    tempHint('Кубик заряжается. Нажми на него ещё раз, чтобы бросить.');
+    return;
+  }
+  endHold();
+}
+scene.addEventListener('pointerdown', onDown);
+scene.addEventListener('pointerup', onUp);
+scene.addEventListener('pointercancel', abortHold);
+scene.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+scene.addEventListener('selectstart', function(e){ e.preventDefault(); });
+scene.addEventListener('dragstart', function(e){ e.preventDefault(); });
+scene.addEventListener('pointermove', function(e){ if(holding) feed(e.clientX*31 + e.clientY*17); });
+scene.addEventListener('keydown', function(e){
+  if((e.key === ' ' || e.key === 'Enter') && !holding){ e.preventDefault(); startHold(null); }
+});
+scene.addEventListener('keyup', function(e){
+  if(e.key === ' ' || e.key === 'Enter'){ e.preventDefault(); endHold(); }
+});
+
+/* встряхивание телефона */
+let motionEvents = 0, lastShake = 0, base = null;
+function onMotion(ev){
+  const a = ev.accelerationIncludingGravity || ev.acceleration;
+  if(!a) return;
+  motionEvents++;
+  feed((a.x||0)*97 + (a.y||0)*53 + (a.z||0)*29);
+  const p = Math.hypot(a.x||0, a.y||0, a.z||0);
+  if(base === null){ base = p; return; }
+  const jerk = Math.abs(p - base);
+  base = base*0.85 + p*0.15;
+  const now = performance.now();
+  if(jerk > 9 && now - lastShake > 1200 && !rolling && !holding){
+    lastShake = now;
+    throwDie();
+  }
+}
+function enableMotion(){ window.addEventListener('devicemotion', onMotion); }
+
+const motionBtn = document.getElementById('motionbtn');
+function motionStatus(txt){ motionBtn.textContent = txt; }
+
+function checkMotionFlow(){
+  motionEvents = 0;
+  enableMotion();
+  setTimeout(function(){
+    if(motionEvents === 0){
+      motionBtn.hidden = true;
+      document.getElementById('hint').textContent =
+        'Встряхивание на этом устройстве заблокировано страницей: события движения не приходят. Бросай удержанием — зажми кубик, подержи и отпусти.';
+    } else {
+      motionStatus('Встряхивание включено — тряхни устройство');
+    }
+  }, 1800);
+}
+
+const HAS_SENSOR_DEVICE =
+  (navigator.maxTouchPoints || 0) > 0 &&
+  window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+
+if(typeof DeviceMotionEvent !== 'undefined' && HAS_SENSOR_DEVICE){
+  if(typeof DeviceMotionEvent.requestPermission === 'function'){
+    motionBtn.hidden = false;
+    motionBtn.addEventListener('click', function(){
+      motionStatus('Спрашиваю разрешение…');
+      let pr;
+      try{ pr = DeviceMotionEvent.requestPermission(); }
+      catch(err){ motionStatus('Отказано системой: ' + (err && err.name ? err.name : 'ошибка')); return; }
+      pr.then(function(r){
+        if(r === 'granted'){ motionStatus('Разрешено, проверяю датчик…'); checkMotionFlow(); }
+        else motionStatus('Ты отказал в доступе к движению');
+      }).catch(function(err){
+        motionStatus('Недоступно: ' + (err && err.name ? err.name : 'ошибка'));
+        document.getElementById('hint').textContent =
+          'Доступ к датчику движения закрыт для этой страницы (обычно так ведёт себя встроенный фрейм). Бросай удержанием.';
+      });
+    });
+  } else {
+    motionBtn.hidden = false;
+    motionBtn.textContent = 'Проверить встряхивание';
+    motionBtn.addEventListener('click', function(){
+      motionStatus('Проверяю датчик…');
+      checkMotionFlow();
+    });
+  }
+}
+
+/* --- ходы для ведущего: всё, что ещё не отправлено, одним куском --- */
+function moveLine(m){
+  return 'Ход ' + m.seq + ': кость ' + m.die + ', ' + m.from + ' → ' + m.to + ' (' + byN[m.to].name + ')' + (m.note ? ' — ' + m.note : '');
+}
+function pendingMoves(){
+  const from = GAME.reported || 0;
+  const list = GAME.moves.filter(function(m){ return m.seq > from; });
+  return list.length ? list : GAME.moves.slice(-1);
+}
+function movesText(list){
+  const cell = byN[GAME.position];
+  const range = list.length === 1 ? 'ход ' + list[0].seq : 'ходы ' + list[0].seq + '–' + list[list.length-1].seq;
+  let tail = 'Фишка: ' + cell.n + ' · ' + cell.name;
+  if(GAME.finished) tail += ' · партия завершена';
+  else if(GAME.sixes > 0) tail += ' · шестёрка, бросаю ещё';
+  else if(!GAME.inGame) tail += ' · жду шестёрку';
+  return 'Лила 2 · ' + range + '\n' + list.map(moveLine).join('\n') + '\n' + tail;
+}
+function markReported(list){
+  const last = list[list.length-1].seq;
+  if(last > (GAME.reported || 0)){ GAME.reported = last; backupLocal(); }
+}
+function copyText(txt){
+  if(navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(txt);
+  return new Promise(function(ok, fail){
+    try{
+      const ta = document.createElement('textarea');
+      ta.value = txt; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, txt.length);
+      const done = document.execCommand('copy'); document.body.removeChild(ta);
+      if(done) ok(); else fail(new Error('copy'));
+    }catch(err){ fail(err); }
+  });
+}
+function flash(id, txt, back){
+  const b = document.getElementById(id); b.textContent = txt;
+  setTimeout(function(){ b.textContent = back; }, 1600);
+}
+document.getElementById('copymove').addEventListener('click', function(){
+  if(!GAME.moves.length){ syncNote('Ходов пока нет.'); return; }
+  const list = pendingMoves();
+  copyText(movesText(list)).then(function(){
+    markReported(list);
+    flash('copymove', 'Скопировано', 'Скопировать ход для ведущего');
+    syncNote('Скопировано. Вставь ведущему в чат вместе со своим ответом.');
+  }).catch(function(){ syncNote('Скопировать не вышло. Назови ходы ведущему из журнала.'); });
+});
+
+const shareBtn = document.getElementById('sharemove');
+if(navigator.share){
+  shareBtn.hidden = false;
+  shareBtn.addEventListener('click', function(){
+    if(!GAME.moves.length){ syncNote('Ходов пока нет.'); return; }
+    const list = pendingMoves();
+    navigator.share({text: movesText(list)})
+      .then(function(){ markReported(list); syncNote('Отправлено ведущему.'); })
+      .catch(function(){});
+  });
+}
+
+document.getElementById('pushall').addEventListener('click', pushAll);
+
+/* --- состояние партии вовне --- */
+/* На claude.ai у страницы была общая база (claude.use('db')), через которую ведущий видел ходы.
+   На GitHub Pages базы нет: партия хранится в localStorage этого браузера, ходы называются ведущему. */
+let DB = null;
+function initDB(){
+  if(typeof claude === 'undefined' || !claude.use){
+    document.getElementById('pushall').textContent = 'Скопировать партию для ведущего';
+    const local = readLocal();
+    const useLocal = extendsSeed(local);
+    const clash = !useLocal && !!(local && local.moves.length > SEED.moves.length);
+    applyState(useLocal ? local : SEED);
+    if(SEED.intention) GAME.intention = SEED.intention;
+    if(SEED.started) GAME.started = SEED.started;
+    renderState();
+    GAME.reported = Math.max(SEED.moves.length, useLocal ? (local.reported || 0) : 0);
+    if(!useLocal) backupLocal();
+    syncNote((clash ? 'В памяти браузера была другая партия, загружена партия ведущего. ' : '') +
+      (!GAME.moves.length
+        ? 'Новая партия. Сначала назови ведущему намерение, потом бросай: для входа нужна шестёрка.'
+        : (useLocal ? 'Партия продолжается из памяти этого браузера: ' : 'Партия' + (GAME.started ? ' от ' + GAME.started : '') + ': ') +
+          GAME.moves.length + ' ход(ов). После броска нажми «Скопировать ход для ведущего».'));
+    return;
+  }
+  claude.use('db').then(function(db){
+    DB = db;
+    if(!DB){
+      syncNote('База доски недоступна в этом окне — ходы придётся называть ведущему.');
+      return;
+    }
+    syncNote('База подключена.');
+    DB.doc('game/current').get().then(function(doc){
+      if(doc && doc.data){
+        const d = doc.data;
+        if(d.intention) GAME.intention = d.intention;
+        if(typeof d.position === 'number') GAME.position = d.position;
+        GAME.inGame = !!d.inGame; GAME.finished = !!d.finished;
+        GAME.sixes = d.sixes || 0; GAME.beforeSixes = d.beforeSixes || 1;
+      }
+      return DB.collection('moves').orderBy('seq').limit(500).get();
+    }).then(function(snap){
+      if(snap && snap.docs && snap.docs.length) GAME.moves = snap.docs.map(function(x){ return x.data; });
+      renderState(); renderLog(); markHere(); select(GAME.position);
+    }).catch(function(){});
+  }).catch(function(){});
+}
+function backupLocal(){
+  try{
+    localStorage.setItem('lila_game_2', JSON.stringify({
+      intention: GAME.intention, position: GAME.position, inGame: GAME.inGame,
+      finished: GAME.finished, sixes: GAME.sixes, beforeSixes: GAME.beforeSixes,
+      started: GAME.started, reported: GAME.reported || 0,
+      moves: GAME.moves
+    }));
+  }catch(_){}
+}
+/* локальная партия годится, только если она продолжает партию ведущего, а не расходится с ней */
+function extendsSeed(d){
+  if(!d || !Array.isArray(d.moves) || d.moves.length <= SEED.moves.length) return false;
+  for(let i = 0; i < SEED.moves.length; i++){
+    const a = d.moves[i], b = SEED.moves[i];
+    if(!a || a.seq !== b.seq || a.die !== b.die || a.to !== b.to) return false;
+  }
+  return true;
+}
+function readLocal(){
+  try{
+    const raw = localStorage.getItem('lila_game_2');
+    if(!raw) return null;
+    const d = JSON.parse(raw);
+    return (d && Array.isArray(d.moves)) ? d : null;
+  }catch(_){ return null; }
+}
+function applyState(d){
+  if(d.intention) GAME.intention = d.intention;
+  if(d.started) GAME.started = d.started;
+  if(typeof d.position === 'number' && byN[d.position]) GAME.position = d.position;
+  GAME.inGame = !!d.inGame; GAME.finished = !!d.finished;
+  GAME.sixes = d.sixes || 0; GAME.beforeSixes = d.beforeSixes || 1;
+  GAME.moves = d.moves.slice();
+  renderState(); renderLog(); markHere(); select(GAME.position);
+  const fn = document.getElementById('facename');
+  if(fn && GAME.moves.length) fn.textContent = GAME.finished ? 'Партия завершена.'
+    : GAME.inGame ? 'Ты в игре. Фишка на ' + GAME.position + ', ' + byN[GAME.position].name + '.'
+    : 'Пока не выпадет шестёрка, ты не рождён.';
+}
+
+/* --- вся партия текстом: чтобы принести её ведущему в любой чат --- */
+function gameText(){
+  const head = 'Лила 2 · партия' + (GAME.started ? ' от ' + GAME.started : '') +
+    '\nНамерение: ' + GAME.intention +
+    '\nФишка: ' + GAME.position + ' · ' + byN[GAME.position].name +
+    (GAME.finished ? ' · партия завершена' : (GAME.inGame ? '' : ' · ждёт шестёрку')) +
+    '\nХодов: ' + GAME.moves.length;
+  return head + '\n' + GAME.moves.map(moveLine).join('\n');
+}
+function copyGame(){
+  if(!GAME.moves.length){ syncNote('Ходов пока нет.'); return; }
+  copyText(gameText())
+    .then(function(){ syncNote('Партия скопирована (' + GAME.moves.length + ' ход(ов)) — вставь её ведущему.'); })
+    .catch(function(){ syncNote('Скопировать не вышло — назови ходы ведущему из журнала.'); });
+}
+
+function pushAll(){
+  if(!DB){ copyGame(); return; }
+  if(!GAME.moves.length){ syncNote('Ходов пока нет.'); return; }
+  syncNote('Отправляю ' + GAME.moves.length + ' ход(ов)…');
+  const jobs = GAME.moves.map(function(m){
+    return DB.doc('moves/' + String(m.seq).padStart(3,'0')).set(Object.assign({}, m, {ts: Date.now()}));
+  });
+  jobs.push(DB.doc('game/current').set({
+    intention: GAME.intention, position: GAME.position, inGame: GAME.inGame,
+    finished: GAME.finished, sixes: GAME.sixes, beforeSixes: GAME.beforeSixes,
+    moveCount: GAME.moves.length, updatedAt: Date.now()
+  }));
+  Promise.all(jobs)
+    .then(function(){ syncNote('Партия отправлена — ведущий видит все ' + GAME.moves.length + ' ход(ов).'); })
+    .catch(function(err){
+      const code = (err && (err.code || err.name)) ? (err.code || err.name) : 'ошибка';
+      syncNote('Отправить не вышло (' + code + ') — назови ходы ведущему.');
+    });
+}
+
+function syncNote(t){
+  const el = document.getElementById('syncstate');
+  if(el) el.textContent = t;
+}
+
+function saveGame(mv){
+  if(!mv) return;
+  if(!DB){
+    syncNote(GAME.finished ? 'Партия завершена. Скопируй ход для ведущего.'
+      : GAME.sixes > 0 ? 'Шестёрка: бросай ещё. Потом скопируй все ходы разом.'
+      : 'Ход ' + mv.seq + ' сохранён. Скопируй его для ведущего и пришли в чат вместе с ответом.');
+    return;
+  }
+  syncNote('Записываю ход ' + mv.seq + '…');
+  const payload = Object.assign({}, mv, {ts: Date.now()});
+  DB.doc('moves/' + String(mv.seq).padStart(3,'0')).set(payload)
+    .then(function(){
+      return DB.doc('game/current').set({
+        intention: GAME.intention, position: GAME.position, inGame: GAME.inGame,
+        finished: GAME.finished, sixes: GAME.sixes, beforeSixes: GAME.beforeSixes,
+        moveCount: GAME.moves.length, updatedAt: Date.now()
+      });
+    })
+    .then(function(){ syncNote('Ход ' + mv.seq + ' записан — ведущий его видит.'); })
+    .catch(function(err){
+      const code = (err && (err.code || err.name)) ? (err.code || err.name) : 'ошибка';
+      syncNote('Ход ' + mv.seq + ' не записан (' + code + ') — назови число ведущему.');
+    });
+}
+
+/* --- init --- */
+GAME.sixes = 0; GAME.beforeSixes = 1; GAME.finished = false;
+renderBoard();
+renderState();
+renderLog();
+select(68);
+requestAnimationFrame(drawLinks);
+window.addEventListener('resize', function(){ drawLinks(); select(selected); markHere(); });
+if(document.fonts) document.fonts.ready.then(function(){ drawLinks(); select(selected); markHere(); });
+initDB();
+
+const t = document.getElementById('tlinks');
+t.addEventListener('click', ()=>{
+  const svg = document.getElementById('links');
+  const off = svg.classList.toggle('off');
+  t.textContent = off ? 'Связи: скрыты' : 'Связи: показаны';
+  t.setAttribute('aria-pressed', String(!off));
+});
+</script>
+
+</body>
+</html>
