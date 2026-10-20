@@ -251,7 +251,7 @@ function drawWeek(points){
 var mainData=null;
 function renderMain(d){if(denied(d))return;mainData=d;
   setM("income_today",d.income_today);setM("income_yesterday",d.income_yesterday);
-  renderBalance(d.balance);setM("debt",d.debt);setM("safe",d.safe);setInvest(d);
+  renderBalance(d.balance);setM("debt",d.debt);setM("safe",d.safe);
   var r=document.getElementById("reminder");r.innerHTML="";r.appendChild(document.createTextNode(d.reminder||"—"));
   tasksAll=d.tasks_today||[];renderTasks();
   progress(parseNum(d.income_month)||0);
@@ -265,7 +265,19 @@ function renderInc(d){if(denied(d))return;var pts=d.chart_points||[];
   document.getElementById("week_sum").innerHTML=wk>0?("+"+grp(wk)+" &#8381; за 7 дней"):"";
   drawWeek(pts);
 }
+var SHEET="1pTrKbY3BRJjCB3N2lE01zGIw5fILgiB9hV4vSA3sdpM";
+function onInvest(r){try{var rows=r.table.rows,c=rows[rows.length-1].c;
+  setInvest({invest:(c[1]&&(c[1].f!=null?c[1].f:c[1].v)),
+             invest_label:(c[0]&&(c[0].f||c[0].v))});}catch(e){}}
+function loadInvest(){var id="js_invest",old=document.getElementById(id);
+  if(old&&old.parentNode)old.parentNode.removeChild(old);
+  var el=document.createElement("script");el.id=id;
+  el.src="https://docs.google.com/spreadsheets/d/"+SHEET+"/gviz/tq?gid=0"
+    +"&tqx=responseHandler:onInvest&tq="+encodeURIComponent("select A,B limit 4")
+    +"&_="+(new Date().getTime());
+  document.body.appendChild(el);}
 function jsonp(cb,page){var id="js_"+cb,old=document.getElementById(id);if(old&&old.parentNode)old.parentNode.removeChild(old);var s=document.createElement("script");s.id=id;s.src=GAS+"?callback="+cb+"&page="+page+kq()+"&_="+(new Date().getTime());s.onerror=function(){document.getElementById("sync").innerHTML="ошибка загрузки";};document.body.appendChild(s);}
 function load(){jsonp("renderMain","main");}
+loadInvest();setInterval(loadInvest,REFRESH);
 load();setInterval(load,REFRESH);
 </script></body></html>
