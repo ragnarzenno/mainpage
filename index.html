@@ -113,6 +113,7 @@ html,body{width:1024px;height:768px;background:#08070a;color:#f4f7fb;font-family
     <div class="krow main"><span class="kl">Баланс</span><span class="kv" id="balance">—</span><div class="balcap" id="balbreak"></div></div>
     <div class="krow"><span class="kl">Долг</span><span class="kv mn" id="debt">—</span></div>
     <div class="krow"><span class="kl">Сейф</span><span class="kv" id="safe">—</span></div>
+    <div class="krow" id="invest_row" style="display:none"><span class="kl" id="invest_label">Инвестиции</span><span class="kv" id="invest">—</span></div>
   </div>
 
   <div class="pan tasks" id="tasks_pan"><div class="pt">Дела на сегодня<span class="tc" id="tasks_pg"></span></div><ul id="tasks_today"></ul></div>
@@ -141,6 +142,16 @@ function money(v){var n=parseNum(v);if(n==null)return(v&&(""+v).replace(/\s/g,""
   if(c==="IDR")return grp(n)+' Rp <small>(&#8776; '+grp(n*IDR_RUB)+' &#8381;)</small>';
   if(c==="USD")return "$"+grp(n);if(c==="EUR")return grp(n)+" &#8364;";return grp(n)+" &#8381;";}
 function setM(id,v){var e=document.getElementById(id);if(e)e.innerHTML=money(v);}
+/* Инвестиции: строка живёт, только пока в ответе есть поле. Казна растёт на строку,
+   дела едут вниз на столько же, низ правой колонки остаётся на месте. */
+function setInvest(d){var row=document.getElementById("invest_row");if(!row)return;
+  var v=(d&&d.invest!=null&&(""+d.invest).replace(/\s/g,""))?d.invest:null;
+  var kaz=document.getElementsByClassName("kazna")[0],tsk=document.getElementById("tasks_pan");
+  if(v==null){row.style.display="none";
+    if(kaz)kaz.style.height="204px";if(tsk){tsk.style.top="246px";tsk.style.height="330px";}return;}
+  row.style.display="block";setM("invest",v);
+  if(d.invest_label)document.getElementById("invest_label").innerHTML=""+d.invest_label;
+  if(kaz)kaz.style.height="252px";if(tsk){tsk.style.top="294px";tsk.style.height="282px";}}
 function renderBalance(v){var s=(""+v),b=document.getElementById("balance"),cap=document.getElementById("balbreak");
   function fp(x){var n=parseNum(x),suf=(""+x).replace(/[0-9\s.,]/g,"").trim();return (n!=null?grp(n):x)+(suf?" "+suf:"");}
   if(s.indexOf("|")>-1){var p=s.split("|");
@@ -240,7 +251,7 @@ function drawWeek(points){
 var mainData=null;
 function renderMain(d){if(denied(d))return;mainData=d;
   setM("income_today",d.income_today);setM("income_yesterday",d.income_yesterday);
-  renderBalance(d.balance);setM("debt",d.debt);setM("safe",d.safe);
+  renderBalance(d.balance);setM("debt",d.debt);setM("safe",d.safe);setInvest(d);
   var r=document.getElementById("reminder");r.innerHTML="";r.appendChild(document.createTextNode(d.reminder||"—"));
   tasksAll=d.tasks_today||[];renderTasks();
   progress(parseNum(d.income_month)||0);
